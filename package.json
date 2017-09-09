@@ -1,0 +1,26 @@
+{
+  "name": "webgl-shader-editor",
+  "version": "1.0.0",
+  "description": "Realtime editor for creating webgl shaders",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gkjohnson/webgl-shader-editor.git"
+  },
+  "author": "Garrett Johnson <garrett.kjohnson@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/gkjohnson/webgl-shader-editor/issues"
+  },
+  "homepage": "https://github.com/gkjohnson/webgl-shader-editor#readme",
+  "dependencies": {
+    "@gkjohnson/javascript-utils": "0.0.1",
+    "@polymer/polymer": "^2.0.2",
+    "@webcomponents/webcomponentsjs": "^1.0.10",
+    "ace-builds": "^1.2.8",
+    "three": "^0.87.1"
+  }
+}
