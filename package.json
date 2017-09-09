@@ -4,7 +4,8 @@
   "description": "Realtime editor for creating webgl shaders",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "serve": "static-server"
   },
   "repository": {
     "type": "git",
@@ -22,5 +23,8 @@
     "@webcomponents/webcomponentsjs": "^1.0.10",
     "ace-builds": "^1.2.8",
     "three": "^0.87.1"
+  },
+  "devDependencies": {
+    "static-server": "^2.0.5"
   }
 }

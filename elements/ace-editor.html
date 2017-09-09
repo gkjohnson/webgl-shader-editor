@@ -1,0 +1,47 @@
+
+<style> ace-editor { display: block; } </style>
+
+<script type="text/javascript">
+    class AceEditor extends Polymer.Element {
+        static get is() { return 'ace-editor' }
+
+        static get properties() {
+            return {
+                value: {
+                    type: String,
+                    value: '',
+                    notify: true,
+                    observer: '_valueObserver'
+                },
+
+                _editor: {
+                    type: Object,
+                    value: null                    
+                }
+            }
+        }
+
+        /* Lifecycle */
+        ready() {
+            this.value = this.innerHTML
+            super.ready()
+            this._editor = ace.edit(this)
+            this._editor.setTheme("ace/theme/monokai")
+            this._editor.getSession().setMode("ace/mode/glsl")
+            this._editor.setShowPrintMargin(false)
+
+            this._editor.setValue(this.value)
+        }
+
+        /* Observers */
+        _valueObserver(val) {
+            if (!this._editor || this._editor.getValue() == val) return
+            this._editor.setValue(val)
+        }
+
+        /* Overrides */
+        _attachDom(d) { this.appendChild(d) }
+    }
+
+    customElements.define(AceEditor.is, AceEditor)
+</script>
