@@ -1,0 +1,104 @@
+<dom-module id="shader-editor">
+    <template>
+        <style type="text/css">
+            #container {
+                display: flex;
+                height: 100%;
+            }
+
+            #render-view {
+                flex: 1;
+            }
+
+            #editors {
+                height: 100%;
+                display: flex;
+                flex-direction: column;
+                flex: 2;
+            }
+
+            ace-editor {
+                flex: 1;
+            }
+
+            h5 {
+                padding: 5px;
+                margin: 0;
+                color: white;
+                background: #272822;
+                font-size: 12px;
+            }
+        </style>
+        <div id="container">
+            <div id="editors">
+                <h5>Vertex Shader</h5>
+                <ace-editor value="{{ vertexShader }}" type="glsl"></ace-editor>
+                
+                <h5>Fragment Shader</h5>
+                <ace-editor value="{{ fragmentShader }}" type="glsl"></ace-editor>
+            </div>
+            <div id="render-view">placeholder</div>
+        </div>
+    </template>
+</dom-module>
+<script type="text/javascript">
+    const vs = `// http://blog.cjgammon.com/threejs-custom-shader-material
+// Vertex Shader
+attribute float vertexDisplacement;
+uniform float delta;
+varying float vOpacity;
+varying vec3 vUv;
+
+void main() 
+{
+    vUv = position;
+    vOpacity = vertexDisplacement;
+
+    vec3 p = position;
+
+    p.x += sin(vertexDisplacement) * 50.0;
+    p.y += cos(vertexDisplacement) * 50.0;
+
+    vec4 modelViewPosition = modelViewMatrix * vec4(p, 1.0);
+    gl_Position = projectionMatrix * modelViewPosition;
+}`
+
+    const fs = `// Fragment Shader
+uniform float delta;
+varying float vOpacity;
+varying vec3 vUv;
+
+void main() {
+
+    float r = 1.0 + cos(vUv.x * delta);
+    float g = 0.5 + sin(delta) * 0.5;
+    float b = 0.0;
+    vec3 rgb = vec3(r, g, b);
+
+    gl_FragColor = vec4(rgb, vOpacity);
+}`
+
+    class ShaderEditor extends Polymer.Element {
+        static get is() { return 'shader-editor' }
+
+        static get properties() {
+            return {
+                vertexShader: {
+                    type: String,
+                    value: vs,
+                    notify: true
+                },
+
+                fragmentShader: {
+                    type: String,
+                    value: fs,
+                    notify: true,
+                }
+            }
+        }
+
+        _attachDom(d) { this.appendChild(d) }
+    }
+ 
+    customElements.define(ShaderEditor.is, ShaderEditor)
+</script>

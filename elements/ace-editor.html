@@ -23,7 +23,7 @@
 
         /* Lifecycle */
         ready() {
-            this.value = this.innerHTML
+            this.value = this.innerText || this.value
             super.ready()
             this._editor = ace.edit(this)
             this._editor.setTheme("ace/theme/monokai")
@@ -31,6 +31,8 @@
             this._editor.setShowPrintMargin(false)
 
             this._editor.setValue(this.value)
+
+            this._editor.on('change', (e, ed) => this.value = ed.getValue())
         }
 
         /* Observers */
