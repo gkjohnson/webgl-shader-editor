@@ -1,0 +1,32 @@
+<dom-module id="shader-preview">
+    <template>
+        <div>Shader Preview Pane</div>
+        <div>[[ vertexShader ]]</div>
+        <div>[[ fragmentShader ]]</div>
+    </template>
+</dom-module>
+<script type="text/javascript">
+    class ShaderPreview extends Polymer.Element {
+        static get is() { return 'shader-preview' }
+
+        static get properties() {
+            return {
+                vertexShader: {
+                    type: String,
+                    value: '',
+                    notify: true
+                },
+
+                fragmentShader: {
+                    type: String,
+                    value: '',
+                    notify: true,
+                }
+            }
+        }
+
+        _attachDom(d) { this.appendChild(d) }
+    }
+ 
+    customElements.define(ShaderPreview.is, ShaderPreview)
+</script>

@@ -6,7 +6,7 @@
                 height: 100%;
             }
 
-            #render-view {
+            shader-preview {
                 flex: 1;
             }
 
@@ -37,7 +37,7 @@
                 <h5>Fragment Shader</h5>
                 <ace-editor value="{{ fragmentShader }}" type="glsl"></ace-editor>
             </div>
-            <div id="render-view">placeholder</div>
+            <shader-preview vertex-shader="[[ vertexShader ]]" fragment-shader="[[ fragmentShader ]]"></shader-preview>
         </div>
     </template>
 </dom-module>
