@@ -7,7 +7,7 @@
             }
 
         </style>
-        <div>Shader Preview Pane</div>
+        
         <img />
 
         <div>[[ vertexShader ]]</div>
@@ -44,7 +44,7 @@
             renderer.setClearColor(0x111111, 1)
 
             const camera = new THREE.PerspectiveCamera(75, 1, 0.1, 50)
-            camera.position.z = 15
+            camera.position.z = 10
 
             const material = new THREE.MeshLambertMaterial({ color: 0xffff00 })
             const sphere = new THREE.Mesh(new THREE.SphereGeometry( 5, 32, 32 ), material )
@@ -59,16 +59,18 @@
             
             const orbit = new THREE.OrbitControls(camera, this.querySelector('img'))
             orbit.enableZoom = false
+            orbit.addEventListener('change', () => this._render())
 
-            const render = () => {
+            this._renderer = renderer
+            this._scene = scene
+            this._camera = camera
 
-                renderer.render(scene, camera)
+            this._render()
+        }
 
-                this.querySelector('img').setAttribute('src', renderer.domElement.toDataURL('image/png'))
-                requestAnimationFrame(render)
-            }
-
-            render()
+        _render() {
+            this._renderer.render(this._scene, this._camera)
+            this.querySelector('img').setAttribute('src', this._renderer.domElement.toDataURL('image/png'))
         }
 
         _attachDom(d) { this.appendChild(d) }
