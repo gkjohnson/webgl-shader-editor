@@ -3,8 +3,7 @@
         <style type="text/css">
 
             img {
-                width: 200px;
-                height: 200px;                
+                width: 100%;
             }
 
         </style>
@@ -35,25 +34,41 @@
             }
         }
 
-        constructor() {
-            super()
+        ready() {
+            super.ready()
 
             const scene = new THREE.Scene()
-            const renderer = new THREE.WebGLRenderer({ antialieas: true })
+            const renderer = new THREE.WebGLRenderer({ antialias: true })
             renderer.setPixelRatio(window.devicePixelRatio)
-            renderer.setSize(200, 200)
+            renderer.setSize(400, 400)
             renderer.setClearColor(0x111111, 1)
 
             const camera = new THREE.PerspectiveCamera(75, 1, 0.1, 50)
-            camera.position.z = 30
+            camera.position.z = 15
 
-            const material = new THREE.MeshBasicMaterial({ color: 0xffff00 })
+            const material = new THREE.MeshLambertMaterial({ color: 0xffff00 })
             const sphere = new THREE.Mesh(new THREE.SphereGeometry( 5, 32, 32 ), material )
             scene.add( sphere );
-        
+            scene.add(new THREE.AmbientLight(0x222222))
+            
+            const dl = new THREE.DirectionalLight( 0xffffff, 0.5 );
+            dl.position.x = 1;
+            dl.position.y = 1;
+            dl.position.z = 1;
+            scene.add( dl );
+            
             const orbit = new THREE.OrbitControls(camera, this.querySelector('img'))
             orbit.enableZoom = false
-            // .toDataURL('image/png')
+
+            const render = () => {
+
+                renderer.render(scene, camera)
+
+                this.querySelector('img').setAttribute('src', renderer.domElement.toDataURL('image/png'))
+                requestAnimationFrame(render)
+            }
+
+            render()
         }
 
         _attachDom(d) { this.appendChild(d) }
