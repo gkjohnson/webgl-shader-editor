@@ -1,6 +1,16 @@
 <dom-module id="shader-preview">
     <template>
+        <style type="text/css">
+
+            img {
+                width: 200px;
+                height: 200px;                
+            }
+
+        </style>
         <div>Shader Preview Pane</div>
+        <img />
+
         <div>[[ vertexShader ]]</div>
         <div>[[ fragmentShader ]]</div>
     </template>
@@ -23,6 +33,21 @@
                     notify: true,
                 }
             }
+        }
+
+        constructor() {
+            super()
+
+            const scene = new THREE.Scene()
+            const renderer = new THREE.WebGLRenderer({ antialieas: true })
+            renderer.setPixelRatio(window.devicePixelRatio)
+            renderer.setClearColor(0x111111, 1)
+
+            const material = new THREE.MeshBasicMaterial( {color: 0xffff00} );
+            const sphere = new THREE.Mesh(new THREE.SphereGeometry( 5, 32, 32 ), material );
+            scene.add( sphere );
+        
+            // .toDataURL('image/png')
         }
 
         _attachDom(d) { this.appendChild(d) }
