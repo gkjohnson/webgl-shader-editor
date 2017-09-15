@@ -41,12 +41,18 @@
             const scene = new THREE.Scene()
             const renderer = new THREE.WebGLRenderer({ antialieas: true })
             renderer.setPixelRatio(window.devicePixelRatio)
+            renderer.setSize(200, 200)
             renderer.setClearColor(0x111111, 1)
 
-            const material = new THREE.MeshBasicMaterial( {color: 0xffff00} );
-            const sphere = new THREE.Mesh(new THREE.SphereGeometry( 5, 32, 32 ), material );
+            const camera = new THREE.PerspectiveCamera(75, 1, 0.1, 50)
+            camera.position.z = 30
+
+            const material = new THREE.MeshBasicMaterial({ color: 0xffff00 })
+            const sphere = new THREE.Mesh(new THREE.SphereGeometry( 5, 32, 32 ), material )
             scene.add( sphere );
         
+            const orbit = new THREE.OrbitControls(camera, this.querySelector('img'))
+            orbit.enableZoom = false
             // .toDataURL('image/png')
         }
 
