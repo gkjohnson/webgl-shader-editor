@@ -31,6 +31,7 @@
             this._editor.setShowPrintMargin(false)
 
             this._editor.setValue(this.value)
+            this._editor.selection.clearSelection()
 
             this._editor.on('change', (e, ed) => this.value = ed.getValue())
         }
