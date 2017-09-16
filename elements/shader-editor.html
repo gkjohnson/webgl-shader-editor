@@ -43,34 +43,36 @@
     </template>
 </dom-module>
 <script type="text/javascript">
-    const vs = `// http://blog.cjgammon.com/threejs-custom-shader-material
-// Vertex Shader
-attribute float vertexDisplacement;
-uniform float delta;
-varying float vOpacity;
-varying vec3 vUv;
+    const vs = `// Lighting
+struct DirLight {
+    highp vec3 color;
+    highp vec3 direction;
+};
+
+uniform DirLight directionalLights[NUM_DIR_LIGHTS];
+uniform vec3 ambientLightColor;
+
+varying vec3 lighting;
 
 void main() 
 {
-    vUv = position;
-    vOpacity = vertexDisplacement;
+    vec3 worldNorm = (modelViewMatrix * vec4(normal, 0)).xyz;
+    
+    lighting = ambientLightColor;
+    for(int i = 0; i < NUM_DIR_LIGHTS; i ++) {
+        DirLight dl = directionalLights[i];
+        lighting += clamp(dot(worldNorm, dl.direction), 0.0, 1.0) * dl.color;
+    } 
 
     gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
 }`
 
-    const fs = `// Fragment Shader
-uniform float delta;
-varying float vOpacity;
-varying vec3 vUv;
+    const fs = `varying vec3 lighting;
 
 void main() {
+    vec3 rgb = vec3(1, 1, 1);
 
-    float r = 1.0 + cos(vUv.x * delta);
-    float g = 0.5 + sin(delta) * 0.5;
-    float b = 0.0;
-    vec3 rgb = vec3(r, g, b);
-
-    gl_FragColor = vec4(rgb, vOpacity);
+    gl_FragColor = vec4(rgb * lighting, 1);
 }`
 
     class ShaderEditor extends Polymer.Element {
