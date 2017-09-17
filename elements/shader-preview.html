@@ -2,13 +2,14 @@
     <template>
         <style type="text/css">
 
-            img {
+            #target {
                 width: 100%;
+                image-rendering: pixelated;
             }
 
         </style>
         
-        <img />
+        <zoomable-image id="target"></zoomable-image>
         
     </template>
 </dom-module>
@@ -60,6 +61,7 @@
 
             const camera = new THREE.PerspectiveCamera(75, 1, 0.1, 50)
             camera.position.z = 10
+            scene.add(camera)
 
             const material = new THREE.ShaderMaterial({ uniforms: THREE.UniformsUtils.merge([
                 THREE.UniformsLib["lights"]
@@ -74,7 +76,7 @@
             dl.position.z = 1;
             scene.add( dl );
             
-            const orbit = new THREE.OrbitControls(camera, this.querySelector('img'))
+            const orbit = new THREE.OrbitControls(camera, this.querySelector('#target'))
             orbit.enableZoom = false
             orbit.addEventListener('change', () => this._render())
 
@@ -142,7 +144,7 @@
 
         _render() {
             this._renderer.render(this._scene, this._camera)
-            this.querySelector('img').setAttribute('src', this._renderer.domElement.toDataURL('image/png'))
+            this.querySelector('#target').setAttribute('src', this._renderer.domElement.toDataURL('image/png'))
         }
 
         // Observers
