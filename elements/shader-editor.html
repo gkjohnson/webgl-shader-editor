@@ -33,20 +33,31 @@
         <div id="container">
             <div id="editors">
                 <h5>Vertex Shader</h5>
-                <ace-editor value="{{ vertexShader }}" type="glsl"></ace-editor>
+                <ace-editor
+                    value="{{ vertexShader }}"
+                    type="glsl"
+                ></ace-editor>
                 
                 <h5>Fragment Shader</h5>
-                <ace-editor value="{{ fragmentShader }}" type="glsl"></ace-editor>
+                <ace-editor
+                    value="{{ fragmentShader }}"
+                    type="glsl"
+                ></ace-editor>
             </div>
-            <shader-preview vertex-shader="[[ vertexShader ]]" fragment-shader="[[ fragmentShader ]]"></shader-preview>
+            <shader-preview
+                vertex-shader="[[ vertexShader ]]"
+                vertex-errors="{{ vertexErrors }}"
+                fragment-shader="[[ fragmentShader ]]"
+                fragment-errors="{{ fragmentErrors }}"
+            ></shader-preview>
         </div>
     </template>
 </dom-module>
 <script type="text/javascript">
     const vs = `// Lighting
 struct DirLight {
-    highp vec3 color;
-    highp vec3 direction;
+    vec3 color;
+    vec3 direction;
 };
 
 uniform DirLight directionalLights[NUM_DIR_LIGHTS];
@@ -90,6 +101,18 @@ void main() {
                     type: String,
                     value: fs,
                     notify: true,
+                },
+
+                vertexErrors: {
+                    type: Array,
+                    value: null,
+                    notify: true
+                },
+
+                fragmentErrors: {
+                    type: Array,
+                    value: null,
+                    notify: true
                 }
             }
         }

@@ -28,6 +28,18 @@
                     type: String,
                     value: '',
                     notify: true,
+                },
+
+                vertexErrors: {
+                    type: Array,
+                    value: null,
+                    notify: true
+                },
+
+                fragmentErrors: {
+                    type: Array,
+                    value: null,
+                    notify: true
                 }
             }
         }
@@ -74,6 +86,11 @@
             this._updateMaterialAndRender()
         }
 
+        // Utilities
+        _getLogError(log, lineOffset) {
+            return { line: 0, log }
+        }
+
         // Private Functions
         _updateMaterialAndRender() {
             if (!this._material) return
@@ -89,13 +106,29 @@
             this._material.needsUpdate = true
             
             this._render()
+
+            // setTimeout
+            this._checkForError()
+        }
+
+        _checkForError() {
+            const diag = this._renderer.info.programs[0].diagnostics
+            if (!diag || !diag.fragmentShader.log) {
+                this.fragmentErrors = null
+            } else {
+                this.fragmentErrors = [this._getLogError(diag.fragmentShader.log, 0)]
+            }
+
+            if (!diag || !diag.vertexShader.log) {
+                this.vertexErrors = null
+            } else {
+                this.vertexErrors = [this._getLogError(diag.vertexShader.log, 0)]
+            }
         }
 
         _render() {
-            setTimeout(() => {
-                this._renderer.render(this._scene, this._camera)
-                this.querySelector('img').setAttribute('src', this._renderer.domElement.toDataURL('image/png'))
-            })
+            this._renderer.render(this._scene, this._camera)
+            this.querySelector('img').setAttribute('src', this._renderer.domElement.toDataURL('image/png'))
         }
 
         // Observers
