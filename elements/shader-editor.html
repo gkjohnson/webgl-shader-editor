@@ -35,12 +35,14 @@
                 <h5>Vertex Shader</h5>
                 <ace-editor
                     value="{{ vertexShader }}"
+                    annotations="[[ _errorsToAnnotations(vertexErrors) ]]"
                     type="glsl"
                 ></ace-editor>
                 
                 <h5>Fragment Shader</h5>
                 <ace-editor
                     value="{{ fragmentShader }}"
+                    annotations="[[ _errorsToAnnotations(fragmentErrors) ]]"
                     type="glsl"
                 ></ace-editor>
             </div>
@@ -118,6 +120,20 @@ void main() {
         }
 
         _attachDom(d) { this.appendChild(d) }
+
+        // Utilities
+        _errorsToAnnotations(e) {
+            if (!e) return null
+
+            return e.map(i => {
+                return {
+                    row: i.row,
+                    column: i.column,
+                    text: i.log,
+                    type: 'error'
+                }
+            })
+        }
     }
  
     customElements.define(ShaderEditor.is, ShaderEditor)

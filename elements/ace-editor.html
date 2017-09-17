@@ -14,6 +14,12 @@
                     observer: '_valueObserver'
                 },
 
+                annotations: {
+                    type: Array,
+                    value: () => [],
+                    observer: '_annotationsObserver'
+                },
+
                 _editor: {
                     type: Object,
                     value: null                    
@@ -31,6 +37,7 @@
             this._editor.setShowPrintMargin(false)
 
             this._editor.setValue(this.value)
+            this._editor.session.setAnnotations(this.annotations)
             this._editor.selection.clearSelection()
 
             this._editor.on('change', (e, ed) => this.value = ed.getValue())
@@ -40,6 +47,10 @@
         _valueObserver(val) {
             if (!this._editor || this._editor.getValue() == val) return
             this._editor.setValue(val)
+        }
+
+        _annotationsObserver(ann) {
+            if (this._editor) this._editor.session.setAnnotations(ann)
         }
 
         /* Overrides */

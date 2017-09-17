@@ -87,8 +87,23 @@
         }
 
         // Utilities
-        _getLogError(log, lineOffset) {
-            return { line: 0, log }
+        _getLogErrors(logs, lineOffset = 0) {
+            return logs
+                .replace(String.fromCharCode(0), '')
+                .trim()
+                .split('\n')
+                .map(line => this._getLogError(line, lineOffset))
+        }
+
+        _getLogError(log, lineOffset = 0) {
+            const regex = /ERROR: (\d+):(\d+):/
+            const matches = log.match(regex)
+            const row = parseFloat(matches[2]) - lineOffset
+            const col = parseFloat(matches[1])
+
+            log = log.replace(regex).trim()            
+
+            return { row, col, log }
         }
 
         // Private Functions
@@ -107,7 +122,6 @@
             
             this._render()
 
-            // setTimeout
             this._checkForError()
         }
 
@@ -116,13 +130,13 @@
             if (!diag || !diag.fragmentShader.log) {
                 this.fragmentErrors = null
             } else {
-                this.fragmentErrors = [this._getLogError(diag.fragmentShader.log, 0)]
+                this.fragmentErrors = this._getLogErrors(diag.fragmentShader.log, diag.fragmentShader.prefix.split('\n').length)
             }
 
             if (!diag || !diag.vertexShader.log) {
                 this.vertexErrors = null
             } else {
-                this.vertexErrors = [this._getLogError(diag.vertexShader.log, 0)]
+                this.vertexErrors = this._getLogErrors(diag.vertexShader.log, diag.vertexShader.prefix.split('\n').length)
             }
         }
 
