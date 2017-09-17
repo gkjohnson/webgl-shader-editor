@@ -119,7 +119,6 @@
             let lastPageX, lastPageY
             this.addEventListener('mousedown', e => {
                 if (e.which !== 2) return
-                    console.log("ASDF")
                 this._dragging = true
                 
                 lastPageX = e.pageX
@@ -128,7 +127,6 @@
 
             document.addEventListener('mouseup', e => {
                 if (e.which !== 2) return
-
                 this._dragging = false
             })
 
