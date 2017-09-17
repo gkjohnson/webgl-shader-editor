@@ -96,7 +96,24 @@
             super.ready()
 
             this.addEventListener('wheel', e => {
-                this.scale -= e.deltaY * 1e-2
+                const oldScale = this.scale
+
+                // set the scale first because the
+                // offsets are clamped by the scale
+                // and the scale is clamped by
+                // the max value
+                this.scale = oldScale - e.deltaY * 1e-2
+                const newScale = this.scale
+
+                // calculate the offset before and after
+                // the scale change and move the offset by
+                // that amount to keep the mouse over the
+                // current pixel
+                const xpxdelta = Math.floor(e.offsetX / newScale) - Math.floor(e.offsetX / oldScale)
+                const ypxdelta = Math.floor(e.offsetY / newScale) - Math.floor(e.offsetY / oldScale)
+
+                this.xOffset += xpxdelta
+                this.yOffset += ypxdelta
             })
 
             let lastPageX, lastPageY

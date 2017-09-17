@@ -98,12 +98,18 @@
         }
 
         _getLogError(log, lineOffset = 0) {
-            const regex = /ERROR: (\d+):(\d+):/
+            const regex = /^ERROR: ([^:]+):([^:]+)\s*:/
             const matches = log.match(regex)
-            const row = parseFloat(matches[2]) - lineOffset
-            const col = parseFloat(matches[1])
+            let row = 0
+            let col = 0
+            if(matches != null) {
+                row = parseFloat(matches[2]) - lineOffset
+                col = parseFloat(matches[1])
 
-            log = log.replace(regex).trim()            
+                row = row || 0
+                col = col || 0
+            }
+            log = log.replace(regex, '').trim()            
 
             return { row, col, log }
         }
