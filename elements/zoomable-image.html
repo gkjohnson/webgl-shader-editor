@@ -78,29 +78,86 @@
                     type: Number,
                     value: 0,
                     notify: true
+                },
+
+                _dragging: {
+                    type: Boolean,
+                    value: false
                 }
             }
+        }
+
+        static get observers() {
+            return ['_offsetObserver(xOffset, yOffset, scale, src)']
         }
 
         // Lifecycle
         ready() {
             super.ready()
 
-            this.addEventListener('wheel', e => this.scale -= e.deltaY * 1e-2)
+            this.addEventListener('wheel', e => {
+                this.scale -= e.deltaY * 1e-2
+            })
+
+            let lastPageX, lastPageY
+            this.addEventListener('mousedown', e => {
+                if (e.which !== 2) return
+                    console.log("ASDF")
+                this._dragging = true
+                
+                lastPageX = e.pageX
+                lastPageY = e.pageY
+            })
+
+            document.addEventListener('mouseup', e => {
+                if (e.which !== 2) return
+
+                this._dragging = false
+            })
+
+            document.addEventListener('mousemove', e => {
+                if (!this._dragging) return
+
+                const deltaX = e.pageX - lastPageX
+                const deltaY = e.pageY - lastPageY
+
+                this.xOffset += deltaX / this.scale
+                this.yOffset += deltaY / this.scale
+
+                lastPageX = e.pageX
+                lastPageY = e.pageY
+            })
         }
 
         // Utilities
         _getStyle(s, x, y) {
+            x = Math.floor(x)            
+            y = Math.floor(y)            
             x *= s
             y *= s
             s *= 100
-            return `width:${s}%; top:${x}px; left:${y}px;`
+
+            return `width:${s}%; top:${y}px; left:${x}px;`
         }
 
         // Observers
         _scaleObserver(s) {
             s = Math.max(1, Math.min(this.maxScale, s))
             if (this.scale !== s) this.scale = s
+        }
+
+        _offsetObserver(x, y, s, src) {
+            const prox = this.shadowRoot.querySelector('#proxy-image')
+
+            const maxX = prox.width - prox.width / s
+            const maxY = prox.height - prox.height / s
+
+            // don't go past the top left edge
+            x = Math.max(-maxX, Math.min(0, x))
+            y = Math.max(-maxY, Math.min(0, y))
+
+            if (this.xOffset !== x) this.xOffset = x
+            if (this.yOffset !== y) this.yOffset = y
         }
     }
 
