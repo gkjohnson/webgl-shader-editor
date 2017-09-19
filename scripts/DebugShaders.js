@@ -26,6 +26,9 @@ DebugShaders = {}
         let a = 0
         
         if (/^vec/.test(type)) {
+            // TODO: Pack these more so more of
+            // the data can be read back out, otherwise
+            // they're clamped from 0 to 1.0
             r = `${name}.r`
             g = `${name}.g`
             if (/^vec(3|4)/.test(type)) b = `${name}.b`
@@ -44,6 +47,8 @@ DebugShaders = {}
             a = `float((${name} << 24) & 0xFF) / 0xFF`
         }
         else if(type === 'float') {
+            // TODO : Pack this into bytes so we can
+            // read it back out as a larger float
             r = `${name}`
         }
 
