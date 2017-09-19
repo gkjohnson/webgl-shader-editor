@@ -47,6 +47,7 @@
         _valueObserver(val) {
             if (!this._editor || this._editor.getValue() == val) return
             this._editor.setValue(val)
+            this._editor.selection.clearSelection()
         }
 
         _annotationsObserver(ann) {

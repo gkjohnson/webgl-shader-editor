@@ -58,38 +58,6 @@
     </template>
 </dom-module>
 <script type="text/javascript">
-    const vs = `// Lighting
-struct DirLight {
-    vec3 color;
-    vec3 direction;
-};
-
-uniform DirLight directionalLights[NUM_DIR_LIGHTS];
-uniform vec3 ambientLightColor;
-
-varying vec3 lighting;
-
-void main() 
-{
-    vec3 worldNorm = (modelViewMatrix * vec4(normal, 0)).xyz;
-    
-    lighting = ambientLightColor;
-    for(int i = 0; i < NUM_DIR_LIGHTS; i ++) {
-        DirLight dl = directionalLights[i];
-        lighting += clamp(dot(worldNorm, dl.direction), 0.0, 1.0) * dl.color;
-    } 
-
-    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-}`
-
-    const fs = `varying vec3 lighting;
-
-void main() {
-    vec3 rgb = vec3(1, 1, 1);
-
-    gl_FragColor = vec4(rgb * lighting, 1);
-}`
-
     class ShaderEditor extends Polymer.Element {
         static get is() { return 'shader-editor' }
 
@@ -97,13 +65,13 @@ void main() {
             return {
                 vertexShader: {
                     type: String,
-                    value: vs,
+                    value: '',
                     notify: true
                 },
 
                 fragmentShader: {
                     type: String,
-                    value: fs,
+                    value: '',
                     notify: true,
                 },
 

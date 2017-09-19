@@ -36,5 +36,47 @@
 </head>
 <body>
     <shader-editor></shader-editor>
+    <script type="text/javascript">
+    
+        const se = document.querySelector('shader-editor')
+            const vs = `// Lighting
+struct DirLight {
+    vec3 color;
+    vec3 direction;
+};
+
+uniform DirLight directionalLights[NUM_DIR_LIGHTS];
+uniform vec3 ambientLightColor;
+
+varying vec3 lighting;
+
+void main() 
+{
+    vec3 worldNorm = (modelViewMatrix * vec4(normal, 0)).xyz;
+    
+    lighting = ambientLightColor;
+    for(int i = 0; i < NUM_DIR_LIGHTS; i ++) {
+        DirLight dl = directionalLights[i];
+        lighting += clamp(dot(worldNorm, dl.direction), 0.0, 1.0) * dl.color;
+    } 
+
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+}`
+
+    const fs = `varying vec3 lighting;
+
+void main() {
+    vec3 rgb = vec3(1, 1, 1);
+
+    gl_FragColor = vec4(rgb * lighting, 1);
+}`
+        window.onunload = () => {
+            localStorage.setItem('vertexShader', se.vertexShader)
+            localStorage.setItem('fragmentShader', se.fragmentShader)
+        }
+
+        se.vertexShader = localStorage.getItem('vertexShader') || vs
+        se.fragmentShader = localStorage.getItem('fragmentShader') || fs
+    </script>
 </body>
 </html>
