@@ -107,31 +107,22 @@ DebugShaders = {}
         return shaders
     }
 
-    DebugShaders.readPixelColor = (data, x, y, cb) => {
-        // TODO: this may be resource intensive? Should create a pool?
-        // Should probably require that the containing element
-        // manage the image lifecycle        
-        let img = new Image()
-        img.onload = () => {
-            ctx.clearRect(0, 0, 1, 1)
-            ctx.drawImage(img, x, y, 1, 1, 0, 0, 1, 1)
+    DebugShaders.readPixelColor = (img, x, y, type) => {
+        ctx.clearRect(0, 0, 1, 1)
+        ctx.drawImage(img, x, y, 1, 1, 0, 0, 1, 1)
 
-            const data = ctx.getImageData(0,0,1,1).data
-            cb({
-                get x() { return this.r },
-                get y() { return this.g },
-                get z() { return this.b },
-                get w() { return this.a },
-                r: data[0],
-                g: data[1],
-                b: data[2],
-                a: data[3]
-            })
+        const data = ctx.getImageData(0,0,1,1).data
 
-            img.onload = null
-            img = null
+        // TODO: Coerce it into the given type
+        return {
+            get x() { return this.r },
+            get y() { return this.g },
+            get z() { return this.b },
+            get w() { return this.a },
+            r: data[0],
+            g: data[1],
+            b: data[2],
+            a: data[3]
         }
-
-        img.src = data
     }
 })()
