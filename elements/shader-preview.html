@@ -11,6 +11,19 @@
                 visibility: hidden;
             }
 
+            #debug-list {
+                display: flex;
+                width: 100%;
+            }
+
+            #debug-list>div {
+                flex: 1;
+            }
+
+            #debug-list>div>img {
+                width: 100%;
+            }
+
         </style>
         
         <image-magnifier
@@ -28,6 +41,13 @@
             clamp
         ></zoomable-image>
         
+        <div id="debug-list">
+            <template is="dom-repeat" items="[[_images]]">
+                <div>
+                    <img src$="[[item.img.src]]" />
+                </div>
+            </template>
+        </div>        
     </template>
 </dom-module>
 <script type="text/javascript">
@@ -60,6 +80,17 @@
                     notify: true
                 },
 
+                _shaders: {
+                    type: Array,
+                    value: () => [],
+                    computed: '_computeShaders(vertexShader, fragmentShader)'
+                },
+
+                _images: {
+                    type: Array,
+                    value: () => []
+                },
+
                 _imgsrc: {
                     type: String,
                     value: null
@@ -68,7 +99,7 @@
         }
 
         static get observers() {
-            return [ '_shadersObserver(vertexShader, fragmentShader)' ]
+            return [ '_shadersObserver(_shaders)' ]
         }
 
         // Lifecycle Functions
@@ -107,7 +138,7 @@
             this._camera = camera
             this._material = material
 
-            this._updateMaterialAndRender()
+            this._render()
         }
 
         // Utilities
@@ -137,11 +168,11 @@
         }
 
         // Private Functions
-        _updateMaterialAndRender() {
+        _updateMaterialAndRender(vs, fs, checkforerrors) {
             if (!this._material) return
 
-            this._material.vertexShader = this.vertexShader
-            this._material.fragmentShader = this.fragmentShader
+            this._material.vertexShader = vs
+            this._material.fragmentShader = fs
 
             this._material.lights = true
             this._material.uniforms = THREE.UniformsUtils.merge([
@@ -149,10 +180,9 @@
             ]);
 
             this._material.needsUpdate = true
-            
-            this._render()
+            this._renderer.render(this._scene, this._camera)
 
-            this._checkForError()
+            if (checkforerrors) this._checkForError()
         }
 
         _checkForError() {
@@ -171,8 +201,36 @@
         }
 
         _render() {
-            this._renderer.render(this._scene, this._camera)
-            this._imgsrc = this._renderer.domElement.toDataURL('image/png')
+            if (!this._renderer) return
+
+            // TODO: Run this over multiple frames
+            let arr = this._images.map(item => Object.assign({}, item))
+            while (arr.length > this._shaders.length) arr.pop()
+            while (arr.length < this._shaders.length) arr.push({})
+
+            let bail = false
+            for (let i = 0; i < this._shaders.length; i ++) {
+                const item = this._shaders[i]
+                const vs = item.vertexShader
+                const fs = item.fragmentShader
+
+                arr[i].name = item.name
+                arr[i].type = item.type
+                arr[i].img = arr[i].img || new Image()
+
+                if (!bail) {
+                    this._updateMaterialAndRender(vs, fs, i === 0)
+                    arr[i].img.src = this._renderer.domElement.toDataURL('image/png')
+                } else {
+                    arr[i].img.src = ''
+                }
+
+                bail = this.fragmentErrors || this.vertexErrors
+            }
+
+            this._imgsrc = arr[0].img.src
+            this._images = null
+            this._images = arr            
         }
 
         // Event Handlers
@@ -194,9 +252,25 @@
             this.querySelector('image-magnifier').style.visibility = 'hidden'
         }
 
+        // Computed Variables
+        _computeShaders(vs, fs) {
+            const prim = {
+                type: 'vec4',
+                name: 'color',
+                vertexShader: vs,
+                fragmentShader: fs
+            }
+            
+            console.time("TEST")
+            const arr = [prim].concat(DebugShaders.enumerate(vs, fs))
+            console.timeEnd("TEST")
+
+            return arr
+        }
+
         // Observers
-        _shadersObserver(vs, fs) {
-            this._updateMaterialAndRender()
+        _shadersObserver(shaders) {
+            this._render()
         }
 
         // Overrides

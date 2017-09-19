@@ -81,6 +81,8 @@ DebugShaders = {}
                     newlines[i] += '\n' + toGlFragColorLine(type, name) + '\nreturn;\n'
 
                     shaders.push({
+                        type,
+                        name,
                         vertexShader: vs,
                         fragmentShader: newlines.join('\n')
                     })
@@ -94,6 +96,8 @@ DebugShaders = {}
                 const mainSig = 'void main() {'
                 const res = fs.replace(mainSig, mainSig + '\n' + toGlFragColorLine(it.type, it.name) + '\nreturn;\n')
                 shaders.push({
+                    type: it.type,
+                    name: it.name,
                     vertexShader: vs,
                     fragmentShader: res
                 })
