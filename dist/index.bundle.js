@@ -3525,7 +3525,7 @@ __webpack_require__(1);
 /* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
-/*__wc__loader*/!function(a){var b="\n    <title></title>\n\n    \n    <link href=\"https://fonts.googleapis.com/css?family=Roboto:100\" rel=\"stylesheet\">\n\n    \n    \n    \n    \n    \n    \n\n    \n    \n    \n\n    \n    \n    \n    \n    \n\n    <style type=\"text/css\">html,body{margin:0;padding:0;height:100%;font-weight:100;font-family:Roboto,sans-serif;}</style>\n";if(a.head){var c=a.head,d=a.createElement("div");for(d.innerHTML=b;d.children.length>0;)c.appendChild(d.children[0])}else a.write(b)}(document);!function(a){var b="\n    <shader-editor></shader-editor>\n\n";if(a.body){var c=a.body,d=a.createElement("div");for(d.innerHTML=b;d.children.length>0;)c.appendChild(d.children[0])}else a.write(b)}(document);
+/*__wc__loader*/!function(a){var b="\n    <title></title>\n\n    \n    <link href=\"https://fonts.googleapis.com/css?family=Roboto:100\" rel=\"stylesheet\">\n\n    \n    \n    \n    \n    \n    \n\n    \n    \n    \n\n    \n    \n    \n    \n    \n\n    <style type=\"text/css\">html,body{margin:0;padding:0;height:100%;font-weight:100;font-family:Roboto,sans-serif;}</style>\n";if(a.head){var c=a.head,d=a.createElement("div");for(d.innerHTML=b;d.children.length>0;)c.appendChild(d.children[0])}else a.write(b)}(document);!function(a){var b="\n    <shader-editor></shader-editor>\n    \n\n";if(a.body){var c=a.body,d=a.createElement("div");for(d.innerHTML=b;d.children.length>0;)c.appendChild(d.children[0])}else a.write(b)}(document);
 __webpack_require__(10);
 
 __webpack_require__(12);
@@ -3549,6 +3549,49 @@ __webpack_require__(33);
 __webpack_require__(34);
 
 __webpack_require__(35);
+
+
+    
+        const se = document.querySelector('shader-editor')
+            const vs = `// Lighting
+struct DirLight {
+    vec3 color;
+    vec3 direction;
+};
+
+uniform DirLight directionalLights[NUM_DIR_LIGHTS];
+uniform vec3 ambientLightColor;
+
+varying vec3 lighting;
+
+void main() 
+{
+    vec3 worldNorm = (modelViewMatrix * vec4(normal, 0)).xyz;
+    
+    lighting = ambientLightColor;
+    for(int i = 0; i < NUM_DIR_LIGHTS; i ++) {
+        DirLight dl = directionalLights[i];
+        lighting += clamp(dot(worldNorm, dl.direction), 0.0, 1.0) * dl.color;
+    } 
+
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+}`
+
+    const fs = `varying vec3 lighting;
+
+void main() {
+    vec3 rgb = vec3(1, 1, 1);
+
+    gl_FragColor = vec4(rgb * lighting, 1);
+}`
+        window.onunload = () => {
+            localStorage.setItem('vertexShader', se.vertexShader)
+            localStorage.setItem('fragmentShader', se.fragmentShader)
+        }
+
+        se.vertexShader = localStorage.getItem('vertexShader') || vs
+        se.fragmentShader = localStorage.getItem('fragmentShader') || fs
+    
 
 
 /***/ }),
@@ -3609,7 +3652,7 @@ __webpack_require__(2)(__webpack_require__(19))
 /* 19 */
 /***/ (function(module, exports) {
 
-module.exports = "DebugShaders = {}\r\n\r\n;(function() {\r\n\r\n    const variableRegex = /((((precision|varying|uniform|attribute)\\s+)?)((highp|mediump|lowp)\\s+)?)(vec4|vec3|vec2|float|int|uint|bool)\\s+([A-Za-z0-9]+)/\r\n    const canvas = document.createElement('canvas')\r\n    const ctx = canvas.getContext('2d')\r\n    canvas.width = 100\r\n    canvas.height = 100\r\n\r\n    const normalize = shader => {\r\n        return shader\r\n            .replace(/\\/\\/[^\\n]*\\n/g, '')               // comment line\r\n            .replace(/\\/\\*(\\*(?!\\/)|[^*])*\\*\\//, '')    // block comment\r\n            .replace(/(\\n|\\s)+/g, ' ')\r\n            .replace(/\\s*{\\s*/g, '\\n{\\n')\r\n            .replace(/\\s*}\\s*/g, '\\n}\\n')\r\n            .replace(/\\s*;\\s*/g, ';\\n')\r\n            .replace(/void\\s+main\\s*\\(\\)(\\s|\\n)*{/, 'void main() {')\r\n    }\r\n\r\n    const toGlFragColorLine = (type, name) => {\r\n        let r = 0\r\n        let g = 0\r\n        let b = 0\r\n        let a = 1\r\n        \r\n        if (/^vec/.test(type)) {\r\n            // TODO: Pack these more so more of\r\n            // the data can be read back out, otherwise\r\n            // they're clamped from 0 to 1.0\r\n            r = `${name}.r`\r\n            g = `${name}.g`\r\n            if (/^vec(3|4)/.test(type)) b = `${name}.b`\r\n            if (/^vec4/.test(type)) a = `${name}.a`\r\n        }\r\n        else if(type === 'bool') {\r\n            r = `${name} ? 1 : 0`\r\n            g = r\r\n            b = r\r\n            a = r\r\n        }\r\n        else if(/^(int|uint)/.test(type)) {\r\n            r = `float((${name} << 0 ) & 0xFF) / 0xFF`\r\n            g = `float((${name} << 8 ) & 0xFF) / 0xFF`\r\n            b = `float((${name} << 16) & 0xFF) / 0xFF`\r\n            a = `float((${name} << 24) & 0xFF) / 0xFF`\r\n        }\r\n        else if(type === 'float') {\r\n            // TODO : Pack this into bytes so we can\r\n            // read it back out as a larger float\r\n            r = `${name}`\r\n        }\r\n\r\n        return `gl_FragColor = vec4(${r},${g},${b},${a});`\r\n    }\r\n\r\n    DebugShaders.enumerate = (vs, fs) => {\r\n        vs = normalize(vs)\r\n        fs = normalize(fs)\r\n\r\n        const shaders = []\r\n        const fsVarying = []\r\n\r\n        // output color for each variable in the frag shader\r\n        const lines = fs.split('\\n')\r\n        lines\r\n            .forEach((line, i) => {\r\n                const matches = line.match(variableRegex)\r\n                if (matches) {\r\n                    const prefix = (matches[1] || '').trim()\r\n                    const type = matches[7].trim()\r\n                    const name = matches[8].trim()\r\n\r\n                    if (prefix) {\r\n                        if (prefix === 'varying') fsVarying.push({ type, name })\r\n                        return\r\n                    }\r\n\r\n                    const newlines = [].concat(lines)\r\n                    newlines[i] += '\\n' + toGlFragColorLine(type, name) + '\\nreturn;\\n'\r\n\r\n                    shaders.push({\r\n                        type,\r\n                        name,\r\n                        vertexShader: vs,\r\n                        fragmentShader: newlines.join('\\n')\r\n                    })\r\n                }\r\n            })\r\n\r\n\r\n        // output color for each varying variable in the frag shader\r\n        fsVarying\r\n            .forEach(it => {\r\n                const mainSig = 'void main() {'\r\n                const res = fs.replace(mainSig, mainSig + '\\n' + toGlFragColorLine(it.type, it.name) + '\\nreturn;\\n')\r\n                shaders.push({\r\n                    type: it.type,\r\n                    name: it.name,\r\n                    vertexShader: vs,\r\n                    fragmentShader: res\r\n                })\r\n            })\r\n\r\n\r\n        return shaders\r\n    }\r\n\r\n    DebugShaders.readPixelColor = (data, x, y, cb) => {\r\n        // TODO: this may be resource intensive? Should create a pool?\r\n        // Should probably require that the containing element\r\n        // manage the image lifecycle        \r\n        let img = new Image()\r\n        img.onload = () => {\r\n            ctx.clearRect(0, 0, 1, 1)\r\n            ctx.drawImage(img, x, y, 1, 1, 0, 0, 1, 1)\r\n\r\n            const data = ctx.getImageData(0,0,1,1).data\r\n            cb({\r\n                get x() { return this.r },\r\n                get y() { return this.g },\r\n                get z() { return this.b },\r\n                get w() { return this.a },\r\n                r: data[0],\r\n                g: data[1],\r\n                b: data[2],\r\n                a: data[3]\r\n            })\r\n\r\n            img.onload = null\r\n            img = null\r\n        }\r\n\r\n        img.src = data\r\n    }\r\n})()"
+module.exports = "DebugShaders = {}\r\n\r\n;(function() {\r\n\r\n    const variableRegex = /((((precision|varying|uniform|attribute)\\s+)?)((highp|mediump|lowp)\\s+)?)(vec4|vec3|vec2|float|int|uint|bool)\\s+([A-Za-z0-9]+)/\r\n    const canvas = document.createElement('canvas')\r\n    const ctx = canvas.getContext('2d')\r\n    canvas.width = 100\r\n    canvas.height = 100\r\n\r\n    const normalize = shader => {\r\n        return shader\r\n            .replace(/\\/\\/[^\\n]*\\n/g, '')               // comment line\r\n            .replace(/\\/\\*(\\*(?!\\/)|[^*])*\\*\\//, '')    // block comment\r\n            .replace(/(\\n|\\s)+/g, ' ')\r\n            .replace(/\\s*{\\s*/g, '\\n{\\n')\r\n            .replace(/\\s*}\\s*/g, '\\n}\\n')\r\n            .replace(/\\s*;\\s*/g, ';\\n')\r\n            .replace(/void\\s+main\\s*\\(\\)(\\s|\\n)*{/, 'void main() {')\r\n    }\r\n\r\n    const toGlFragColorLine = (type, name) => {\r\n        let r = 0\r\n        let g = 0\r\n        let b = 0\r\n        let a = 1\r\n        \r\n        if (/^vec/.test(type)) {\r\n            // TODO: Pack these more so more of\r\n            // the data can be read back out, otherwise\r\n            // they're clamped from 0 to 1.0\r\n            r = `${name}.r`\r\n            g = `${name}.g`\r\n            if (/^vec(3|4)/.test(type)) b = `${name}.b`\r\n            if (/^vec4/.test(type)) a = `${name}.a`\r\n        }\r\n        else if(type === 'bool') {\r\n            r = `${name} ? 1 : 0`\r\n            g = r\r\n            b = r\r\n            a = r\r\n        }\r\n        else if(/^(int|uint)/.test(type)) {\r\n            r = `float((${name} << 0 ) & 0xFF) / 0xFF`\r\n            g = `float((${name} << 8 ) & 0xFF) / 0xFF`\r\n            b = `float((${name} << 16) & 0xFF) / 0xFF`\r\n            a = `float((${name} << 24) & 0xFF) / 0xFF`\r\n        }\r\n        else if(type === 'float') {\r\n            // TODO : Pack this into bytes so we can\r\n            // read it back out as a larger float\r\n            r = `${name}`\r\n        }\r\n\r\n        return `gl_FragColor = vec4(${r},${g},${b},${a});`\r\n    }\r\n\r\n    DebugShaders.enumerate = (vs, fs) => {\r\n        vs = normalize(vs)\r\n        fs = normalize(fs)\r\n\r\n        const shaders = []\r\n        const fsVarying = []\r\n\r\n        // output color for each variable in the frag shader\r\n        const lines = fs.split('\\n')\r\n        lines\r\n            .forEach((line, i) => {\r\n                const matches = line.match(variableRegex)\r\n                if (matches) {\r\n                    const prefix = (matches[1] || '').trim()\r\n                    const type = matches[7].trim()\r\n                    const name = matches[8].trim()\r\n\r\n                    if (prefix) {\r\n                        if (prefix === 'varying') fsVarying.push({ type, name })\r\n                        return\r\n                    }\r\n\r\n                    const newlines = [].concat(lines)\r\n                    newlines[i] += '\\n' + toGlFragColorLine(type, name) + '\\nreturn;\\n'\r\n\r\n                    shaders.push({\r\n                        type,\r\n                        name,\r\n                        vertexShader: vs,\r\n                        fragmentShader: newlines.join('\\n')\r\n                    })\r\n                }\r\n            })\r\n\r\n\r\n        // output color for each varying variable in the frag shader\r\n        fsVarying\r\n            .forEach(it => {\r\n                const mainSig = 'void main() {'\r\n                const res = fs.replace(mainSig, mainSig + '\\n' + toGlFragColorLine(it.type, it.name) + '\\nreturn;\\n')\r\n                shaders.push({\r\n                    type: it.type,\r\n                    name: it.name,\r\n                    vertexShader: vs,\r\n                    fragmentShader: res\r\n                })\r\n            })\r\n\r\n\r\n        return shaders\r\n    }\r\n\r\n    DebugShaders.readPixelColor = (img, x, y, type) => {\r\n        ctx.clearRect(0, 0, 1, 1)\r\n        ctx.drawImage(img, x, y, 1, 1, 0, 0, 1, 1)\r\n\r\n        const data = ctx.getImageData(0,0,1,1).data\r\n\r\n        // TODO: Coerce it into the given type\r\n        return {\r\n            get x() { return this.r },\r\n            get y() { return this.g },\r\n            get z() { return this.b },\r\n            get w() { return this.a },\r\n            r: data[0],\r\n            g: data[1],\r\n            b: data[2],\r\n            a: data[3]\r\n        }\r\n    }\r\n})()"
 
 /***/ }),
 /* 20 */
@@ -7641,6 +7684,7 @@ __webpack_require__(0);
         _valueObserver(val) {
             if (!this._editor || this._editor.getValue() == val) return
             this._editor.setValue(val)
+            this._editor.selection.clearSelection()
         }
 
         _annotationsObserver(ann) {
@@ -7877,38 +7921,6 @@ __webpack_require__(0);
 
 /*__wc__loader*/!function(a){var b="<dom-module id=\"shader-editor\">\n    <template>\n        <style type=\"text/css\">#container{display:flex;height:100%;}shader-preview{flex:1;max-width:400px;background:#111;color:white;}#editors{height:100%;display:flex;flex-direction:column;flex:2;}ace-editor{flex:1;}h5{padding:5px;margin:0;color:white;background:#272822;font-size:12px;}</style>\n        <div id=\"container\">\n            <div id=\"editors\">\n                <h5>Vertex Shader</h5>\n                <ace-editor value=\"{{ vertexShader }}\" annotations=\"[[ _errorsToAnnotations(vertexErrors) ]]\" type=\"glsl\"></ace-editor>\n                \n                <h5>Fragment Shader</h5>\n                <ace-editor value=\"{{ fragmentShader }}\" annotations=\"[[ _errorsToAnnotations(fragmentErrors) ]]\" type=\"glsl\"></ace-editor>\n            </div>\n            <shader-preview vertex-shader=\"[[ vertexShader ]]\" vertex-errors=\"{{ vertexErrors }}\" fragment-shader=\"[[ fragmentShader ]]\" fragment-errors=\"{{ fragmentErrors }}\"></shader-preview>\n        </div>\n    </template>\n</dom-module>\n";if(a.body){var c=a.body,d=a.createElement("div");for(d.innerHTML=b;d.children.length>0;)c.appendChild(d.children[0])}else a.write(b)}(document);
 
-    const vs = `// Lighting
-struct DirLight {
-    vec3 color;
-    vec3 direction;
-};
-
-uniform DirLight directionalLights[NUM_DIR_LIGHTS];
-uniform vec3 ambientLightColor;
-
-varying vec3 lighting;
-
-void main() 
-{
-    vec3 worldNorm = (modelViewMatrix * vec4(normal, 0)).xyz;
-    
-    lighting = ambientLightColor;
-    for(int i = 0; i < NUM_DIR_LIGHTS; i ++) {
-        DirLight dl = directionalLights[i];
-        lighting += clamp(dot(worldNorm, dl.direction), 0.0, 1.0) * dl.color;
-    } 
-
-    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-}`
-
-    const fs = `varying vec3 lighting;
-
-void main() {
-    vec3 rgb = vec3(1, 1, 1);
-
-    gl_FragColor = vec4(rgb * lighting, 1);
-}`
-
     class ShaderEditor extends Polymer.Element {
         static get is() { return 'shader-editor' }
 
@@ -7916,13 +7928,13 @@ void main() {
             return {
                 vertexShader: {
                     type: String,
-                    value: vs,
+                    value: '',
                     notify: true
                 },
 
                 fragmentShader: {
                     type: String,
-                    value: fs,
+                    value: '',
                     notify: true,
                 },
 
@@ -7965,7 +7977,7 @@ void main() {
 /* 35 */
 /***/ (function(module, exports) {
 
-/*__wc__loader*/!function(a){var b="<dom-module id=\"shader-preview\">\n    <template>\n        <style type=\"text/css\">#target{width:100%;image-rendering:pixelated;}image-magnifier{visibility:hidden;}#debug-list{display:flex;flex-wrap:wrap;width:100%;}#debug-list .shader{flex:1;min-width:100px;max-width:200px;transition:opacity .25s ease;}#debug-list:hover .shader{opacity:0.25;}#debug-list:hover .shader:hover{opacity:1;}#debug-list .shader .name{font-weight:500;font-size:14px;font-style:italic;text-align:center;}#debug-list .shader img{width:100%;}</style>\n        \n        <image-magnifier scale=\"20\" src=\"[[_primaryImageSrc]]\"></image-magnifier>\n\n        <zoomable-image id=\"target\" src=\"[[_primaryImageSrc]]\" max-scale=\"10\" on-mouseenter=\"_imageMouseEnterHandler\" on-mousemove=\"_imageMouseMoveHandler\" on-mouseleave=\"_imageMouseLeaveHandler\" clamp=\"\"></zoomable-image>\n        \n        <div id=\"debug-list\">\n            <template is=\"dom-repeat\" items=\"[[_images]]\">\n                <div class=\"shader\" active$=\"[[_equals(index,_activeImage)]]\" on-click=\"_debugImageClickHandler\">\n                    <div class=\"name\">[[item.type]] [[item.name]]</div>\n                    <img src$=\"[[item.src]]\">\n                </div>\n            </template>\n        </div>        \n    </template>\n</dom-module>\n";if(a.body){var c=a.body,d=a.createElement("div");for(d.innerHTML=b;d.children.length>0;)c.appendChild(d.children[0])}else a.write(b)}(document);
+/*__wc__loader*/!function(a){var b="<dom-module id=\"shader-preview\">\n    <template>\n        <style type=\"text/css\">#target{width:100%;image-rendering:pixelated;}image-magnifier{visibility:hidden;}#debug-list{display:flex;flex-wrap:wrap;width:100%;}#debug-list .shader{flex:1;min-width:100px;max-width:200px;transition:opacity .25s ease;}#debug-list:hover .shader{opacity:0.25;}#debug-list:hover .shader:hover{opacity:1;}#debug-list .shader .name{font-weight:900;font-size:14px;font-style:italic;text-align:center;}#debug-list .shader img{width:100%;}</style>\n        \n        <image-magnifier scale=\"20\" src=\"[[_primaryImageSrc]]\"></image-magnifier>\n\n        <zoomable-image id=\"target\" src=\"[[_primaryImageSrc]]\" max-scale=\"10\" on-mouseenter=\"_imageMouseEnterHandler\" on-mousemove=\"_imageMouseMoveHandler\" on-mouseleave=\"_imageMouseLeaveHandler\" clamp=\"\"></zoomable-image>\n        \n        <div id=\"debug-list\">\n            <template is=\"dom-repeat\" items=\"[[_images]]\">\n                <div class=\"shader\" active$=\"[[_equals(index,_activeImage)]]\" on-click=\"_debugImageClickHandler\">\n                    <div class=\"name\">[[item.type]] [[item.name]]</div>\n                    <img src$=\"[[item.src]]\">\n                </div>\n            </template>\n        </div>        \n    </template>\n</dom-module>\n";if(a.body){var c=a.body,d=a.createElement("div");for(d.innerHTML=b;d.children.length>0;)c.appendChild(d.children[0])}else a.write(b)}(document);
 
     class ShaderPreview extends Polymer.Element {
         static get is() { return 'shader-preview' }
