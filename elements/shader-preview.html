@@ -7,69 +7,21 @@
                 image-rendering: pixelated;
             }
 
-            #image-magnifier {
-                position: absolute;
-                z-index: 1000;
-                width: 90px;
-                height: 90px;
-                pointer-events: none;
-            }
-
-            #magnifier-container {
-                width: 80px;
-                height: 80px;
-                border: 5px solid white;
-                border-radius: 100px;
-                overflow: hidden;
-                background: #111;
-                position: absolute;
-            }
-
-            #magnifier-container img {
-                position: relative;
-                image-rendering: pixelated;
-            }
-
-            #image-magnifier:before {
-                content: "";
-                width: 30px;
-                height: 30px;
-                top: 7px;
-                right: 7px;
-                position: absolute;
-                background: white;
-            }
-
-            #pixel-outline {
-                position: absolute;
-                border: 1px solid white;
-
-                width: 20px;
-                height: 20px;
-
-                /* -1px for the outline */
-                top: 29px;
-                left: 29px;
-
-                z-index: 1000;
-                opacity: 0.25;
-            }
-
         </style>
         
-        <div id="image-magnifier">
-            <div id="magnifier-container">
-                <div id="pixel-outline"></div>
-                <img src="[[_imgsrc]]" />
-            </div>
-        </div>
+        <image-magnifier
+            scale="20"
+            src="[[_imgsrc]]"
+        ></image-magnifier>
 
         <zoomable-image
             id="target"
             src="[[_imgsrc]]"
+            max-scale="10"
             on-mouseenter="_imageMouseEnterHandler"
-            on-mousemove="_imageMouseOverHandler"
+            on-mousemove="_imageMouseMoveHandler"
             on-mouseleave="_imageMouseLeaveHandler"
+            clamp
         ></zoomable-image>
         
     </template>
@@ -221,26 +173,21 @@
 
         // Event Handlers
         _imageMouseEnterHandler() {
-            this.querySelector('#image-magnifier').style.visibility = "visible"
+            this.querySelector('image-magnifier').style.visibility = 'visible'
         }
 
-        _imageMouseOverHandler(e) {
-            const im = this.querySelector('#image-magnifier')
+        _imageMouseMoveHandler(e) {
+            const im = this.querySelector('image-magnifier')
+
             im.style.top = e.pageY + 'px'
             im.style.left = (e.pageX - im.clientWidth) + 'px'
 
-            const target = e.target
-            const xOffset = -target.xOffset + Math.floor(e.offsetX / target.scale)
-            const yOffset = -target.yOffset + Math.floor(e.offsetY / target.scale)
-
-            const img = im.querySelector('img')
-            img.style.top = (-yOffset * 20 + 30) + 'px' 
-            img.style.left = (-xOffset * 20 + 30) + 'px'
-            img.style.width = (this.querySelector('#target').clientWidth * 20) + 'px'
+            im.xPixel = e.pixel.x
+            im.yPixel = e.pixel.y
         }
 
         _imageMouseLeaveHandler() {
-            this.querySelector('#image-magnifier').style.visibility = "hidden"
+            this.querySelector('image-magnifier').style.visibility = 'hidden'
         }
 
         // Observers

@@ -41,6 +41,7 @@
                 id="zoom-image"
                 src="[[src]]"
                 style="[[_getStyle(scale, xOffset, yOffset)]]"
+                on-mousemove="_imageMouseMoveHandler"
             />
         </div>
     </template>
@@ -61,7 +62,12 @@
 
                 maxScale: {
                     type: Number,
-                    value: 10
+                    value: null
+                },
+
+                clamp: {
+                    type: Boolean,
+                    value: false
                 },
 
                 src: {
@@ -89,7 +95,7 @@
         }
 
         static get observers() {
-            return ['_offsetObserver(xOffset, yOffset, scale, src)']
+            return ['_offsetObserver(xOffset, yOffset, scale, src, clamp)']
         }
 
         // Lifecycle
@@ -158,11 +164,13 @@
 
         // Observers
         _scaleObserver(s) {
-            s = Math.max(1, Math.min(this.maxScale, s))
+            s = Math.max(1, Math.min(this.maxScale || Infinity, s))
             if (this.scale !== s) this.scale = s
         }
 
-        _offsetObserver(x, y, s, src) {
+        _offsetObserver(x, y, s, src, clamp) {
+            if (!clamp) return
+
             const prox = this.shadowRoot.querySelector('#proxy-image')
 
             const maxX = prox.width - prox.width / s
@@ -174,6 +182,17 @@
 
             if (this.xOffset !== x) this.xOffset = x
             if (this.yOffset !== y) this.yOffset = y
+        }
+
+        // Event Handlers
+        _imageMouseMoveHandler(e) {
+            const xpx = Math.floor(e.offsetX / this.scale)
+            const ypx = Math.floor(e.offsetY / this.scale)
+
+            e.pixel = {
+                x: xpx,
+                y: ypx        
+            }
         }
     }
 

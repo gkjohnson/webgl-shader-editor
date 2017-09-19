@@ -1,0 +1,133 @@
+<dom-module id="image-magnifier">
+    <template>
+        <style>
+            :host {
+                display: block;
+                position: absolute;
+                pointer-events: none;
+            }
+
+            #image-magnifier {
+                right: 0;
+                top: 0;
+
+                position: absolute;
+                z-index: 1000;
+                width: 90px;
+                height: 90px;
+                pointer-events: none;
+            }
+
+            #magnifier-container {
+                width: 80px;
+                height: 80px;
+                border: 5px solid white;
+                border-radius: 100px;
+                overflow: hidden;
+                background: #111;
+                position: absolute;
+            }
+
+            #magnifier-container img {
+                position: relative;
+                image-rendering: pixelated;
+            }
+
+            #image-magnifier:before {
+                content: "";
+                width: 30px;
+                height: 30px;
+                top: 7px;
+                right: 7px;
+                position: absolute;
+                background: white;
+            }
+
+            #pixel-outline {
+                position: absolute;
+                border: 1px solid white;
+
+                width: 20px;
+                height: 20px;
+
+                /* -1px for the outline */
+                top: 29px;
+                left: 29px;
+
+                z-index: 1000;
+                opacity: 0.5;
+            }
+
+            zoomable-image {
+                position: absolute;
+                image-rendering: pixelated;
+            }
+        </style>
+
+        <div id="image-magnifier">
+            <div id="magnifier-container">
+                <div id="pixel-outline"></div>
+                <zoomable-image
+                    src="[[src]]"
+                    scale="[[scale]]"
+                    x-offset="[[_toOffset(xPixel)]]"
+                    y-offset="[[_toOffset(yPixel)]]"
+
+                    style="[[_getOffsetStyle(scale)]]"
+                ></zoomable-image>
+            </div>
+        </div>
+    </template>
+</dom-module>
+
+<script type="text/javascript">
+    class ImageMagnifier extends Polymer.Element {
+        static get is() { return 'image-magnifier' }
+
+        static get properties() {
+            return {
+                scale: {
+                    type: Number,
+                    value: 1,
+                    notify: true,
+                },
+
+                src: {
+                    type: String,
+                    value: ''
+                },
+
+                xPixel: {
+                    type: Number,
+                    value: 0
+                },
+
+                yPixel: {
+                    type: Number,
+                    value: 0
+                }
+            }
+        }
+
+        static get observers() {
+            return ['_offsetObserver(xPixel, yPixel)']
+        }
+
+        // Utilities
+        _toOffset(px) {
+            return -px + 2
+        }
+
+        _getOffsetStyle(s) {
+            const offset = -s / 2
+            return `top:${offset}px; left:${offset}px;`
+        }
+        
+        // Observers
+        _offsetObserver(x, y, s, src) {
+
+        }
+    }
+
+    customElements.define(ImageMagnifier.is, ImageMagnifier)
+</script>
