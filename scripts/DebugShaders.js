@@ -2,7 +2,7 @@ DebugShaders = {}
 
 ;(function() {
 
-    const variableRegex = /((((precision|varying|uniform)\s+)?)((highp|mediump|lowp)\s+)?)(vec4|vec3|vec2|float|int|uint|bool)\s+([A-Za-z0-9]+)/
+    const variableRegex = /((((precision|varying|uniform|attribute)\s+)?)((highp|mediump|lowp)\s+)?)(vec4|vec3|vec2|float|int|uint|bool)\s+([A-Za-z0-9]+)/
     const canvas = document.createElement('canvas')
     const ctx = canvas.getContext('2d')
     canvas.width = 100
@@ -60,6 +60,9 @@ DebugShaders = {}
         fs = normalize(fs)
 
         const shaders = []
+        const fsVarying = []
+
+        // output color for each variable in the frag shader
         const lines = fs.split('\n')
         lines
             .forEach((line, i) => {
@@ -69,7 +72,10 @@ DebugShaders = {}
                     const type = matches[7].trim()
                     const name = matches[8].trim()
 
-                    if (prefix) return
+                    if (prefix) {
+                        if (prefix === 'varying') fsVarying.push({ type, name })
+                        return
+                    }
 
                     const newlines = [].concat(lines)
                     newlines[i] += '\n' + toGlFragColorLine(type, name) + '\nreturn;\n'
@@ -80,6 +86,19 @@ DebugShaders = {}
                     })
                 }
             })
+
+
+        // output color for each varying variable in the frag shader
+        fsVarying
+            .forEach(it => {
+                const mainSig = 'void main() {'
+                const res = fs.replace(mainSig, mainSig + '\n' + toGlFragColorLine(it.type, it.name) + '\nreturn;\n')
+                shaders.push({
+                    vertexShader: vs,
+                    fragmentShader: res
+                })
+            })
+
 
         return shaders
     }
