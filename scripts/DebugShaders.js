@@ -23,7 +23,7 @@ DebugShaders = {}
         let r = 0
         let g = 0
         let b = 0
-        let a = 0
+        let a = 1
         
         if (/^vec/.test(type)) {
             // TODO: Pack these more so more of
@@ -113,6 +113,7 @@ DebugShaders = {}
         // manage the image lifecycle        
         let img = new Image()
         img.onload = () => {
+            ctx.clearRect(0, 0, 1, 1)
             ctx.drawImage(img, x, y, 1, 1, 0, 0, 1, 1)
 
             const data = ctx.getImageData(0,0,1,1).data

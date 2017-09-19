@@ -20,11 +20,9 @@
             }
 
             #debug-list .shader .name{
-                color: white;
                 font-weight: 500;
                 font-size: 14px;
                 font-style: italic;
-                background: #111;
 
                 text-align: center;
             }
@@ -117,10 +115,10 @@
             super.ready()
 
             const scene = new THREE.Scene()
-            const renderer = new THREE.WebGLRenderer({ antialias: true })
+            const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
             renderer.setPixelRatio(window.devicePixelRatio)
             renderer.setSize(400, 400)
-            renderer.setClearColor(0x111111, 1)
+            renderer.setClearColor(0x000000, 0)
 
             const camera = new THREE.PerspectiveCamera(75, 1, 0.1, 50)
             camera.position.z = 10
