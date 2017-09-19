@@ -1,7 +1,6 @@
 <dom-module id="shader-preview">
     <template>
         <style type="text/css">
-
             #target {
                 width: 100%;
                 image-rendering: pixelated;
@@ -16,11 +15,21 @@
                 width: 100%;
             }
 
-            #debug-list>div {
+            #debug-list .shader {
                 flex: 1;
             }
 
-            #debug-list>div>img {
+            #debug-list .shader .name{
+                color: white;
+                font-weight: 500;
+                font-size: 14px;
+                font-style: italic;
+                background: #111;
+
+                text-align: center;
+            }
+
+            #debug-list .shader img {
                 width: 100%;
             }
 
@@ -43,7 +52,8 @@
         
         <div id="debug-list">
             <template is="dom-repeat" items="[[_images]]">
-                <div>
+                <div class="shader">
+                    <div class="name">[[item.type]] [[item.name]]</div>
                     <img src$="[[item.img.src]]" />
                 </div>
             </template>
