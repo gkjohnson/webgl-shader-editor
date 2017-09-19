@@ -52,7 +52,7 @@
             <template is="dom-repeat" items="[[_images]]">
                 <div class="shader">
                     <div class="name">[[item.type]] [[item.name]]</div>
-                    <img src$="[[item.img.src]]" />
+                    <img src$="[[item.src]]" />
                 </div>
             </template>
         </div>        
@@ -211,11 +211,16 @@
         _render() {
             if (!this._renderer) return
 
-            // TODO: Run this over multiple frames
-            let arr = this._images.map(item => Object.assign({}, item))
+
+            let arr = this._images
+
+            // expand the array if necessary
+            const stlen = arr.length
             while (arr.length > this._shaders.length) arr.pop()
             while (arr.length < this._shaders.length) arr.push({})
+            if (stlen !== arr.length) this._images = [].concat(arr)
 
+            // TODO: Do this over multiple frames
             let bail = false
             for (let i = 0; i < this._shaders.length; i ++) {
                 const item = this._shaders[i]
@@ -225,20 +230,21 @@
                 arr[i].name = item.name
                 arr[i].type = item.type
                 arr[i].img = arr[i].img || new Image()
+                arr[i].src = this._renderer.domElement.toDataURL('image/png')
 
                 if (!bail) {
                     this._updateMaterialAndRender(vs, fs, i === 0)
-                    arr[i].img.src = this._renderer.domElement.toDataURL('image/png')
+                    this.set (`_images.${i}.src`, this._renderer.domElement.toDataURL('image/png'))
                 } else {
-                    arr[i].img.src = ''
+                    this.set (`_images.${i}.src`, '')
                 }
+
+                arr[i].img.src = arr[i].src
 
                 bail = this.fragmentErrors || this.vertexErrors
             }
 
-            this._imgsrc = arr[0].img.src
-            this._images = null
-            this._images = arr            
+            this._imgsrc = arr[0].src
         }
 
         // Event Handlers
