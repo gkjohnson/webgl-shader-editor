@@ -20,18 +20,32 @@ DebugShaders = {}
     }
 
     const toGlFragColorLine = (type, name) => {
-        let r, g, b, a
-        if (/^vec/.test(type)) r = `${name}.r`
-        else r = name
-
-        if (/^vec/.test(type)) g = `${name}.g`
-        else g = 0
-
-        if (/^vec(3|4)/.test(type)) b = `${name}.b`
-        else b = 0
-
-        if (/^vec4/.test(type)) a = `${name}.a`
-        else a = 1
+        let r = 0
+        let g = 0
+        let b = 0
+        let a = 0
+        
+        if (/^vec/.test(type)) {
+            r = `${name}.r`
+            g = `${name}.g`
+            if (/^vec(3|4)/.test(type)) b = `${name}.b`
+            if (/^vec4/.test(type)) a = `${name}.a`
+        }
+        else if(type === 'bool') {
+            r = `${name} ? 1 : 0`
+            g = r
+            b = r
+            a = r
+        }
+        else if(/^(int|uint)/.test(type)) {
+            r = `float((${name} << 0 ) & 0xFF) / 0xFF`
+            g = `float((${name} << 8 ) & 0xFF) / 0xFF`
+            b = `float((${name} << 16) & 0xFF) / 0xFF`
+            a = `float((${name} << 24) & 0xFF) / 0xFF`
+        }
+        else if(type === 'float') {
+            r = `${name}`
+        }
 
         return `gl_FragColor = vec4(${r},${g},${b},${a});`
     }
