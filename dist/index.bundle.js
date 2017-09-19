@@ -8035,7 +8035,7 @@ void main() {
             const material = new THREE.ShaderMaterial({ uniforms: THREE.UniformsUtils.merge([
                 THREE.UniformsLib["lights"]
             ]), lights: true })
-            const sphere = new THREE.Mesh(new THREE.BoxGeometry( 5, 5, 5 ), material )
+            const sphere = new THREE.Mesh(new THREE.SphereGeometry( 5, 32, 32 ), material )
             scene.add( sphere );
             scene.add(new THREE.AmbientLight(0x222222))
             
@@ -8167,8 +8167,6 @@ void main() {
 
             im.xPixel = e.pixel.x
             im.yPixel = e.pixel.y
-
-            DebugShaders.readPixelColor(this._imgsrc, e.pixel.x, e.pixel.y, rgba => console.log(rgba.x, rgba.y, rgba.z, rgba.w))
         }
 
         _imageMouseLeaveHandler() {
