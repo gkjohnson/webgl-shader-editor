@@ -69,7 +69,7 @@ DebugShaders = {}
         // TODO: this may be resource intensive? Should create a pool?
         // Should probably require that the containing element
         // manage the image lifecycle        
-        const img = new Image()
+        let img = new Image()
         img.onload = () => {
             ctx.drawImage(img, x, y, 1, 1, 0, 0, 1, 1)
 
