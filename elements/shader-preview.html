@@ -20,7 +20,17 @@
                 flex: 1;
                 min-width: 100px;
                 max-width: 200px;
+                transition: opacity .25s ease;
             }
+
+            #debug-list:hover .shader {
+                opacity: 0.25;
+            }
+
+            #debug-list:hover .shader:hover {
+                opacity: 1;
+            }
+
 
             #debug-list .shader .name{
                 font-weight: 500;
@@ -38,12 +48,12 @@
         
         <image-magnifier
             scale="20"
-            src="[[_imgsrc]]"
+            src="[[_primaryImageSrc]]"
         ></image-magnifier>
 
         <zoomable-image
             id="target"
-            src="[[_imgsrc]]"
+            src="[[_primaryImageSrc]]"
             max-scale="10"
             on-mouseenter="_imageMouseEnterHandler"
             on-mousemove="_imageMouseMoveHandler"
@@ -53,7 +63,11 @@
         
         <div id="debug-list">
             <template is="dom-repeat" items="[[_images]]">
-                <div class="shader">
+                <div
+                    class="shader"
+                    active$="[[_equals(index,_activeImage)]]"
+                    on-click="_debugImageClickHandler"
+                >
                     <div class="name">[[item.type]] [[item.name]]</div>
                     <img src$="[[item.src]]" />
                 </div>
@@ -102,9 +116,14 @@
                     value: () => []
                 },
 
-                _imgsrc: {
+                _activeImage: {
+                    type: Number,
+                    value: 0
+                },
+
+                _primaryImageSrc: {
                     type: String,
-                    value: null
+                    computed: '_computeImageSrc(_images.*, _activeImage)'
                 }
             }
         }
@@ -124,7 +143,7 @@
             renderer.setClearColor(0x000000, 0)
 
             const camera = new THREE.PerspectiveCamera(75, 1, 0.1, 50)
-            camera.position.z = 8
+            camera.position.z = 10
             scene.add(camera)
 
             const material = new THREE.ShaderMaterial({ uniforms: THREE.UniformsUtils.merge([
@@ -153,6 +172,10 @@
         }
 
         // Utilities
+        _equals(a,b) {
+            return a === b
+        }
+
         _getLogErrors(logs, lineOffset = 0) {
             return logs
                 .replace(String.fromCharCode(0), '')
@@ -245,8 +268,6 @@
 
                 bail = this.fragmentErrors || this.vertexErrors
             }
-
-            this._imgsrc = arr[0].src
         }
 
         // Event Handlers
@@ -268,6 +289,10 @@
             this.querySelector('image-magnifier').style.visibility = 'hidden'
         }
 
+        _debugImageClickHandler(e) {
+            this._activeImage = e.model.index
+        }
+
         // Computed Variables
         _computeShaders(vs, fs) {
             const prim = {
@@ -276,12 +301,13 @@
                 vertexShader: vs,
                 fragmentShader: fs
             }
-            
-            console.time("TEST")
             const arr = [prim].concat(DebugShaders.enumerate(vs, fs))
-            console.timeEnd("TEST")
 
             return arr
+        }
+
+        _computeImageSrc(images, i) {
+            return images.base[i] ? images.base[i].src : ''
         }
 
         // Observers

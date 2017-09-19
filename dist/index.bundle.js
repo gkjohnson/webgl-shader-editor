@@ -7965,7 +7965,7 @@ void main() {
 /* 35 */
 /***/ (function(module, exports) {
 
-/*__wc__loader*/!function(a){var b="<dom-module id=\"shader-preview\">\n    <template>\n        <style type=\"text/css\">#target{width:100%;image-rendering:pixelated;}image-magnifier{visibility:hidden;}#debug-list{display:flex;flex-wrap:wrap;width:100%;}#debug-list .shader{flex:1;min-width:100px;max-width:200px;}#debug-list .shader .name{font-weight:500;font-size:14px;font-style:italic;text-align:center;}#debug-list .shader img{width:100%;}</style>\n        \n        <image-magnifier scale=\"20\" src=\"[[_imgsrc]]\"></image-magnifier>\n\n        <zoomable-image id=\"target\" src=\"[[_imgsrc]]\" max-scale=\"10\" on-mouseenter=\"_imageMouseEnterHandler\" on-mousemove=\"_imageMouseMoveHandler\" on-mouseleave=\"_imageMouseLeaveHandler\" clamp=\"\"></zoomable-image>\n        \n        <div id=\"debug-list\">\n            <template is=\"dom-repeat\" items=\"[[_images]]\">\n                <div class=\"shader\">\n                    <div class=\"name\">[[item.type]] [[item.name]]</div>\n                    <img src$=\"[[item.src]]\">\n                </div>\n            </template>\n        </div>        \n    </template>\n</dom-module>\n";if(a.body){var c=a.body,d=a.createElement("div");for(d.innerHTML=b;d.children.length>0;)c.appendChild(d.children[0])}else a.write(b)}(document);
+/*__wc__loader*/!function(a){var b="<dom-module id=\"shader-preview\">\n    <template>\n        <style type=\"text/css\">#target{width:100%;image-rendering:pixelated;}image-magnifier{visibility:hidden;}#debug-list{display:flex;flex-wrap:wrap;width:100%;}#debug-list .shader{flex:1;min-width:100px;max-width:200px;transition:opacity .25s ease;}#debug-list:hover .shader{opacity:0.25;}#debug-list:hover .shader:hover{opacity:1;}#debug-list .shader .name{font-weight:500;font-size:14px;font-style:italic;text-align:center;}#debug-list .shader img{width:100%;}</style>\n        \n        <image-magnifier scale=\"20\" src=\"[[_primaryImageSrc]]\"></image-magnifier>\n\n        <zoomable-image id=\"target\" src=\"[[_primaryImageSrc]]\" max-scale=\"10\" on-mouseenter=\"_imageMouseEnterHandler\" on-mousemove=\"_imageMouseMoveHandler\" on-mouseleave=\"_imageMouseLeaveHandler\" clamp=\"\"></zoomable-image>\n        \n        <div id=\"debug-list\">\n            <template is=\"dom-repeat\" items=\"[[_images]]\">\n                <div class=\"shader\" active$=\"[[_equals(index,_activeImage)]]\" on-click=\"_debugImageClickHandler\">\n                    <div class=\"name\">[[item.type]] [[item.name]]</div>\n                    <img src$=\"[[item.src]]\">\n                </div>\n            </template>\n        </div>        \n    </template>\n</dom-module>\n";if(a.body){var c=a.body,d=a.createElement("div");for(d.innerHTML=b;d.children.length>0;)c.appendChild(d.children[0])}else a.write(b)}(document);
 
     class ShaderPreview extends Polymer.Element {
         static get is() { return 'shader-preview' }
@@ -8007,9 +8007,14 @@ void main() {
                     value: () => []
                 },
 
-                _imgsrc: {
+                _activeImage: {
+                    type: Number,
+                    value: 0
+                },
+
+                _primaryImageSrc: {
                     type: String,
-                    value: null
+                    computed: '_computeImageSrc(_images.*, _activeImage)'
                 }
             }
         }
@@ -8029,7 +8034,7 @@ void main() {
             renderer.setClearColor(0x000000, 0)
 
             const camera = new THREE.PerspectiveCamera(75, 1, 0.1, 50)
-            camera.position.z = 8
+            camera.position.z = 10
             scene.add(camera)
 
             const material = new THREE.ShaderMaterial({ uniforms: THREE.UniformsUtils.merge([
@@ -8058,6 +8063,10 @@ void main() {
         }
 
         // Utilities
+        _equals(a,b) {
+            return a === b
+        }
+
         _getLogErrors(logs, lineOffset = 0) {
             return logs
                 .replace(String.fromCharCode(0), '')
@@ -8150,8 +8159,6 @@ void main() {
 
                 bail = this.fragmentErrors || this.vertexErrors
             }
-
-            this._imgsrc = arr[0].src
         }
 
         // Event Handlers
@@ -8173,6 +8180,10 @@ void main() {
             this.querySelector('image-magnifier').style.visibility = 'hidden'
         }
 
+        _debugImageClickHandler(e) {
+            this._activeImage = e.model.index
+        }
+
         // Computed Variables
         _computeShaders(vs, fs) {
             const prim = {
@@ -8181,12 +8192,13 @@ void main() {
                 vertexShader: vs,
                 fragmentShader: fs
             }
-            
-            console.time("TEST")
             const arr = [prim].concat(DebugShaders.enumerate(vs, fs))
-            console.timeEnd("TEST")
 
             return arr
+        }
+
+        _computeImageSrc(images, i) {
+            return images.base[i] ? images.base[i].src : ''
         }
 
         // Observers
