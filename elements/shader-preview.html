@@ -215,10 +215,8 @@
             let arr = this._images
 
             // expand the array if necessary
-            const stlen = arr.length
-            while (arr.length > this._shaders.length) arr.pop()
-            while (arr.length < this._shaders.length) arr.push({})
-            if (stlen !== arr.length) this._images = [].concat(arr)
+            while (arr.length > this._shaders.length) this.pop('_images')
+            while (arr.length < this._shaders.length) this.push('_images', {})
 
             // TODO: Do this over multiple frames
             let bail = false
@@ -227,16 +225,17 @@
                 const vs = item.vertexShader
                 const fs = item.fragmentShader
 
-                arr[i].name = item.name
-                arr[i].type = item.type
+                const setpref = `_images.${i}`
+
+                this.set(`${setpref}.name`, item.name)
+                this.set(`${setpref}.type`, item.type)
                 arr[i].img = arr[i].img || new Image()
-                arr[i].src = this._renderer.domElement.toDataURL('image/png')
 
                 if (!bail) {
                     this._updateMaterialAndRender(vs, fs, i === 0)
-                    this.set (`_images.${i}.src`, this._renderer.domElement.toDataURL('image/png'))
+                    this.set(`${setpref}.src`, this._renderer.domElement.toDataURL('image/png'))
                 } else {
-                    this.set (`_images.${i}.src`, '')
+                    this.set(`${setpref}.src`, '')
                 }
 
                 arr[i].img.src = arr[i].src
