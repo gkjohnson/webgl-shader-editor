@@ -3,6 +3,11 @@ DebugShaders = {}
 ;(function() {
 
     const variableRegex = /((((precision|varying|uniform)\s+)?)((highp|mediump|lowp)\s+)?)(vec4|vec3|vec2|float|int|uint|bool)\s+([A-Za-z0-9]+)/
+    const canvas = document.createElement('canvas')
+    const ctx = canvas.getContext('2d')
+    canvas.width = 100
+    canvas.height = 100
+    const img = new Image()
 
     const normalize = shader => {
         return shader
@@ -57,11 +62,30 @@ DebugShaders = {}
                         vertexShader: vs,
                         fragmentShader: newlines.join('\n')
                     })
-
-                    console.log(newlines.join('\n'))
                 }
             })
 
         return shaders
+    }
+
+    DebugShaders.readPixelColor = (data, x, y, cb) => {
+
+        // TODO: This won't work if we call it multiple times
+        img.onload = () => {
+            ctx.drawImage(img, x, y, 1, 1, 0, 0, 1, 1)
+            const data = ctx.getImageData(0,0,1,1).data
+            cb({
+                get x() { return this.r },
+                get y() { return this.g },
+                get z() { return this.b },
+                get w() { return this.a },
+                r: data[0],
+                g: data[1],
+                b: data[2],
+                a: data[3]
+            })
+        }
+
+        img.src = data
     }
 })()
