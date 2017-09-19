@@ -73,7 +73,7 @@ DebugShaders = {}
                     const name = matches[8].trim()
 
                     if (prefix) {
-                        if (prefix === 'varying') fsVarying.push({ type, name })
+                        if (prefix === 'varying') fsVarying.push({ type, name, line: i })
                         return
                     }
 
@@ -84,7 +84,8 @@ DebugShaders = {}
                         type,
                         name,
                         vertexShader: vs,
-                        fragmentShader: newlines.join('\n')
+                        fragmentShader: newlines.join('\n'),
+                        line: i
                     })
                 }
             })
@@ -99,7 +100,8 @@ DebugShaders = {}
                     type: it.type,
                     name: it.name,
                     vertexShader: vs,
-                    fragmentShader: res
+                    fragmentShader: res,
+                    line: it.line
                 })
             })
 
