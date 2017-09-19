@@ -7,7 +7,6 @@ DebugShaders = {}
     const ctx = canvas.getContext('2d')
     canvas.width = 100
     canvas.height = 100
-    const img = new Image()
 
     const normalize = shader => {
         return shader
@@ -51,8 +50,6 @@ DebugShaders = {}
                     const type = matches[7].trim()
                     const name = matches[8].trim()
 
-                    console.log("HERE")
-
                     if (prefix) return
 
                     const newlines = [].concat(lines)
@@ -69,10 +66,13 @@ DebugShaders = {}
     }
 
     DebugShaders.readPixelColor = (data, x, y, cb) => {
-
-        // TODO: This won't work if we call it multiple times
+        // TODO: this may be resource intensive? Should create a pool?
+        // Should probably require that the containing element
+        // manage the image lifecycle        
+        const img = new Image()
         img.onload = () => {
             ctx.drawImage(img, x, y, 1, 1, 0, 0, 1, 1)
+
             const data = ctx.getImageData(0,0,1,1).data
             cb({
                 get x() { return this.r },
@@ -84,6 +84,9 @@ DebugShaders = {}
                 b: data[2],
                 a: data[3]
             })
+
+            img.onload = null
+            img = null
         }
 
         img.src = data
