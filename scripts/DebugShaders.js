@@ -109,13 +109,12 @@ DebugShaders = {}
         return shaders
     }
 
-    DebugShaders.readPixelColor = (img, x, y, type) => {
+    DebugShaders.readPixel = (img, x, y) => {
         ctx.clearRect(0, 0, 1, 1)
         ctx.drawImage(img, x, y, 1, 1, 0, 0, 1, 1)
 
         const data = ctx.getImageData(0,0,1,1).data
 
-        // TODO: Coerce it into the given type
         return {
             get x() { return this.r },
             get y() { return this.g },
@@ -126,5 +125,17 @@ DebugShaders = {}
             b: data[2],
             a: data[3]
         }
+    }
+
+    DebugShaders.pixelToArray = (px, type, prec = 10) => {
+        const cv = f => parseFloat((f / 255.0).toPrecision(prec))
+
+        if (type === 'vec2') return [cv(px.r), cv(px.g)]
+        if (type === 'vec3') return [cv(px.r), cv(px.g), cv(px.b)]
+        if (type === 'vec4') return [cv(px.r), cv(px.g), cv(px.b), cv(px.a)]
+        if (type === 'bool') return [!!px.r]
+        if (type === 'int'); // TODO
+        if (type === 'uint'); // TODO
+        if (type === 'float') return [cv(res.r)]
     }
 })()

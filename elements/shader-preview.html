@@ -1,6 +1,13 @@
 <dom-module id="shader-preview">
     <template>
         <style type="text/css">
+            #container {
+                display: flex;
+                flex-direction: column;
+                width: 100%;
+                height: 100%;
+            }
+
             #target {
                 width: 100%;
                 image-rendering: pixelated;
@@ -14,6 +21,8 @@
                 display: flex;
                 flex-wrap: wrap;
                 width: 100%;
+                overflow-y: auto;
+                flex: 1;
             }
 
             #debug-list .shader {
@@ -30,7 +39,6 @@
             #debug-list:hover .shader:hover {
                 opacity: 1;
             }
-
 
             #debug-list .shader .name{
                 font-weight: 900;
@@ -51,28 +59,30 @@
             src="[[_primaryImageSrc]]"
         ></image-magnifier>
 
-        <zoomable-image
-            id="target"
-            src="[[_primaryImageSrc]]"
-            max-scale="10"
-            on-mouseenter="_imageMouseEnterHandler"
-            on-mousemove="_imageMouseMoveHandler"
-            on-mouseleave="_imageMouseLeaveHandler"
-            clamp
-        ></zoomable-image>
-        
-        <div id="debug-list">
-            <template is="dom-repeat" items="[[_images]]">
-                <div
-                    class="shader"
-                    active$="[[_equals(index,_activeImage)]]"
-                    on-click="_debugImageClickHandler"
-                >
-                    <div class="name">[[item.type]] [[item.name]]</div>
-                    <img src$="[[item.src]]" />
-                </div>
-            </template>
-        </div>        
+        <div id="container">
+            <zoomable-image
+                id="target"
+                src="[[_primaryImageSrc]]"
+                max-scale="10"
+                on-mouseenter="_imageMouseEnterHandler"
+                on-mousemove="_imageMouseMoveHandler"
+                on-mouseleave="_imageMouseLeaveHandler"
+                clamp
+            ></zoomable-image>
+            
+            <div id="debug-list">
+                <template is="dom-repeat" items="[[_images]]">
+                    <div
+                        class="shader"
+                        active$="[[_equals(index,_activeImage)]]"
+                        on-click="_debugImageClickHandler"
+                    >
+                        <div class="name">[[item.type]] [[item.name]]</div>
+                        <img src$="[[item.src]]" />
+                    </div>
+                </template>
+            </div>
+        </div>
     </template>
 </dom-module>
 <script type="text/javascript">
@@ -159,7 +169,7 @@
             dl.position.z = 1;
             scene.add( dl );
             
-            const orbit = new THREE.OrbitControls(camera, this.querySelector('#target'))
+            const orbit = new THREE.OrbitControls(camera, this.shadowRoot.querySelector('#target'))
             orbit.enableZoom = false
             orbit.addEventListener('change', () => this._render())
 
@@ -237,7 +247,6 @@
         _render() {
             if (!this._renderer) return
 
-
             let arr = this._images
 
             // expand the array if necessary
@@ -272,11 +281,11 @@
 
         // Event Handlers
         _imageMouseEnterHandler() {
-            this.querySelector('image-magnifier').style.visibility = 'visible'
+            this.shadowRoot.querySelector('image-magnifier').style.visibility = 'visible'
         }
 
         _imageMouseMoveHandler(e) {
-            const im = this.querySelector('image-magnifier')
+            const im = this.shadowRoot.querySelector('image-magnifier')
 
             im.style.top = e.pageY + 'px'
             im.style.left = (e.pageX - im.clientWidth) + 'px'
@@ -286,7 +295,7 @@
         }
 
         _imageMouseLeaveHandler() {
-            this.querySelector('image-magnifier').style.visibility = 'hidden'
+            this.shadowRoot.querySelector('image-magnifier').style.visibility = 'hidden'
         }
 
         _debugImageClickHandler(e) {
@@ -315,9 +324,6 @@
         _shadersObserver(shaders) {
             this._render()
         }
-
-        // Overrides
-        _attachDom(d) { this.appendChild(d) }
     }
  
     customElements.define(ShaderPreview.is, ShaderPreview)
