@@ -127,7 +127,7 @@ DebugShaders = {}
         }
     }
 
-    DebugShaders.pixelToArray = (px, type, prec = 10) => {
+    DebugShaders.pixelToArray = (px, type, prec = 5) => {
         const cv = f => parseFloat((f / 255.0).toPrecision(prec))
 
         if (type === 'vec2') return [cv(px.r), cv(px.g)]

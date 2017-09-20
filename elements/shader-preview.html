@@ -24,6 +24,10 @@
                 overflow-y: auto;
             }
 
+            #debug-list:not([show]) {
+                display: none;
+            }
+
             #debug-list .shader {
                 flex: 1;
                 min-width: 100px;
@@ -39,14 +43,33 @@
                 opacity: 1;
             }
 
-            #debug-list .shader .name{
+            #debug-list .name {
+                text-align: center;
                 font-weight: 900;
                 font-size: 14px;
                 font-style: italic;
 
-                text-align: center;
                 opacity: 0.75;
             }
+
+            #local-variables-list {
+                padding: 10px;
+            }
+
+            #local-variables-list .data {
+                display: flex;
+                padding: 5px 10px;
+            }
+
+            #local-variables-list .data span {
+                flex: 1;
+                font-size: 14px;
+            }
+
+            #local-variables-list .data .name {
+                flex: 2;
+            }
+
 
             #debug-list .shader img {
                 width: 100%;
@@ -81,7 +104,7 @@
                 clamp
             ></zoomable-image>
             
-            <div id="debug-list">
+            <div id="debug-list" show$="[[!_exists(_localVariables)]]">
                 <template is="dom-repeat" items="[[_images]]">
                     <div
                         class="shader"
@@ -90,6 +113,18 @@
                     >
                         <div class="name">[[item.type]] [[item.name]]</div>
                         <img src$="[[item.src]]" />
+                    </div>
+                </template>
+            </div>
+
+            <div id="local-variables-list" show$="[[_exists(_localVariables)]]">
+                <template is="dom-repeat" items="[[_localVariables]]">
+                    <div class="data">
+                        <span class="name">[[item.type]] [[item.name]]</span>
+                        <span>[[item.data.0]]</span>
+                        <span>[[item.data.1]]</span>
+                        <span>[[item.data.2]]</span>
+                        <span>[[item.data.3]]</span>
                     </div>
                 </template>
             </div>
@@ -145,6 +180,11 @@
                 _primaryImageSrc: {
                     type: String,
                     computed: '_computeImageSrc(_images.*, _activeImage)'
+                },
+
+                _localVariables: {
+                    type: Array,
+                    value: null
                 }
             }
         }
@@ -180,9 +220,11 @@
             dl.position.z = 1;
             scene.add( dl );
             
-            const orbit = new THREE.OrbitControls(camera, this.shadowRoot.querySelector('#target'))
+            const target = this.shadowRoot.querySelector('#target')
+            const orbit = new THREE.OrbitControls(camera, target)
             orbit.enableZoom = false
-            orbit.addEventListener('change', () => this._render())
+            orbit.addEventListener('change', () => this._render(true))
+            target.addEventListener('mouseup', () => this._render())
 
             this._renderer = renderer
             this._scene = scene
@@ -195,6 +237,10 @@
         // Utilities
         _equals(a,b) {
             return a === b
+        }
+
+        _exists(a) {
+            return !!a
         }
 
         _getLogErrors(logs, lineOffset = 0) {
@@ -255,7 +301,7 @@
             }
         }
 
-        _render() {
+        _render(activeOnly = false) {
             if (!this._renderer) return
 
             let arr = this._images
@@ -267,6 +313,8 @@
             // TODO: Do this over multiple frames
             let bail = false
             for (let i = 0; i < this._shaders.length; i ++) {
+                if (activeOnly && i !== this._activeImage) continue
+
                 const item = this._shaders[i]
                 const vs = item.vertexShader
                 const fs = item.fragmentShader
@@ -278,6 +326,9 @@
                 arr[i].img = arr[i].img || new Image()
 
                 if (!bail) {
+                    // TODO: We shouldn't have to call this if there are no
+                    // material updates. Right now we're dirtying the material
+                    // every frame for every pass, which is super slow
                     this._updateMaterialAndRender(vs, fs, i === 0)
                     this.set(`${setpref}.src`, this._renderer.domElement.toDataURL('image/png'))
                 } else {
@@ -303,10 +354,24 @@
 
             im.xPixel = e.pixel.x
             im.yPixel = e.pixel.y
+
+            const arr = []
+            this._images.forEach(item => {
+                const px = DebugShaders.readPixel(item.img, e.pixel.x, e.pixel.y)
+                const data = DebugShaders.pixelToArray(px, item.type)
+                arr.push({
+                    type: item.type,
+                    name: item.name,
+                    data
+                })
+            })
+
+            this._localVariables = arr
         }
 
         _imageMouseLeaveHandler() {
             this.shadowRoot.querySelector('image-magnifier').style.visibility = 'hidden'
+            this._localVariables = null
         }
 
         _debugImageClickHandler(e) {
