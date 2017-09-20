@@ -27,7 +27,6 @@ Because colors are stored as 4 8bit values, there is a severe loss of precision 
 
 ## TODO
 - [ ] Allow for changing rendered shape
-- [ ] Remove right click panning
 - [ ] Render the shader with inverted colors values so negative values are exposed on hover inspection
 - [ ] Investigate ways to read the pixel data back with higher precision
 - [ ] Add some default uniform variables, such as time, render target size, etc

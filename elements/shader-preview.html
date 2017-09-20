@@ -237,6 +237,8 @@
             const target = this.shadowRoot.querySelector('#target')
             const orbit = new THREE.OrbitControls(camera, target)
             orbit.enableZoom = false
+            orbit.enablePan = false
+            orbit.enableKeys = false
             orbit.addEventListener('change', () => this._render(true))
             target.addEventListener('mouseup', () => this._render())
 

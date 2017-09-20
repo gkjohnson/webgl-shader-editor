@@ -116,10 +116,6 @@ DebugShaders = {}
         const data = ctx.getImageData(0,0,1,1).data
 
         return {
-            get x() { return this.r },
-            get y() { return this.g },
-            get z() { return this.b },
-            get w() { return this.a },
             r: data[0],
             g: data[1],
             b: data[2],
