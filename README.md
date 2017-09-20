@@ -19,6 +19,9 @@ Hovering over a pixel in the preview pane will display the values of all the loc
 #### Local Variable Color Display
 Every local variable will be displayed as a rendered image in the preview bar as though that variable were used to output the color for that fragment.
 
+#### LocalStorage Saving
+The vertex and fragment shader being written are saved and reloaded on refresh
+
 ## Caveats
 Because colors are stored as 4 8bit values, there is a severe loss of precision when reading out floating point values.
 
