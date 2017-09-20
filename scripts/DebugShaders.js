@@ -19,7 +19,7 @@ DebugShaders = {}
             .replace(/void\s+main\s*\(\)(\s|\n)*{/, 'void main() {')
     }
 
-    const toGlFragColorLine = (type, name) => {
+    const toGlFragColorLine = (type, name, negate) => {
         let r = 0
         let g = 0
         let b = 0
@@ -52,10 +52,12 @@ DebugShaders = {}
             r = `${name}`
         }
 
-        return `gl_FragColor = vec4(${r},${g},${b},${a});`
+        let res = negate ? `${name}=-${name};\n` : ''
+        res += `gl_FragColor = vec4(${r},${g},${b},${a});`
+        return res
     }
 
-    DebugShaders.enumerate = (vs, fs) => {
+    DebugShaders.enumerate = (vs, fs, negate = false) => {
         vs = normalize(vs)
         fs = normalize(fs)
 
@@ -78,7 +80,7 @@ DebugShaders = {}
                     }
 
                     const newlines = [].concat(lines)
-                    newlines[i] += '\n' + toGlFragColorLine(type, name) + '\nreturn;\n'
+                    newlines[i] += '\n' + toGlFragColorLine(type, name, negate) + '\nreturn;\n'
 
                     shaders.push({
                         type,
@@ -95,7 +97,7 @@ DebugShaders = {}
         fsVarying
             .forEach(it => {
                 const mainSig = 'void main() {'
-                const res = fs.replace(mainSig, mainSig + '\n' + toGlFragColorLine(it.type, it.name) + '\nreturn;\n')
+                const res = fs.replace(mainSig, mainSig + '\n' + toGlFragColorLine(it.type, it.name, negate) + '\nreturn;\n')
                 shaders.push({
                     type: it.type,
                     name: it.name,
