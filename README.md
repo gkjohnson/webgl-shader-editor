@@ -35,3 +35,4 @@ Because colors are stored as 4 8bit values, there is a severe loss of precision 
 - [ ] Uniform variable edit UI
 - [ ] Cache materials per target
 - [ ] Multi-pass shaders, stencil buffer, and screen post-effects
+- [ ] Update UI so it's easier to inspect (local variables not persistent, etc)
