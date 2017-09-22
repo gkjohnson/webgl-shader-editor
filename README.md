@@ -45,6 +45,5 @@ val.r = 0;
 - [ ] Add some basic built in textures
 - [ ] Texture upload
 - [ ] Uniform variable edit UI
-- [ ] Cache materials per target
 - [ ] Multi-pass shaders, stencil buffer, and screen post-effects
 - [ ] Update UI so it's easier to inspect (local variables not persistent, etc)

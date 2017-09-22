@@ -222,11 +222,8 @@
             camera.position.z = 10
             scene.add(camera)
 
-            const material = new THREE.ShaderMaterial({ uniforms: THREE.UniformsUtils.merge([
-                THREE.UniformsLib["lights"]
-            ]), lights: true })
-            const sphere = new THREE.Mesh(new THREE.SphereGeometry( 5, 100, 100 ), material )
-            scene.add( sphere );
+            const mesh = new THREE.Mesh(new THREE.SphereGeometry( 5, 100, 100 ), null )
+            scene.add( mesh );
             scene.add(new THREE.AmbientLight(0x222222))
             
             const dl = new THREE.DirectionalLight( 0xffffff, 0.5 );
@@ -246,7 +243,7 @@
             this._renderer = renderer
             this._scene = scene
             this._camera = camera
-            this._material = material
+            this._mesh = mesh
 
             this._render()
         }
@@ -285,77 +282,68 @@
             return { row, col, log }
         }
 
-        // Private Functions
-        _updateMaterialAndRender(vs, fs, checkforerrors) {
-            if (!this._material) return
-
-            this._material.vertexShader = vs
-            this._material.fragmentShader = fs
-
-            this._material.lights = true
-            this._material.uniforms = THREE.UniformsUtils.merge([
-                THREE.UniformsLib["lights"]
-            ]);
-
-            this._material.needsUpdate = true
-            this._renderer.render(this._scene, this._camera)
-
-            if (checkforerrors) this._checkForError()
+        _getMaterial() {
+            const mat = new THREE.ShaderMaterial({
+                uniforms: THREE.UniformsUtils.merge(
+                    [
+                        THREE.UniformsLib["lights"]
+                    ]),
+                lights: true
+            })
+            return mat
         }
 
-        _checkForError() {
-            const diag = this._renderer.info.programs[0].diagnostics
+        // Private Functions
+        _checkForError(mat) {
+            const diag = mat.program.diagnostics
+
             if (!diag || !diag.fragmentShader.log) {
                 this.fragmentErrors = null
             } else {
-                this.fragmentErrors = this._getLogErrors(diag.fragmentShader.log, diag.fragmentShader.prefix.split('\n').length)
+                this.fragmentErrors = this._getLogErrors(
+                    diag.fragmentShader.log,
+                    diag.fragmentShader.prefix.split('\n').length
+                )
             }
 
             if (!diag || !diag.vertexShader.log) {
                 this.vertexErrors = null
             } else {
-                this.vertexErrors = this._getLogErrors(diag.vertexShader.log, diag.vertexShader.prefix.split('\n').length)
+                this.vertexErrors = this._getLogErrors(
+                    diag.vertexShader.log,
+                    diag.vertexShader.prefix.split('\n').length
+                )
             }
         }
 
         _render(activeOnly = false) {
             if (!this._renderer) return
 
-            let arr = this._images
+            this.vertexErrors = null
+            this.fragmentErrors = null
 
-            // expand the array if necessary
-            while (arr.length > this._shaders.length) this.pop('_images')
-            while (arr.length < this._shaders.length) this.push('_images', {})
-
-            // TODO: Do this over multiple frames
-            let bail = false
-            for (let i = 0; i < this._shaders.length; i ++) {
-                if (activeOnly && i !== this._activeImage) continue
-
-                const item = this._shaders[i]
-                const vs = item.vertexShader
-                const fs = item.fragmentShader
+            // assign the new shaders to the images being rendered
+            this._shaders.forEach((s, i) => {
+                if (activeOnly && i !== 0) return
+                    
+                const fs = s.fragmentShader
+                const vs = s.vertexShader
 
                 const setpref = `_images.${i}`
-
-                this.set(`${setpref}.name`, item.name)
-                this.set(`${setpref}.type`, item.type)
-                arr[i].img = arr[i].img || new Image()
-
-                if (!bail) {
-                    // TODO: We shouldn't have to call this if there are no
-                    // material updates. Right now we're dirtying the material
-                    // every frame for every pass, which is super slow
-                    this._updateMaterialAndRender(vs, fs, i === 0)
-                    this.set(`${setpref}.src`, this._renderer.domElement.toDataURL('image/png'))
-                } else {
+                if (this.fragmentErrors || this.vertexErrors) {
                     this.set(`${setpref}.src`, '')
+                } else {
+                    this._mesh.material = this._images[i].material
+                    this._renderer.render(this._scene, this._camera)
+                    this.set(`${setpref}.src`, this._renderer.domElement.toDataURL('image/png'))
+
+                    // only check for errors on the first go because thats
+                    // the one that the user is writing
+                    if (i === 0) this._checkForError(this._images[i].material)
                 }
 
-                arr[i].img.src = arr[i].src
-
-                bail = this.fragmentErrors || this.vertexErrors
-            }
+                this._images[i].img.src = this._images[i].src
+            })
         }
 
         // Event Handlers
@@ -415,6 +403,35 @@
 
         // Observers
         _shadersObserver(shaders) {
+
+            // expand or shorten the array if necessary
+            while (this._images.length > this._shaders.length) {
+                const item = this.pop('_images')
+                item.material.dispose()
+            }
+
+            while (this._images.length < this._shaders.length) {
+                this.push('_images', {
+                    img: new Image(),
+                    material: this._getMaterial(),
+                    src: '',
+                    name: '',
+                    type: ''
+                })
+            }
+
+            shaders.forEach((s, i) => {
+                const item = this._images[i]
+                const setpref = `_images.${i}`
+
+                this.set(`${setpref}.name`, s.name)
+                this.set(`${setpref}.type`, s.type)
+
+                item.material.vertexShader = s.vertexShader
+                item.material.fragmentShader = s.fragmentShader
+                item.material.needsUpdate = true
+            })
+
             this._render()
         }
     }
