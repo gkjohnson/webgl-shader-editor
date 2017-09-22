@@ -47,3 +47,4 @@ val.r = 0;
 - [ ] Uniform variable edit UI
 - [ ] Multi-pass shaders, stencil buffer, and screen post-effects
 - [ ] Update UI so it's easier to inspect (local variables not persistent, etc)
+- [ ] Add the fragment output after the last modification of a variable so we can see the result after the full shader has run
