@@ -39,6 +39,7 @@ val.r = 0;
 
 ## TODO
 - [ ] Allow for changing rendered shape
+- [ ] Progressively generate and update the materials shader to prevent typing from feeling really sluggish
 - [ ] Render the shader with inverted colors values so negative values are exposed on hover inspection
 - [ ] Investigate ways to read the pixel data back with higher precision
 - [ ] Add some default uniform variables, such as time, render target size, etc
