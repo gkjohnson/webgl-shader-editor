@@ -4378,7 +4378,7 @@ __webpack_require__(1)(__webpack_require__(26))
 /* 26 */
 /***/ (function(module, exports) {
 
-module.exports = "DebugShaders = {}\r\n\r\n;(function() {\r\n\r\n    const variableRegex = /((((precision|varying|uniform|attribute)\\s+)?)((highp|mediump|lowp)\\s+)?)(vec4|vec3|vec2|float|int|uint|bool)\\s+([A-Za-z0-9]+)/\r\n    const canvas = document.createElement('canvas')\r\n    const ctx = canvas.getContext('2d')\r\n    canvas.width = 100\r\n    canvas.height = 100\r\n\r\n    const normalize = shader => {\r\n        return shader\r\n            .replace(/\\/\\/[^\\n]*\\n/g, '')               // comment line\r\n            .replace(/\\/\\*(\\*(?!\\/)|[^*])*\\*\\//, '')    // block comment\r\n            .replace(/(\\n|\\s)+/g, ' ')\r\n            .replace(/\\s*{\\s*/g, '\\n{\\n')\r\n            .replace(/\\s*}\\s*/g, '\\n}\\n')\r\n            .replace(/\\s*;\\s*/g, ';\\n')\r\n            .replace(/void\\s+main\\s*\\(\\)(\\s|\\n)*{/, 'void main() {')\r\n    }\r\n\r\n    const toGlFragColorLine = (type, name, negate) => {\r\n        let r = 0\r\n        let g = 0\r\n        let b = 0\r\n        let a = 1\r\n        \r\n        if (/^vec/.test(type)) {\r\n            // TODO: Pack these more so more of\r\n            // the data can be read back out, otherwise\r\n            // they're clamped from 0 to 1.0\r\n            r = `${name}.r`\r\n            g = `${name}.g`\r\n            if (/^vec(3|4)/.test(type)) b = `${name}.b`\r\n            if (/^vec4/.test(type)) a = `${name}.a`\r\n        }\r\n        else if(type === 'bool') {\r\n            r = `${name} ? 1 : 0`\r\n            g = r\r\n            b = r\r\n            a = r\r\n        }\r\n        else if(/^(int|uint)/.test(type)) {\r\n            r = `float((${name} << 0 ) & 0xFF) / 0xFF`\r\n            g = `float((${name} << 8 ) & 0xFF) / 0xFF`\r\n            b = `float((${name} << 16) & 0xFF) / 0xFF`\r\n            a = `float((${name} << 24) & 0xFF) / 0xFF`\r\n        }\r\n        else if(type === 'float') {\r\n            // TODO : Pack this into bytes so we can\r\n            // read it back out as a larger float\r\n            r = `${name}`\r\n        }\r\n\r\n        let res = negate ? `${name}=-${name};\\n` : ''\r\n        res += `gl_FragColor = vec4(${r},${g},${b},${a});`\r\n        return res\r\n    }\r\n\r\n    DebugShaders.enumerate = (vs, fs, negate = false) => {\r\n        vs = normalize(vs)\r\n        fs = normalize(fs)\r\n\r\n        const shaders = []\r\n        const fsVarying = []\r\n\r\n        // output color for each variable in the frag shader\r\n        const lines = fs.split('\\n')\r\n        lines\r\n            .forEach((line, i) => {\r\n                const matches = line.match(variableRegex)\r\n                if (matches) {\r\n                    const prefix = (matches[1] || '').trim()\r\n                    const type = matches[7].trim()\r\n                    const name = matches[8].trim()\r\n\r\n                    if (prefix) {\r\n                        if (prefix === 'varying') fsVarying.push({ type, name, line: i })\r\n                        return\r\n                    }\r\n\r\n                    const newlines = [].concat(lines)\r\n                    newlines[i] += '\\n' + toGlFragColorLine(type, name, negate) + '\\nreturn;\\n'\r\n\r\n                    shaders.push({\r\n                        type,\r\n                        name,\r\n                        vertexShader: vs,\r\n                        fragmentShader: newlines.join('\\n'),\r\n                        line: i\r\n                    })\r\n                }\r\n            })\r\n\r\n\r\n        // output color for each varying variable in the frag shader\r\n        fsVarying\r\n            .forEach(it => {\r\n                const mainSig = 'void main() {'\r\n                const res = fs.replace(mainSig, mainSig + '\\n' + toGlFragColorLine(it.type, it.name, negate) + '\\nreturn;\\n')\r\n                shaders.push({\r\n                    type: it.type,\r\n                    name: it.name,\r\n                    vertexShader: vs,\r\n                    fragmentShader: res,\r\n                    line: it.line\r\n                })\r\n            })\r\n\r\n\r\n        return shaders\r\n    }\r\n\r\n    DebugShaders.readPixel = (img, x, y) => {\r\n        ctx.clearRect(0, 0, 1, 1)\r\n        ctx.drawImage(img, x, y, 1, 1, 0, 0, 1, 1)\r\n\r\n        const data = ctx.getImageData(0,0,1,1).data\r\n\r\n        return {\r\n            r: data[0],\r\n            g: data[1],\r\n            b: data[2],\r\n            a: data[3]\r\n        }\r\n    }\r\n\r\n    DebugShaders.pixelToArray = (px, type, prec = 5) => {\r\n        const cv = f => parseFloat((f / 255.0).toPrecision(prec))\r\n\r\n        if (type === 'vec2') return [cv(px.r), cv(px.g)]\r\n        if (type === 'vec3') return [cv(px.r), cv(px.g), cv(px.b)]\r\n        if (type === 'vec4') return [cv(px.r), cv(px.g), cv(px.b), cv(px.a)]\r\n        if (type === 'bool') return [!!px.r]\r\n        if (type === 'int'); // TODO\r\n        if (type === 'uint'); // TODO\r\n        if (type === 'float') return [cv(res.r)]\r\n    }\r\n})()"
+module.exports = "DebugShaders = {}\r\n\r\n;(function() {\r\n\r\n    const NEGATE_UNIFORM = '_negate_'\r\n    const variableRegex = /((((precision|varying|uniform|attribute)\\s+)?)((highp|mediump|lowp)\\s+)?)(vec4|vec3|vec2|float|int|uint|bool)\\s+([A-Za-z0-9]+)/\r\n    const canvas = document.createElement('canvas')\r\n    const ctx = canvas.getContext('2d')\r\n    canvas.width = 100\r\n    canvas.height = 100\r\n\r\n    const normalize = shader => {\r\n        return shader\r\n            .replace(/\\/\\/[^\\n]*\\n/g, '')               // comment line\r\n            .replace(/\\/\\*(\\*(?!\\/)|[^*])*\\*\\//, '')    // block comment\r\n            .replace(/(\\n|\\s)+/g, ' ')\r\n            .replace(/\\s*{\\s*/g, '\\n{\\n')\r\n            .replace(/\\s*}\\s*/g, '\\n}\\n')\r\n            .replace(/\\s*;\\s*/g, ';\\n')\r\n            .replace(/void\\s+main\\s*\\(\\)(\\s|\\n)*{/, 'void main() {')\r\n    }\r\n\r\n    const toGlFragColorLine = (type, name) => {\r\n        let r = 0\r\n        let g = 0\r\n        let b = 0\r\n        let a = 1\r\n        \r\n        const neg = `(${NEGATE_UNIFORM} ? -1.0 : 1.0)`\r\n\r\n        if (/^vec/.test(type)) {\r\n            // TODO: Pack these more so more of\r\n            // the data can be read back out, otherwise\r\n            // they're clamped from 0 to 1.0\r\n            r = `${name}.r * ${neg}`\r\n            g = `${name}.g * ${neg}`\r\n            if (/^vec(3|4)/.test(type)) b = `${name}.b * ${neg}`\r\n            if (/^vec4/.test(type)) a = `${name}.a * ${neg}`\r\n        }\r\n        else if(type === 'bool') {\r\n            r = `${name} ? 1 : 0`\r\n            g = r\r\n            b = r\r\n            a = r\r\n        }\r\n        else if(/^(int|uint)/.test(type)) {\r\n            r = `float(((${name} * int(${neg})) << 0 ) & 0xFF) / 0xFF`\r\n            g = `float(((${name} * int(${neg})) << 8 ) & 0xFF) / 0xFF`\r\n            b = `float(((${name} * int(${neg})) << 16) & 0xFF) / 0xFF`\r\n            a = `float(((${name} * int(${neg})) << 24) & 0xFF) / 0xFF`\r\n        }\r\n        else if(type === 'float') {\r\n            // TODO : Pack this into bytes so we can\r\n            // read it back out as a larger float\r\n            r = `${name}`\r\n        }\r\n\r\n        return `gl_FragColor = vec4(${r},${g},${b},${a});`\r\n    }\r\n\r\n    DebugShaders.enumerate = (vs, fs, negate = false) => {\r\n        vs = normalize(vs)\r\n        fs = normalize(fs)\r\n\r\n        const shaders = []\r\n        const fsVarying = []\r\n\r\n        // output color for each variable in the frag shader\r\n        const lines = fs.split('\\n')\r\n        lines\r\n            .forEach((line, i) => {\r\n                const matches = line.match(variableRegex)\r\n                if (matches) {\r\n                    const prefix = (matches[1] || '').trim()\r\n                    const type = matches[7].trim()\r\n                    const name = matches[8].trim()\r\n\r\n                    if (prefix) {\r\n                        if (prefix === 'varying') fsVarying.push({ type, name, line: i })\r\n                        return\r\n                    }\r\n\r\n                    const newlines = [].concat(lines)\r\n                    newlines[i] += '\\n' + toGlFragColorLine(type, name, negate) + '\\nreturn;\\n'\r\n\r\n                    shaders.push({\r\n                        type,\r\n                        name,\r\n                        vertexShader: vs,\r\n                        fragmentShader: newlines.join('\\n'),\r\n                        line: i\r\n                    })\r\n                }\r\n            })\r\n\r\n\r\n        // output color for each varying variable in the frag shader\r\n        fsVarying\r\n            .forEach(it => {\r\n                const mainSig = 'void main() {'\r\n                const res = fs.replace(mainSig, mainSig + '\\n' + toGlFragColorLine(it.type, it.name, negate) + '\\nreturn;\\n')\r\n                shaders.push({\r\n                    type: it.type,\r\n                    name: it.name,\r\n                    vertexShader: vs,\r\n                    fragmentShader: res,\r\n                    line: it.line\r\n                })\r\n            })\r\n\r\n        for(let i in shaders) {\r\n            shaders[i].fragmentShader = `\r\n            uniform bool ${NEGATE_UNIFORM};\r\n            ${shaders[i].fragmentShader}\r\n            `\r\n        }\r\n\r\n        return shaders\r\n    }\r\n\r\n    DebugShaders.readPixel = (img, x, y) => {\r\n        ctx.clearRect(0, 0, 1, 1)\r\n        ctx.drawImage(img, x, y, 1, 1, 0, 0, 1, 1)\r\n\r\n        const data = ctx.getImageData(0,0,1,1).data\r\n\r\n        return {\r\n            r: data[0],\r\n            g: data[1],\r\n            b: data[2],\r\n            a: data[3]\r\n        }\r\n    }\r\n\r\n    DebugShaders.pixelToArray = (px, type, prec = 5) => {\r\n        const cv = f => parseFloat((f / 255.0).toPrecision(prec))\r\n\r\n        if (type === 'vec2') return [cv(px.r), cv(px.g)]\r\n        if (type === 'vec3') return [cv(px.r), cv(px.g), cv(px.b)]\r\n        if (type === 'vec4') return [cv(px.r), cv(px.g), cv(px.b), cv(px.a)]\r\n        if (type === 'bool') return [!!px.r]\r\n        if (type === 'int'); // TODO\r\n        if (type === 'uint'); // TODO\r\n        if (type === 'float') return [cv(res.r)]\r\n    }\r\n})()"
 
 /***/ }),
 /* 27 */
@@ -8432,7 +8432,10 @@ __webpack_require__(9);
             const mat = new THREE.ShaderMaterial({
                 uniforms: THREE.UniformsUtils.merge(
                     [
-                        THREE.UniformsLib["lights"]
+                        THREE.UniformsLib["lights"],
+                        {
+                            _negate_: { value: false }
+                        }
                     ]),
                 lights: true,
                 side: THREE.DoubleSide
@@ -8486,8 +8489,14 @@ __webpack_require__(9);
                     this.set(`${setpref}.src`, '')
                 } else {
                     this._meshes[this._displayGeometry].material = this._images[i].material
+                    
+                    this._images[i].material.uniforms._negate_.value = false
                     this._renderer.render(this._scene, this._camera)
                     this.set(`${setpref}.src`, this._renderer.domElement.toDataURL('image/png'))
+
+                    this._images[i].material.uniforms._negate_.value = true
+                    this._renderer.render(this._scene, this._camera)
+                    this.set(`${setpref}.negsrc`, this._renderer.domElement.toDataURL('image/png'))
 
                     // only check for errors on the first go because thats
                     // the one that the user is writing
@@ -8495,6 +8504,7 @@ __webpack_require__(9);
                 }
 
                 this._images[i].img.src = this._images[i].src
+                this._images[i].negimg.src = this._images[i].negsrc
             })
         }
 
@@ -8516,6 +8526,12 @@ __webpack_require__(9);
             this._images.forEach(item => {
                 const px = DebugShaders.readPixel(item.img, e.pixel.x, e.pixel.y)
                 const data = DebugShaders.pixelToArray(px, item.type)
+                
+                const negpx = DebugShaders.readPixel(item.negimg, e.pixel.x, e.pixel.y)
+                const negdata = DebugShaders.pixelToArray(negpx, item.type)
+
+                for(let i in data) data[i] = data[i] || -negdata[i]
+
                 arr.push({
                     type: item.type,
                     name: item.name,
@@ -8569,8 +8585,10 @@ __webpack_require__(9);
             while (this._images.length < this._shaders.length) {
                 this.push('_images', {
                     img: new Image(),
+                    negimg: new Image(),
                     material: this._getMaterial(),
                     src: '',
+                    negsrc: '',
                     name: '',
                     type: ''
                 })
