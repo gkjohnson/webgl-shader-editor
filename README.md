@@ -39,13 +39,13 @@ val.r = 0;
 
 ## TODO
 - [ ] Make icon for cube shape
-- [ ] Progressively generate and update the materials shader to prevent typing from feeling really sluggish
 - [ ] Render the shader with inverted colors values so negative values are exposed on hover inspection
 - [ ] Investigate ways to read the pixel data back with higher precision
-- [ ] Add some default uniform variables, such as time, render target size, etc
+- [ ] Update UI so it's easier to inspect (local variables not persistent, etc)
 - [ ] Add some basic built in textures
+- [ ] Add the fragment output after the last modification of a variable so we can see the result after the full shader has run
+
 - [ ] Texture upload
 - [ ] Uniform variable edit UI
 - [ ] Multi-pass shaders, stencil buffer, and screen post-effects
-- [ ] Update UI so it's easier to inspect (local variables not persistent, etc)
-- [ ] Add the fragment output after the last modification of a variable so we can see the result after the full shader has run
+- [ ] Add some default uniform variables, such as time, render target size, etc
