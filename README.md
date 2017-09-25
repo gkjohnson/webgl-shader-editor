@@ -39,7 +39,6 @@ val.r = 0;
 
 ## TODO
 - [ ] Make icon for cube shape
-- [ ] Render the shader with inverted colors values so negative values are exposed on hover inspection
 - [ ] Investigate ways to read the pixel data back with higher precision
 - [ ] Update UI so it's easier to inspect (local variables not persistent, etc)
 - [ ] Add some basic built in textures
