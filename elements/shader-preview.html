@@ -200,6 +200,12 @@
                 _localVariables: {
                     type: Array,
                     value: null
+                },
+
+                _displayGeometry: {
+                    type: String,
+                    value: 'sphere',
+                    observer: '_displayGeometryObserver'
                 }
             }
         }
@@ -213,7 +219,7 @@
             super.ready()
 
             const scene = new THREE.Scene()
-            const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
+            const renderer = new THREE.WebGLRenderer({ antialias: false, alpha: true })
             renderer.setPixelRatio(window.devicePixelRatio)
             renderer.setSize(400, 400)
             renderer.setClearColor(0x000000, 0)
@@ -222,8 +228,13 @@
             camera.position.z = 10
             scene.add(camera)
 
-            const mesh = new THREE.Mesh(new THREE.SphereGeometry( 5, 100, 100 ), null )
-            scene.add( mesh );
+            const meshes = {
+                cube: new THREE.Mesh(new THREE.BoxGeometry( 5, 5, 5, 50, 50, 50 ), null ),
+                plane: new THREE.Mesh(new THREE.PlaneGeometry( 5, 5, 100, 100 ), null ),
+                // sphere: new THREE.Mesh(new THREE.SphereGeometry( 5, 100, 100 ), null ),
+                sphere: new THREE.Mesh(new THREE.IcosahedronGeometry(5, 5), null),
+            }
+            scene.add( meshes[this._displayGeometry] );
             scene.add(new THREE.AmbientLight(0x222222))
             
             const dl = new THREE.DirectionalLight( 0xffffff, 0.5 );
@@ -243,7 +254,7 @@
             this._renderer = renderer
             this._scene = scene
             this._camera = camera
-            this._mesh = mesh
+            this._meshes = meshes
 
             this._render()
         }
@@ -288,7 +299,8 @@
                     [
                         THREE.UniformsLib["lights"]
                     ]),
-                lights: true
+                lights: true,
+                side: THREE.DoubleSide
             })
             return mat
         }
@@ -324,7 +336,7 @@
 
             // assign the new shaders to the images being rendered
             this._shaders.forEach((s, i) => {
-                if (activeOnly && i !== 0) return
+                if (activeOnly && i !== this._activeImage) return
                     
                 const fs = s.fragmentShader
                 const vs = s.vertexShader
@@ -333,7 +345,7 @@
                 if (this.fragmentErrors || this.vertexErrors) {
                     this.set(`${setpref}.src`, '')
                 } else {
-                    this._mesh.material = this._images[i].material
+                    this._meshes[this._displayGeometry].material = this._images[i].material
                     this._renderer.render(this._scene, this._camera)
                     this.set(`${setpref}.src`, this._renderer.domElement.toDataURL('image/png'))
 
@@ -431,6 +443,15 @@
                 item.material.fragmentShader = s.fragmentShader
                 item.material.needsUpdate = true
             })
+
+            this._render()
+        }
+
+        _displayGeometryObserver(newgeom, oldgeom) {
+            if (!this._meshes) return
+
+            this._scene.remove(this._meshes[oldgeom])
+            this._scene.add(this._meshes[newgeom])
 
             this._render()
         }
