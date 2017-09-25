@@ -128,6 +128,29 @@
 
 /***/ }),
 /* 1 */
+/***/ (function(module, exports) {
+
+/*
+	MIT License http://www.opensource.org/licenses/mit-license.php
+	Author Tobias Koppers @sokra
+*/
+module.exports = function(src) {
+	try {
+		if (typeof eval !== "undefined") {
+			eval.call(null, src);
+		} else if (typeof execScript !== "undefined") {
+			execScript(src);
+		} else {
+			console.error("[Script Loader] EvalError: No eval function available");
+		}
+	} catch (error) {
+		console.error("[Script Loader] ", error.message);
+	}
+}
+
+
+/***/ }),
+/* 2 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*__wc__loader*/
@@ -198,29 +221,6 @@ __webpack_require__(0);
 })();
 
 
-
-
-/***/ }),
-/* 2 */
-/***/ (function(module, exports) {
-
-/*
-	MIT License http://www.opensource.org/licenses/mit-license.php
-	Author Tobias Koppers @sokra
-*/
-module.exports = function(src) {
-	try {
-		if (typeof eval !== "undefined") {
-			eval.call(null, src);
-		} else if (typeof execScript !== "undefined") {
-			execScript(src);
-		} else {
-			console.error("[Script Loader] EvalError: No eval function available");
-		}
-	} catch (error) {
-		console.error("[Script Loader] ", error.message);
-	}
-}
 
 
 /***/ }),
@@ -334,7 +334,7 @@ __webpack_require__(0);
 /***/ (function(module, exports, __webpack_require__) {
 
 /*__wc__loader*/
-__webpack_require__(23);
+__webpack_require__(27);
 
 
 (function() {
@@ -437,15 +437,15 @@ __webpack_require__(0);
 /*__wc__loader*/
 __webpack_require__(0);
 
-__webpack_require__(1);
+__webpack_require__(2);
 
-__webpack_require__(27);
+__webpack_require__(31);
 
 __webpack_require__(5);
 
-__webpack_require__(28);
+__webpack_require__(32);
 
-__webpack_require__(29);
+__webpack_require__(33);
 
 
 (function() {
@@ -3849,7 +3849,7 @@ __webpack_require__(9);
 /***/ (function(module, exports, __webpack_require__) {
 
 /*__wc__loader*/
-__webpack_require__(1);
+__webpack_require__(2);
 
 
 (function() {
@@ -4049,7 +4049,7 @@ __webpack_require__(1);
 /*__wc__loader*/
 __webpack_require__(0);
 
-__webpack_require__(1);
+__webpack_require__(2);
 
 __webpack_require__(7);
 
@@ -4221,7 +4221,7 @@ __webpack_require__(0);
 /* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
-/*__wc__loader*/!function(a){var b="\n    <title>WebGL Shader Editor</title>\n\n    \n    <link href=\"https://fonts.googleapis.com/css?family=Roboto:100\" rel=\"stylesheet\">\n\n    \n    \n    \n    \n    \n    \n\n    \n    \n    \n    \n\n    \n    \n    \n    \n    \n\n    <style type=\"text/css\">html,body{margin:0;padding:0;height:100%;font-weight:100;font-family:Roboto,sans-serif;}::-webkit-scrollbar{width:5px;position:absolute;}::-webkit-scrollbar-thumb{border-radius:5px;background-color:rgba(255,255,255,0.2);}</style>\n";if(a.head){var c=a.head,d=a.createElement("div");for(d.innerHTML=b;d.children.length>0;)c.appendChild(d.children[0])}else a.write(b)}(document);!function(a){var b="\n    <shader-editor></shader-editor>\n    \n\n";if(a.body){var c=a.body,d=a.createElement("div");for(d.innerHTML=b;d.children.length>0;)c.appendChild(d.children[0])}else a.write(b)}(document);
+/*__wc__loader*/!function(a){var b="\n    <title>WebGL Shader Editor</title>\n\n    \n    <link href=\"https://fonts.googleapis.com/css?family=Roboto:100\" rel=\"stylesheet\">\n\n    \n    \n    \n    \n    \n    \n    \n\n    \n\n    \n    \n    \n    \n\n    \n    \n    \n    \n    \n\n    <style type=\"text/css\">html,body{margin:0;padding:0;height:100%;font-weight:100;font-family:Roboto,sans-serif;}::-webkit-scrollbar{width:5px;position:absolute;}::-webkit-scrollbar-thumb{border-radius:5px;background-color:rgba(255,255,255,0.2);}</style>\n";if(a.head){var c=a.head,d=a.createElement("div");for(d.innerHTML=b;d.children.length>0;)c.appendChild(d.children[0])}else a.write(b)}(document);!function(a){var b="\n    <shader-editor></shader-editor>\n    \n\n";if(a.body){var c=a.body,d=a.createElement("div");for(d.innerHTML=b;d.children.length>0;)c.appendChild(d.children[0])}else a.write(b)}(document);
 __webpack_require__(13);
 
 __webpack_require__(15);
@@ -4232,21 +4232,25 @@ __webpack_require__(19);
 
 __webpack_require__(21);
 
+__webpack_require__(23);
+
+__webpack_require__(25);
+
 __webpack_require__(4);
-
-__webpack_require__(30);
-
-__webpack_require__(31);
-
-__webpack_require__(32);
-
-__webpack_require__(33);
 
 __webpack_require__(34);
 
 __webpack_require__(35);
 
 __webpack_require__(36);
+
+__webpack_require__(37);
+
+__webpack_require__(38);
+
+__webpack_require__(39);
+
+__webpack_require__(40);
 
 
     
@@ -4296,7 +4300,7 @@ void main() {
 /* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(2)(__webpack_require__(14))
+__webpack_require__(1)(__webpack_require__(14))
 
 /***/ }),
 /* 14 */
@@ -4308,7 +4312,7 @@ module.exports = "(function(){/*\n\n Copyright (c) 2016 The Polymer Project Auth
 /* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(2)(__webpack_require__(16))
+__webpack_require__(1)(__webpack_require__(16))
 
 /***/ }),
 /* 16 */
@@ -4320,7 +4324,7 @@ module.exports = "(function(){function o(n){var i=e;n&&(e[n]||(e[n]={}),i=e[n]);
 /* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(2)(__webpack_require__(18))
+__webpack_require__(1)(__webpack_require__(18))
 
 /***/ }),
 /* 18 */
@@ -4332,7 +4336,7 @@ module.exports = "(function (global, factory) {\n\ttypeof exports === 'object' &
 /* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(2)(__webpack_require__(20))
+__webpack_require__(1)(__webpack_require__(20))
 
 /***/ }),
 /* 20 */
@@ -4344,32 +4348,56 @@ module.exports = "/**\n * @author qiao / https://github.com/qiao\n * @author mrd
 /* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(2)(__webpack_require__(22))
+__webpack_require__(1)(__webpack_require__(22))
 
 /***/ }),
 /* 22 */
 /***/ (function(module, exports) {
 
-module.exports = "DebugShaders = {}\r\n\r\n;(function() {\r\n\r\n    const variableRegex = /((((precision|varying|uniform|attribute)\\s+)?)((highp|mediump|lowp)\\s+)?)(vec4|vec3|vec2|float|int|uint|bool)\\s+([A-Za-z0-9]+)/\r\n    const canvas = document.createElement('canvas')\r\n    const ctx = canvas.getContext('2d')\r\n    canvas.width = 100\r\n    canvas.height = 100\r\n\r\n    const normalize = shader => {\r\n        return shader\r\n            .replace(/\\/\\/[^\\n]*\\n/g, '')               // comment line\r\n            .replace(/\\/\\*(\\*(?!\\/)|[^*])*\\*\\//, '')    // block comment\r\n            .replace(/(\\n|\\s)+/g, ' ')\r\n            .replace(/\\s*{\\s*/g, '\\n{\\n')\r\n            .replace(/\\s*}\\s*/g, '\\n}\\n')\r\n            .replace(/\\s*;\\s*/g, ';\\n')\r\n            .replace(/void\\s+main\\s*\\(\\)(\\s|\\n)*{/, 'void main() {')\r\n    }\r\n\r\n    const toGlFragColorLine = (type, name, negate) => {\r\n        let r = 0\r\n        let g = 0\r\n        let b = 0\r\n        let a = 1\r\n        \r\n        if (/^vec/.test(type)) {\r\n            // TODO: Pack these more so more of\r\n            // the data can be read back out, otherwise\r\n            // they're clamped from 0 to 1.0\r\n            r = `${name}.r`\r\n            g = `${name}.g`\r\n            if (/^vec(3|4)/.test(type)) b = `${name}.b`\r\n            if (/^vec4/.test(type)) a = `${name}.a`\r\n        }\r\n        else if(type === 'bool') {\r\n            r = `${name} ? 1 : 0`\r\n            g = r\r\n            b = r\r\n            a = r\r\n        }\r\n        else if(/^(int|uint)/.test(type)) {\r\n            r = `float((${name} << 0 ) & 0xFF) / 0xFF`\r\n            g = `float((${name} << 8 ) & 0xFF) / 0xFF`\r\n            b = `float((${name} << 16) & 0xFF) / 0xFF`\r\n            a = `float((${name} << 24) & 0xFF) / 0xFF`\r\n        }\r\n        else if(type === 'float') {\r\n            // TODO : Pack this into bytes so we can\r\n            // read it back out as a larger float\r\n            r = `${name}`\r\n        }\r\n\r\n        let res = negate ? `${name}=-${name};\\n` : ''\r\n        res += `gl_FragColor = vec4(${r},${g},${b},${a});`\r\n        return res\r\n    }\r\n\r\n    DebugShaders.enumerate = (vs, fs, negate = false) => {\r\n        vs = normalize(vs)\r\n        fs = normalize(fs)\r\n\r\n        const shaders = []\r\n        const fsVarying = []\r\n\r\n        // output color for each variable in the frag shader\r\n        const lines = fs.split('\\n')\r\n        lines\r\n            .forEach((line, i) => {\r\n                const matches = line.match(variableRegex)\r\n                if (matches) {\r\n                    const prefix = (matches[1] || '').trim()\r\n                    const type = matches[7].trim()\r\n                    const name = matches[8].trim()\r\n\r\n                    if (prefix) {\r\n                        if (prefix === 'varying') fsVarying.push({ type, name, line: i })\r\n                        return\r\n                    }\r\n\r\n                    const newlines = [].concat(lines)\r\n                    newlines[i] += '\\n' + toGlFragColorLine(type, name, negate) + '\\nreturn;\\n'\r\n\r\n                    shaders.push({\r\n                        type,\r\n                        name,\r\n                        vertexShader: vs,\r\n                        fragmentShader: newlines.join('\\n'),\r\n                        line: i\r\n                    })\r\n                }\r\n            })\r\n\r\n\r\n        // output color for each varying variable in the frag shader\r\n        fsVarying\r\n            .forEach(it => {\r\n                const mainSig = 'void main() {'\r\n                const res = fs.replace(mainSig, mainSig + '\\n' + toGlFragColorLine(it.type, it.name, negate) + '\\nreturn;\\n')\r\n                shaders.push({\r\n                    type: it.type,\r\n                    name: it.name,\r\n                    vertexShader: vs,\r\n                    fragmentShader: res,\r\n                    line: it.line\r\n                })\r\n            })\r\n\r\n\r\n        return shaders\r\n    }\r\n\r\n    DebugShaders.readPixel = (img, x, y) => {\r\n        ctx.clearRect(0, 0, 1, 1)\r\n        ctx.drawImage(img, x, y, 1, 1, 0, 0, 1, 1)\r\n\r\n        const data = ctx.getImageData(0,0,1,1).data\r\n\r\n        return {\r\n            r: data[0],\r\n            g: data[1],\r\n            b: data[2],\r\n            a: data[3]\r\n        }\r\n    }\r\n\r\n    DebugShaders.pixelToArray = (px, type, prec = 5) => {\r\n        const cv = f => parseFloat((f / 255.0).toPrecision(prec))\r\n\r\n        if (type === 'vec2') return [cv(px.r), cv(px.g)]\r\n        if (type === 'vec3') return [cv(px.r), cv(px.g), cv(px.b)]\r\n        if (type === 'vec4') return [cv(px.r), cv(px.g), cv(px.b), cv(px.a)]\r\n        if (type === 'bool') return [!!px.r]\r\n        if (type === 'int'); // TODO\r\n        if (type === 'uint'); // TODO\r\n        if (type === 'float') return [cv(res.r)]\r\n    }\r\n})()"
+module.exports = "(function(module) {\r\n    module.Debouncer = class {\r\n        constructor() {\r\n            this.__debounces = {}\r\n        }\r\n\r\n        // Returns whether there are any debounces the be run\r\n        hasDebounces() {\r\n            return !!Object.keys(this.__debounces).length\r\n        }\r\n\r\n        // Fires s debounce function after the given duration\r\n        debounce(key, func, dur) {\r\n            if (key == null || !func) return\r\n\r\n            if (key in this.__debounces) this.clearDebounce(key)\r\n\r\n            this.__debounces[key] = {\r\n                handle: setTimeout(() => {\r\n                    func()\r\n                    this.clearDebounce(key)\r\n                }, dur || 0),\r\n                func\r\n            }\r\n        }\r\n\r\n        // Clears the given debounce key\r\n        // Clears all debounces if no key is given\r\n        clearDebounce(key) {\r\n            if (key == null) {\r\n                for (let k in this.__debounces) {\r\n                    this.clearDebounce(k)\r\n                }\r\n            } else if (key in this.__debounces) {\r\n                clearTimeout(this.__debounces[key].handle)\r\n                delete this.__debounces[key]\r\n            }\r\n        }\r\n\r\n        // Fires the debounce now and clears the key\r\n        // Flushes all debounces if no key is given\r\n        flushDebounce(key) {\r\n            if (key == null) {\r\n                for (let k in this.__debounces) {\r\n                    this.flushDebounce(k)\r\n                }\r\n            } else if (key in this.__debounces) {\r\n                this.__debounces[key].func()\r\n                this.clearDebounce(key)\r\n            }\r\n        }\r\n    }\r\n})(typeof window !== 'undefined' && window || module && (module.exports = {}))"
 
 /***/ }),
 /* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
+__webpack_require__(1)(__webpack_require__(24))
+
+/***/ }),
+/* 24 */
+/***/ (function(module, exports) {
+
+module.exports = "(function(module){\r\n    module.Mixin = function(superClass, ...args) {\r\n        const __mixinargs__ = args\r\n\r\n        class Mixed extends superClass{\r\n            constructor() {\r\n                super(...arguments)\r\n\r\n                for (let arg of __mixinargs__) {\r\n                    Object.assign(this, new arg())\r\n\r\n                    for (let key of Object.getOwnPropertyNames(arg.prototype)) {\r\n                        if (key === 'constructor') continue\r\n\r\n                        this[key] = function() {\r\n                            return arg.prototype[key].call(this, ...arguments)\r\n                        }\r\n                    }\r\n                }\r\n            }\r\n        }\r\n\r\n        return Mixed\r\n    }\r\n})(typeof window !== 'undefined' && window || module && (module.exports = {}))"
+
+/***/ }),
+/* 25 */
+/***/ (function(module, exports, __webpack_require__) {
+
+__webpack_require__(1)(__webpack_require__(26))
+
+/***/ }),
+/* 26 */
+/***/ (function(module, exports) {
+
+module.exports = "DebugShaders = {}\r\n\r\n;(function() {\r\n\r\n    const variableRegex = /((((precision|varying|uniform|attribute)\\s+)?)((highp|mediump|lowp)\\s+)?)(vec4|vec3|vec2|float|int|uint|bool)\\s+([A-Za-z0-9]+)/\r\n    const canvas = document.createElement('canvas')\r\n    const ctx = canvas.getContext('2d')\r\n    canvas.width = 100\r\n    canvas.height = 100\r\n\r\n    const normalize = shader => {\r\n        return shader\r\n            .replace(/\\/\\/[^\\n]*\\n/g, '')               // comment line\r\n            .replace(/\\/\\*(\\*(?!\\/)|[^*])*\\*\\//, '')    // block comment\r\n            .replace(/(\\n|\\s)+/g, ' ')\r\n            .replace(/\\s*{\\s*/g, '\\n{\\n')\r\n            .replace(/\\s*}\\s*/g, '\\n}\\n')\r\n            .replace(/\\s*;\\s*/g, ';\\n')\r\n            .replace(/void\\s+main\\s*\\(\\)(\\s|\\n)*{/, 'void main() {')\r\n    }\r\n\r\n    const toGlFragColorLine = (type, name, negate) => {\r\n        let r = 0\r\n        let g = 0\r\n        let b = 0\r\n        let a = 1\r\n        \r\n        if (/^vec/.test(type)) {\r\n            // TODO: Pack these more so more of\r\n            // the data can be read back out, otherwise\r\n            // they're clamped from 0 to 1.0\r\n            r = `${name}.r`\r\n            g = `${name}.g`\r\n            if (/^vec(3|4)/.test(type)) b = `${name}.b`\r\n            if (/^vec4/.test(type)) a = `${name}.a`\r\n        }\r\n        else if(type === 'bool') {\r\n            r = `${name} ? 1 : 0`\r\n            g = r\r\n            b = r\r\n            a = r\r\n        }\r\n        else if(/^(int|uint)/.test(type)) {\r\n            r = `float((${name} << 0 ) & 0xFF) / 0xFF`\r\n            g = `float((${name} << 8 ) & 0xFF) / 0xFF`\r\n            b = `float((${name} << 16) & 0xFF) / 0xFF`\r\n            a = `float((${name} << 24) & 0xFF) / 0xFF`\r\n        }\r\n        else if(type === 'float') {\r\n            // TODO : Pack this into bytes so we can\r\n            // read it back out as a larger float\r\n            r = `${name}`\r\n        }\r\n\r\n        let res = negate ? `${name}=-${name};\\n` : ''\r\n        res += `gl_FragColor = vec4(${r},${g},${b},${a});`\r\n        return res\r\n    }\r\n\r\n    DebugShaders.enumerate = (vs, fs, negate = false) => {\r\n        vs = normalize(vs)\r\n        fs = normalize(fs)\r\n\r\n        const shaders = []\r\n        const fsVarying = []\r\n\r\n        // output color for each variable in the frag shader\r\n        const lines = fs.split('\\n')\r\n        lines\r\n            .forEach((line, i) => {\r\n                const matches = line.match(variableRegex)\r\n                if (matches) {\r\n                    const prefix = (matches[1] || '').trim()\r\n                    const type = matches[7].trim()\r\n                    const name = matches[8].trim()\r\n\r\n                    if (prefix) {\r\n                        if (prefix === 'varying') fsVarying.push({ type, name, line: i })\r\n                        return\r\n                    }\r\n\r\n                    const newlines = [].concat(lines)\r\n                    newlines[i] += '\\n' + toGlFragColorLine(type, name, negate) + '\\nreturn;\\n'\r\n\r\n                    shaders.push({\r\n                        type,\r\n                        name,\r\n                        vertexShader: vs,\r\n                        fragmentShader: newlines.join('\\n'),\r\n                        line: i\r\n                    })\r\n                }\r\n            })\r\n\r\n\r\n        // output color for each varying variable in the frag shader\r\n        fsVarying\r\n            .forEach(it => {\r\n                const mainSig = 'void main() {'\r\n                const res = fs.replace(mainSig, mainSig + '\\n' + toGlFragColorLine(it.type, it.name, negate) + '\\nreturn;\\n')\r\n                shaders.push({\r\n                    type: it.type,\r\n                    name: it.name,\r\n                    vertexShader: vs,\r\n                    fragmentShader: res,\r\n                    line: it.line\r\n                })\r\n            })\r\n\r\n\r\n        return shaders\r\n    }\r\n\r\n    DebugShaders.readPixel = (img, x, y) => {\r\n        ctx.clearRect(0, 0, 1, 1)\r\n        ctx.drawImage(img, x, y, 1, 1, 0, 0, 1, 1)\r\n\r\n        const data = ctx.getImageData(0,0,1,1).data\r\n\r\n        return {\r\n            r: data[0],\r\n            g: data[1],\r\n            b: data[2],\r\n            a: data[3]\r\n        }\r\n    }\r\n\r\n    DebugShaders.pixelToArray = (px, type, prec = 5) => {\r\n        const cv = f => parseFloat((f / 255.0).toPrecision(prec))\r\n\r\n        if (type === 'vec2') return [cv(px.r), cv(px.g)]\r\n        if (type === 'vec3') return [cv(px.r), cv(px.g), cv(px.b)]\r\n        if (type === 'vec4') return [cv(px.r), cv(px.g), cv(px.b), cv(px.a)]\r\n        if (type === 'bool') return [!!px.r]\r\n        if (type === 'int'); // TODO\r\n        if (type === 'uint'); // TODO\r\n        if (type === 'float') return [cv(res.r)]\r\n    }\r\n})()"
+
+/***/ }),
+/* 27 */
+/***/ (function(module, exports, __webpack_require__) {
+
 /*__wc__loader*/
 __webpack_require__(0);
 
-__webpack_require__(24);
+__webpack_require__(28);
 
-__webpack_require__(1);
+__webpack_require__(2);
 
 __webpack_require__(5);
 
-__webpack_require__(25);
+__webpack_require__(29);
 
 __webpack_require__(3);
 
-__webpack_require__(26);
+__webpack_require__(30);
 
 __webpack_require__(6);
 
@@ -5197,7 +5225,7 @@ __webpack_require__(6);
 
 
 /***/ }),
-/* 24 */
+/* 28 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*__wc__loader*/
@@ -5260,7 +5288,7 @@ __webpack_require__(3);
 
 
 /***/ }),
-/* 25 */
+/* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*__wc__loader*/
@@ -5412,7 +5440,7 @@ __webpack_require__(3);
 
 
 /***/ }),
-/* 26 */
+/* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*__wc__loader*/
@@ -5548,7 +5576,7 @@ __webpack_require__(3);
 
 
 /***/ }),
-/* 27 */
+/* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*__wc__loader*/
@@ -5829,13 +5857,13 @@ __webpack_require__(0);
 
 
 /***/ }),
-/* 28 */
+/* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*__wc__loader*/
 __webpack_require__(0);
 
-__webpack_require__(1);
+__webpack_require__(2);
 
 __webpack_require__(5);
 
@@ -6452,13 +6480,13 @@ __webpack_require__(7);
 
 
 /***/ }),
-/* 29 */
+/* 33 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*__wc__loader*/
 __webpack_require__(0);
 
-__webpack_require__(1);
+__webpack_require__(2);
 
 
 (function() {
@@ -6934,7 +6962,7 @@ __webpack_require__(1);
 
 
 /***/ }),
-/* 30 */
+/* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*__wc__loader*/
@@ -7207,7 +7235,7 @@ __webpack_require__(11);
 
 
 /***/ }),
-/* 31 */
+/* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*__wc__loader*/
@@ -7909,7 +7937,7 @@ __webpack_require__(9);
 
 
 /***/ }),
-/* 32 */
+/* 36 */
 /***/ (function(module, exports) {
 
 /*__wc__loader*/!function(a){var b="<style>ace-editor{display:block;}</style>\n\n";if(a.head){var c=a.head,d=a.createElement("div");for(d.innerHTML=b;d.children.length>0;)c.appendChild(d.children[0])}else a.write(b)}(document);
@@ -7975,7 +8003,7 @@ __webpack_require__(9);
 
 
 /***/ }),
-/* 33 */
+/* 37 */
 /***/ (function(module, exports) {
 
 /*__wc__loader*/!function(a){var b="<dom-module id=\"zoomable-image\">\n    <template>\n        <style>:host{display:block;position:relative;}#proxy-image{display:block;visibility:hidden;}#zoom-container{width:100%;height:100%;position:absolute;overflow:hidden;top:0;left:0;}#zoom-image{position:absolute;}</style>\n\n        \n        <img id=\"proxy-image\" src=\"[[src]]\">\n\n        <div id=\"zoom-container\">\n            <img id=\"zoom-image\" src=\"[[src]]\" style=\"[[_getStyle(scale, xOffset, yOffset)]]\" on-mousemove=\"_imageMouseMoveHandler\">\n        </div>\n    </template>\n</dom-module>\n\n";if(a.body){var c=a.body,d=a.createElement("div");for(d.innerHTML=b;d.children.length>0;)c.appendChild(d.children[0])}else a.write(b)}(document);
@@ -8133,7 +8161,7 @@ __webpack_require__(9);
 
 
 /***/ }),
-/* 34 */
+/* 38 */
 /***/ (function(module, exports) {
 
 /*__wc__loader*/!function(a){var b="<dom-module id=\"image-magnifier\">\n    <template>\n        <style>:host{display:block;position:absolute;pointer-events:none;}#image-magnifier{right:0;top:0;position:absolute;z-index:1000;width:90px;height:90px;pointer-events:none;}#magnifier-container{width:80px;height:80px;border:5px solid white;border-radius:100px;overflow:hidden;background:#111;position:absolute;}#magnifier-container img{position:relative;image-rendering:pixelated;}#image-magnifier:before{content:\"\";width:30px;height:30px;top:7px;right:7px;position:absolute;background:white;}#pixel-outline{position:absolute;border:1px solid white;/* -1px on each side for the outline */ width:18px;height:18px;top:30px;left:30px;z-index:1000;opacity:0.5;}zoomable-image{position:absolute;image-rendering:pixelated;}</style>\n\n        <div id=\"image-magnifier\">\n            <div id=\"magnifier-container\">\n                <div id=\"pixel-outline\"></div>\n                <zoomable-image src=\"[[src]]\" scale=\"[[scale]]\" x-offset=\"[[_toOffset(xPixel)]]\" y-offset=\"[[_toOffset(yPixel)]]\" style=\"[[_getOffsetStyle(scale)]]\"></zoomable-image>\n            </div>\n        </div>\n    </template>\n</dom-module>\n\n";if(a.body){var c=a.body,d=a.createElement("div");for(d.innerHTML=b;d.children.length>0;)c.appendChild(d.children[0])}else a.write(b)}(document);
@@ -8191,7 +8219,7 @@ __webpack_require__(9);
 
 
 /***/ }),
-/* 35 */
+/* 39 */
 /***/ (function(module, exports) {
 
 /*__wc__loader*/!function(a){var b="<dom-module id=\"shader-editor\">\n    <template>\n        <style type=\"text/css\">#container{display:flex;height:100%;}shader-preview{flex:1;max-width:400px;background:#111;color:white;}#editors{height:100%;display:flex;flex-direction:column;flex:2;}ace-editor{flex:1;}h5{padding:5px;margin:0;color:white;background:#272822;font-size:12px;}</style>\n        <div id=\"container\">\n            <div id=\"editors\">\n                <h5>Vertex Shader</h5>\n                <ace-editor value=\"{{ vertexShader }}\" annotations=\"[[ _errorsToAnnotations(vertexErrors) ]]\" type=\"glsl\"></ace-editor>\n                \n                <h5>Fragment Shader</h5>\n                <ace-editor value=\"{{ fragmentShader }}\" annotations=\"[[ _errorsToAnnotations(fragmentErrors) ]]\" type=\"glsl\"></ace-editor>\n            </div>\n            <shader-preview vertex-shader=\"[[ vertexShader ]]\" vertex-errors=\"{{ vertexErrors }}\" fragment-shader=\"[[ fragmentShader ]]\" fragment-errors=\"{{ fragmentErrors }}\"></shader-preview>\n        </div>\n    </template>\n</dom-module>\n";if(a.body){var c=a.body,d=a.createElement("div");for(d.innerHTML=b;d.children.length>0;)c.appendChild(d.children[0])}else a.write(b)}(document);
@@ -8249,12 +8277,12 @@ __webpack_require__(9);
 
 
 /***/ }),
-/* 36 */
+/* 40 */
 /***/ (function(module, exports) {
 
-/*__wc__loader*/!function(a){var b="<dom-module id=\"shader-preview\">\n    <template>\n        <style type=\"text/css\">#container{display:flex;flex-direction:column;width:100%;height:100%;}#target{width:100%;image-rendering:pixelated;}image-magnifier{visibility:hidden;}#debug-list{display:flex;flex-wrap:wrap;width:100%;overflow-y:auto;}#debug-list .shader{flex:1;min-width:100px;max-width:200px;transition:opacity .25s ease;}#debug-list:hover .shader{opacity:0.25;}#debug-list:hover .shader:hover{opacity:1;}#debug-list .name{text-align:center;font-weight:900;font-size:14px;font-style:italic;white-space:pre;overflow:hidden;text-overflow:ellipsis;opacity:0.75;}#local-variables-list{padding:10px;overflow:hidden;}#local-variables-list .data{display:flex;padding:5px 10px;}#local-variables-list .data span{flex:1;font-size:14px;font-weight:900;}#local-variables-list .data .name{flex:2;opacity:0.75;white-space:pre;overflow:hidden;text-overflow:ellipsis;}#debug-list .shader img{width:100%;}.header{font-weight:bold;padding:15px;}::-webkit-scrollbar{width:5px;position:absolute;}::-webkit-scrollbar-thumb{border-radius:5px;background-color:rgba(255,255,255,0.2);}[hidden]{display:none !important;}</style>\n        \n        <image-magnifier scale=\"20\" src=\"[[_primaryImageSrc]]\"></image-magnifier>\n\n        <div id=\"container\">\n            <zoomable-image id=\"target\" src=\"[[_primaryImageSrc]]\" max-scale=\"10\" on-mouseenter=\"_imageMouseEnterHandler\" on-mousemove=\"_imageMouseMoveHandler\" on-mouseleave=\"_imageMouseLeaveHandler\" clamp=\"\"></zoomable-image>\n            \n            <div class=\"header\">Local Fragment Shader Variables</div>\n            <div id=\"debug-list\" hidden$=\"[[_exists(_localVariables)]]\">\n                <template is=\"dom-repeat\" items=\"[[_images]]\">\n                    <div class=\"shader\" active$=\"[[_equals(index,_activeImage)]]\" on-click=\"_debugImageClickHandler\">\n                        <div class=\"name\">[[item.type]] [[item.name]]</div>\n                        <img src$=\"[[item.src]]\">\n                    </div>\n                </template>\n            </div>\n\n            <div id=\"local-variables-list\" hidden$=\"[[!_exists(_localVariables)]]\">\n                <template is=\"dom-repeat\" items=\"[[_localVariables]]\">\n                    <div class=\"data\">\n                        <span class=\"name\">[[item.type]] [[item.name]]</span>\n                        <span>[[item.data.0]]</span>\n                        <span>[[item.data.1]]</span>\n                        <span>[[item.data.2]]</span>\n                        <span>[[item.data.3]]</span>\n                    </div>\n                </template>\n            </div>\n        </div>\n    </template>\n</dom-module>\n";if(a.body){var c=a.body,d=a.createElement("div");for(d.innerHTML=b;d.children.length>0;)c.appendChild(d.children[0])}else a.write(b)}(document);
+/*__wc__loader*/!function(a){var b="<dom-module id=\"shader-preview\">\n    <template>\n        <style type=\"text/css\">#container{display:flex;flex-direction:column;width:100%;height:100%;}#target{width:100%;image-rendering:pixelated;}image-magnifier{visibility:hidden;}#debug-list{display:flex;flex-wrap:wrap;width:100%;overflow-y:auto;}#debug-list .shader{flex:1;min-width:100px;max-width:200px;transition:opacity .25s ease;}#debug-list:hover .shader{opacity:0.25;}#debug-list:hover .shader:hover{opacity:1;}#debug-list .name{text-align:center;font-weight:900;font-size:14px;font-style:italic;white-space:pre;overflow:hidden;text-overflow:ellipsis;opacity:0.75;}#local-variables-list{padding:10px;overflow:hidden;}#local-variables-list .data{display:flex;padding:5px 10px;}#local-variables-list .data span{flex:1;font-size:14px;font-weight:900;}#local-variables-list .data .name{flex:2;opacity:0.75;white-space:pre;overflow:hidden;text-overflow:ellipsis;font-style:italic;}#debug-list .shader img{width:100%;}.header{font-weight:bold;padding:15px;}::-webkit-scrollbar{width:5px;position:absolute;}::-webkit-scrollbar-thumb{border-radius:5px;background-color:rgba(255,255,255,0.2);}[hidden]{display:none !important;}#header{display:flex;}#header .name{flex:1;font-weight:bold;padding:5px;display:inline-block;}#header .shape{padding:4px;opacity:0.5;transition:opacity .25s ease;}#header .shape:hover{opacity:1;}#header .shape[shape=\"plane\"]:before,#header .shape[shape=\"sphere\"]:before{content:'';width:18px;height:18px;background:white;display:block;}#header .shape[shape=\"sphere\"]:before{border-radius:100px;}#header .shape[shape=\"cube\"]:before{content:'cube';font-weight:bold;}</style>\n        \n        <image-magnifier scale=\"20\" src=\"[[_primaryImageSrc]]\"></image-magnifier>\n\n        <div id=\"container\">\n            <div id=\"header\">\n                <span class=\"name\">[[_getName(_images.*, _activeImage)]]</span>\n                <span class=\"shape\" on-click=\"_setShapeHandler\" shape=\"cube\" title=\"cube\"></span>\n                <span class=\"shape\" on-click=\"_setShapeHandler\" shape=\"sphere\" title=\"sphere\"></span>\n                <span class=\"shape\" on-click=\"_setShapeHandler\" shape=\"plane\" title=\"plane\"></span>\n            </div>\n            <zoomable-image id=\"target\" src=\"[[_primaryImageSrc]]\" max-scale=\"10\" on-mouseenter=\"_imageMouseEnterHandler\" on-mousemove=\"_imageMouseMoveHandler\" on-mouseleave=\"_imageMouseLeaveHandler\" clamp=\"\"></zoomable-image>\n            \n            <div class=\"header\">Local Fragment Shader Variables</div>\n            <div id=\"debug-list\" hidden$=\"[[_exists(_localVariables)]]\">\n                <template is=\"dom-repeat\" items=\"[[_images]]\">\n                    <div class=\"shader\" active$=\"[[_equals(index,_activeImage)]]\" on-click=\"_debugImageClickHandler\">\n                        <div class=\"name\">[[item.type]] [[item.name]]</div>\n                        <img src$=\"[[item.src]]\">\n                    </div>\n                </template>\n            </div>\n\n            <div id=\"local-variables-list\" hidden$=\"[[!_exists(_localVariables)]]\">\n                <template is=\"dom-repeat\" items=\"[[_localVariables]]\">\n                    <div class=\"data\">\n                        <span class=\"name\">[[item.type]] [[item.name]]</span>\n                        <span>[[item.data.0]]</span>\n                        <span>[[item.data.1]]</span>\n                        <span>[[item.data.2]]</span>\n                        <span>[[item.data.3]]</span>\n                    </div>\n                </template>\n            </div>\n        </div>\n    </template>\n</dom-module>\n";if(a.body){var c=a.body,d=a.createElement("div");for(d.innerHTML=b;d.children.length>0;)c.appendChild(d.children[0])}else a.write(b)}(document);
 
-    class ShaderPreview extends Polymer.Element {
+    class ShaderPreview extends Mixin(Polymer.Element, Debouncer) {
         static get is() { return 'shader-preview' }
 
         static get properties() {
@@ -8307,6 +8335,12 @@ __webpack_require__(9);
                 _localVariables: {
                     type: Array,
                     value: null
+                },
+
+                _displayGeometry: {
+                    type: String,
+                    value: 'sphere',
+                    observer: '_displayGeometryObserver'
                 }
             }
         }
@@ -8320,7 +8354,7 @@ __webpack_require__(9);
             super.ready()
 
             const scene = new THREE.Scene()
-            const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
+            const renderer = new THREE.WebGLRenderer({ antialias: false, alpha: true })
             renderer.setPixelRatio(window.devicePixelRatio)
             renderer.setSize(400, 400)
             renderer.setClearColor(0x000000, 0)
@@ -8329,8 +8363,13 @@ __webpack_require__(9);
             camera.position.z = 10
             scene.add(camera)
 
-            const mesh = new THREE.Mesh(new THREE.SphereGeometry( 5, 100, 100 ), null )
-            scene.add( mesh );
+            const meshes = {
+                cube: new THREE.Mesh(new THREE.BoxGeometry( 5, 5, 5, 50, 50, 50 ), null ),
+                plane: new THREE.Mesh(new THREE.PlaneGeometry( 5, 5, 100, 100 ), null ),
+                // sphere: new THREE.Mesh(new THREE.SphereGeometry( 5, 100, 100 ), null ),
+                sphere: new THREE.Mesh(new THREE.IcosahedronGeometry(5, 5), null),
+            }
+            scene.add( meshes[this._displayGeometry] );
             scene.add(new THREE.AmbientLight(0x222222))
             
             const dl = new THREE.DirectionalLight( 0xffffff, 0.5 );
@@ -8350,7 +8389,7 @@ __webpack_require__(9);
             this._renderer = renderer
             this._scene = scene
             this._camera = camera
-            this._mesh = mesh
+            this._meshes = meshes
 
             this._render()
         }
@@ -8395,9 +8434,15 @@ __webpack_require__(9);
                     [
                         THREE.UniformsLib["lights"]
                     ]),
-                lights: true
+                lights: true,
+                side: THREE.DoubleSide
             })
             return mat
+        }
+
+        _getName(imgbase, index) {
+            const img = imgbase.base[index]
+            return img ? img.name : ''
         }
 
         // Private Functions
@@ -8431,7 +8476,7 @@ __webpack_require__(9);
 
             // assign the new shaders to the images being rendered
             this._shaders.forEach((s, i) => {
-                if (activeOnly && i !== 0) return
+                if (activeOnly && i !== this._activeImage) return
                     
                 const fs = s.fragmentShader
                 const vs = s.vertexShader
@@ -8440,7 +8485,7 @@ __webpack_require__(9);
                 if (this.fragmentErrors || this.vertexErrors) {
                     this.set(`${setpref}.src`, '')
                 } else {
-                    this._mesh.material = this._images[i].material
+                    this._meshes[this._displayGeometry].material = this._images[i].material
                     this._renderer.render(this._scene, this._camera)
                     this.set(`${setpref}.src`, this._renderer.domElement.toDataURL('image/png'))
 
@@ -8488,6 +8533,10 @@ __webpack_require__(9);
 
         _debugImageClickHandler(e) {
             this._activeImage = e.model.index
+        }
+
+        _setShapeHandler(e) {
+            this._displayGeometry = e.target.getAttribute('shape')
         }
 
         // Computed Variables
@@ -8538,6 +8587,16 @@ __webpack_require__(9);
                 item.material.fragmentShader = s.fragmentShader
                 item.material.needsUpdate = true
             })
+
+            this._render(true)
+            this.debounce('render-all-shader-updates', () => this._render(), 500)
+        }
+
+        _displayGeometryObserver(newgeom, oldgeom) {
+            if (!this._meshes) return
+
+            this._scene.remove(this._meshes[oldgeom])
+            this._scene.add(this._meshes[newgeom])
 
             this._render()
         }
