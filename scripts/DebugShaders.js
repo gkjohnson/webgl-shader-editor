@@ -2,6 +2,7 @@ DebugShaders = {}
 
 ;(function() {
 
+    const NEGATE_UNIFORM = '_negate_'
     const variableRegex = /((((precision|varying|uniform|attribute)\s+)?)((highp|mediump|lowp)\s+)?)(vec4|vec3|vec2|float|int|uint|bool)\s+([A-Za-z0-9]+)/
     const canvas = document.createElement('canvas')
     const ctx = canvas.getContext('2d')
@@ -19,20 +20,22 @@ DebugShaders = {}
             .replace(/void\s+main\s*\(\)(\s|\n)*{/, 'void main() {')
     }
 
-    const toGlFragColorLine = (type, name, negate) => {
+    const toGlFragColorLine = (type, name) => {
         let r = 0
         let g = 0
         let b = 0
         let a = 1
         
+        const neg = `(${NEGATE_UNIFORM} ? -1.0 : 1.0)`
+
         if (/^vec/.test(type)) {
             // TODO: Pack these more so more of
             // the data can be read back out, otherwise
             // they're clamped from 0 to 1.0
-            r = `${name}.r`
-            g = `${name}.g`
-            if (/^vec(3|4)/.test(type)) b = `${name}.b`
-            if (/^vec4/.test(type)) a = `${name}.a`
+            r = `${name}.r * ${neg}`
+            g = `${name}.g * ${neg}`
+            if (/^vec(3|4)/.test(type)) b = `${name}.b * ${neg}`
+            if (/^vec4/.test(type)) a = `${name}.a * ${neg}`
         }
         else if(type === 'bool') {
             r = `${name} ? 1 : 0`
@@ -41,10 +44,10 @@ DebugShaders = {}
             a = r
         }
         else if(/^(int|uint)/.test(type)) {
-            r = `float((${name} << 0 ) & 0xFF) / 0xFF`
-            g = `float((${name} << 8 ) & 0xFF) / 0xFF`
-            b = `float((${name} << 16) & 0xFF) / 0xFF`
-            a = `float((${name} << 24) & 0xFF) / 0xFF`
+            r = `float(((${name} * int(${neg})) << 0 ) & 0xFF) / 0xFF`
+            g = `float(((${name} * int(${neg})) << 8 ) & 0xFF) / 0xFF`
+            b = `float(((${name} * int(${neg})) << 16) & 0xFF) / 0xFF`
+            a = `float(((${name} * int(${neg})) << 24) & 0xFF) / 0xFF`
         }
         else if(type === 'float') {
             // TODO : Pack this into bytes so we can
@@ -52,9 +55,7 @@ DebugShaders = {}
             r = `${name}`
         }
 
-        let res = negate ? `${name}=-${name};\n` : ''
-        res += `gl_FragColor = vec4(${r},${g},${b},${a});`
-        return res
+        return `gl_FragColor = vec4(${r},${g},${b},${a});`
     }
 
     DebugShaders.enumerate = (vs, fs, negate = false) => {
@@ -107,6 +108,12 @@ DebugShaders = {}
                 })
             })
 
+        for(let i in shaders) {
+            shaders[i].fragmentShader = `
+            uniform bool ${NEGATE_UNIFORM};
+            ${shaders[i].fragmentShader}
+            `
+        }
 
         return shaders
     }

@@ -344,7 +344,10 @@
             const mat = new THREE.ShaderMaterial({
                 uniforms: THREE.UniformsUtils.merge(
                     [
-                        THREE.UniformsLib["lights"]
+                        THREE.UniformsLib["lights"],
+                        {
+                            _negate_: { value: false }
+                        }
                     ]),
                 lights: true,
                 side: THREE.DoubleSide
@@ -398,8 +401,14 @@
                     this.set(`${setpref}.src`, '')
                 } else {
                     this._meshes[this._displayGeometry].material = this._images[i].material
+                    
+                    this._images[i].material.uniforms._negate_.value = false
                     this._renderer.render(this._scene, this._camera)
                     this.set(`${setpref}.src`, this._renderer.domElement.toDataURL('image/png'))
+
+                    this._images[i].material.uniforms._negate_.value = true
+                    this._renderer.render(this._scene, this._camera)
+                    this.set(`${setpref}.negsrc`, this._renderer.domElement.toDataURL('image/png'))
 
                     // only check for errors on the first go because thats
                     // the one that the user is writing
@@ -407,6 +416,7 @@
                 }
 
                 this._images[i].img.src = this._images[i].src
+                this._images[i].negimg.src = this._images[i].negsrc
             })
         }
 
@@ -428,6 +438,12 @@
             this._images.forEach(item => {
                 const px = DebugShaders.readPixel(item.img, e.pixel.x, e.pixel.y)
                 const data = DebugShaders.pixelToArray(px, item.type)
+                
+                const negpx = DebugShaders.readPixel(item.negimg, e.pixel.x, e.pixel.y)
+                const negdata = DebugShaders.pixelToArray(negpx, item.type)
+
+                for(let i in data) data[i] = data[i] || -negdata[i]
+
                 arr.push({
                     type: item.type,
                     name: item.name,
@@ -481,8 +497,10 @@
             while (this._images.length < this._shaders.length) {
                 this.push('_images', {
                     img: new Image(),
+                    negimg: new Image(),
                     material: this._getMaterial(),
                     src: '',
+                    negsrc: '',
                     name: '',
                     type: ''
                 })
