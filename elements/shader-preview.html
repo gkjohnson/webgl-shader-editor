@@ -74,6 +74,7 @@
                 white-space: pre;
                 overflow: hidden;
                 text-overflow: ellipsis;
+                font-style: italic;
             }
 
             #debug-list .shader img {
@@ -100,6 +101,46 @@
             [hidden] {
                 display: none !important;
             }
+
+            #header {
+                display: flex;
+            }
+
+            #header .name {
+                flex: 1;
+                font-weight: bold;
+                padding: 5px;
+                display: inline-block;
+            }
+
+            #header .shape {
+                padding: 4px;
+                opacity: 0.5;
+                transition: opacity .25s ease;
+            }
+
+            #header .shape:hover {
+                opacity: 1;
+            }
+
+            #header .shape[shape="plane"]:before,
+            #header .shape[shape="sphere"]:before {
+                content: '';
+                width:18px;
+                height:18px;
+                background: white;
+                display: block;
+            }
+            
+            #header .shape[shape="sphere"]:before {
+                border-radius: 100px;
+            }
+
+            #header .shape[shape="cube"]:before {
+                content: 'cube';
+                font-weight: bold;
+            }
+
         </style>
         
         <image-magnifier
@@ -108,6 +149,12 @@
         ></image-magnifier>
 
         <div id="container">
+            <div id="header">
+                <span class="name">[[_getName(_images.*, _activeImage)]]</span>
+                <span class="shape" on-click="_setShapeHandler" shape="cube" title="cube"></span>
+                <span class="shape" on-click="_setShapeHandler" shape="sphere" title="sphere"></span>
+                <span class="shape" on-click="_setShapeHandler" shape="plane" title="plane"></span>
+            </div>
             <zoomable-image
                 id="target"
                 src="[[_primaryImageSrc]]"
@@ -305,6 +352,11 @@
             return mat
         }
 
+        _getName(imgbase, index) {
+            const img = imgbase.base[index]
+            return img ? img.name : ''
+        }
+
         // Private Functions
         _checkForError(mat) {
             const diag = mat.program.diagnostics
@@ -393,6 +445,10 @@
 
         _debugImageClickHandler(e) {
             this._activeImage = e.model.index
+        }
+
+        _setShapeHandler(e) {
+            this._displayGeometry = e.target.getAttribute('shape')
         }
 
         // Computed Variables
