@@ -194,7 +194,7 @@
     </template>
 </dom-module>
 <script type="text/javascript">
-    class ShaderPreview extends Polymer.Element {
+    class ShaderPreview extends Mixin(Polymer.Element, Debouncer) {
         static get is() { return 'shader-preview' }
 
         static get properties() {
@@ -500,7 +500,8 @@
                 item.material.needsUpdate = true
             })
 
-            this._render()
+            this._render(true)
+            this.debounce('render-all-shader-updates', () => this._render(), 500)
         }
 
         _displayGeometryObserver(newgeom, oldgeom) {
