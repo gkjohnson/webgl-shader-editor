@@ -123,22 +123,32 @@
                 opacity: 1;
             }
 
-            #header .shape[shape="plane"]:before,
-            #header .shape[shape="sphere"]:before {
+            #header .shape:before {
                 content: '';
                 width:18px;
                 height:18px;
-                background: white;
                 display: block;
+            }
+
+            #header .shape[shape="plane"]:before,
+            #header .shape[shape="sphere"]:before {
+                background: white;
             }
             
             #header .shape[shape="sphere"]:before {
                 border-radius: 100px;
             }
 
+            #header .shape[shape="plane"]:before {
+                width: 16px;
+                height: 16px;
+                margin: 1px;
+            }
+
             #header .shape[shape="cube"]:before {
-                content: 'cube';
-                font-weight: bold;
+                background-image: url('../images/cube-icon.png');
+                background-size: cover;
+
             }
 
         </style>
