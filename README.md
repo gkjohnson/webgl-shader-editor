@@ -36,9 +36,7 @@ return;
 val.r = 0;
 ```
 
-
 ## TODO
-- [ ] Investigate ways to read the pixel data back with higher precision
 - [ ] Update UI so it's easier to inspect (local variables not persistent, etc)
 - [ ] Add some basic built in textures
 - [ ] Add the fragment output after the last modification of a variable so we can see the result after the full shader has run
