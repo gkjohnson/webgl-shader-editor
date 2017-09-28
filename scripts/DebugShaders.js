@@ -6,8 +6,8 @@ DebugShaders = {}
     const variableRegex = /((((precision|varying|uniform|attribute)\s+)?)((highp|mediump|lowp)\s+)?)(vec4|vec3|vec2|float|int|uint|bool)\s+([A-Za-z0-9]+)/
     const canvas = document.createElement('canvas')
     const ctx = canvas.getContext('2d')
-    canvas.width = 100
-    canvas.height = 100
+    canvas.width = 1
+    canvas.height = 1
 
     const normalize = shader => {
         return shader

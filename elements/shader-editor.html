@@ -6,18 +6,18 @@
                 height: 100%;
             }
 
-            shader-preview {
-                flex: 1;
-                max-width: 400px;
-                background: #111;
-                color: white;
-            }
-
             #editors {
                 height: 100%;
                 display: flex;
                 flex-direction: column;
                 flex: 2;
+            }
+
+            shader-preview {
+                flex: 1;
+                max-width: 400px;
+                background: #111;
+                color: white;
             }
 
             ace-editor {
@@ -58,29 +58,36 @@
     </template>
 </dom-module>
 <script type="text/javascript">
+    // shader-editor element
+    // Element that contains a vertex and fragment shader editor
+    // and preview panel
     class ShaderEditor extends Polymer.Element {
         static get is() { return 'shader-editor' }
 
         static get properties() {
             return {
+                // The vertex shader value being editted
                 vertexShader: {
                     type: String,
                     value: '',
                     notify: true
                 },
 
+                // The fragment shader value being editted
                 fragmentShader: {
                     type: String,
                     value: '',
                     notify: true,
                 },
 
+                // The errors from compiling the vertex shader
                 vertexErrors: {
                     type: Array,
                     value: null,
                     notify: true
                 },
 
+                // The errors from compiling the fragment shader
                 fragmentErrors: {
                     type: Array,
                     value: null,
@@ -88,8 +95,6 @@
                 }
             }
         }
-
-        _attachDom(d) { this.appendChild(d) }
 
         // Utilities
         _errorsToAnnotations(e) {
@@ -104,6 +109,13 @@
                 }
             })
         }
+
+        // Overrides
+        // This does not use shadow dom because child
+        // the ace-editor child elements require that
+        // they be open
+        _attachDom(d) { this.appendChild(d) }
+
     }
  
     customElements.define(ShaderEditor.is, ShaderEditor)

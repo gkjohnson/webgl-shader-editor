@@ -23,8 +23,6 @@
             #zoom-image {
                 position: absolute;
             }
-
-
         </style>
 
         <!--
@@ -48,11 +46,29 @@
 </dom-module>
 
 <script type="text/javascript">
+    // zoomable-image Element
+    // <img>-like element that allows for pixel-precise zooming and
+    // panning for closer image detail inspection
+
+    // Scroll wheel will zoom and right click will pan
+
+    // TODO: Events are registered on the document in "ready", but never
+    // removed. They should instead be registered in "attached" and removed
+    // in "detached" so the element can be cleanly removed from the page
+
+    // TODO: If you're dragging and you hit the edge of where the image 
+    // can be dragged, it doesn't "spring" back and behaves as though
+    // it was grabbed where your mouse has now drifted to, which feels a bit
+    // odd. The offsets here should be done relative to where the mouse drag
+    // began
+
+    // TODO: Move the pixel-hover event broadcast to here from shader-preview.html
     class ZoomableImage extends Polymer.Element {
         static get is() { return 'zoomable-image' }
 
         static get properties() {
             return {
+                // The factor to zoom in by
                 scale: {
                     type: Number,
                     value: 1,
@@ -60,21 +76,28 @@
                     observer: '_scaleObserver'
                 },
 
+                // The maximum scale allowed
                 maxScale: {
                     type: Number,
                     value: null
                 },
 
+                // Whether or not to clamp to pixel-perfect
+                // aligned offsets
                 clamp: {
                     type: Boolean,
                     value: false
                 },
 
+                // The source of the image to display
                 src: {
                     type: String,
                     value: ''
                 },
 
+                // The pixel offset for the image from the
+                // top left that the image has been panned by
+                // This value is not affected by scale
                 xOffset: {
                     type: Number,
                     value: 0,
@@ -87,6 +110,7 @@
                     notify: true
                 },
 
+                // Whether or not the image is currently being dragged
                 _dragging: {
                     type: Boolean,
                     value: false
@@ -102,6 +126,7 @@
         ready() {
             super.ready()
 
+            // Zoom in on scroll wheel
             this.addEventListener('wheel', e => {
                 const oldScale = this.scale
 
@@ -123,6 +148,7 @@
                 this.yOffset += ypxdelta
             })
 
+            // Begin drag
             let lastPageX, lastPageY
             this.addEventListener('mousedown', e => {
                 if (e.which !== 2) return
@@ -132,11 +158,7 @@
                 lastPageY = e.pageY
             })
 
-            document.addEventListener('mouseup', e => {
-                if (e.which !== 2) return
-                this._dragging = false
-            })
-
+            // Allow for dragging across the page
             document.addEventListener('mousemove', e => {
                 if (!this._dragging) return
 
@@ -149,9 +171,16 @@
                 lastPageX = e.pageX
                 lastPageY = e.pageY
             })
+
+            // Drag end
+            document.addEventListener('mouseup', e => {
+                if (e.which !== 2) return
+                this._dragging = false
+            })
         }
 
         // Utilities
+        // return the image style with the given offset
         _getStyle(s, x, y) {
             x = Math.floor(x)            
             y = Math.floor(y)            
@@ -163,14 +192,20 @@
         }
 
         // Observers
+        // clamp the scale between 1 and maxScale
         _scaleObserver(s) {
             s = Math.max(1, Math.min(this.maxScale || Infinity, s))
             if (this.scale !== s) this.scale = s
         }
 
+        // floor the pixel offsets so that they align to the
+        // precise pixel positions rather than allowing
+        // the pan to sit between pixels
         _offsetObserver(x, y, s, src, clamp) {
             if (!clamp) return
 
+            // use our proxy image, which auto-adjusts its size,
+            // to get the initial image size
             const prox = this.shadowRoot.querySelector('#proxy-image')
 
             const maxX = prox.width - prox.width / s

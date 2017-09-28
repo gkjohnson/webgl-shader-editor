@@ -84,36 +84,43 @@
 </dom-module>
 
 <script type="text/javascript">
+    // image-magnifier Element
+    // A magnifying glass that zooms in to an image to give
+    // pixel detail
+
+    // TODO: allow for dynamic setting of the size of the magnifying
+    // glass. The style limits it to 80x80 at the moment
+    // TODO: Zoom is not very flexible, either. The styles basically dictate
+    // that we expect a 20x zoom
     class ImageMagnifier extends Polymer.Element {
         static get is() { return 'image-magnifier' }
 
         static get properties() {
             return {
+                // The zoom factor on the image
                 scale: {
                     type: Number,
-                    value: 1,
-                    notify: true,
+                    value: 1
                 },
 
+                // The image source to display
                 src: {
                     type: String,
                     value: ''
                 },
 
+                // The x pixel to zoom in on
                 xPixel: {
                     type: Number,
                     value: 0
                 },
 
+                // The y pixel to zoom in on
                 yPixel: {
                     type: Number,
                     value: 0
                 }
             }
-        }
-
-        static get observers() {
-            return ['_offsetObserver(xPixel, yPixel)']
         }
 
         // Utilities
@@ -124,11 +131,6 @@
         _getOffsetStyle(s) {
             const offset = -s / 2
             return `top:${offset}px; left:${offset}px;`
-        }
-        
-        // Observers
-        _offsetObserver(x, y, s, src) {
-
         }
     }
 

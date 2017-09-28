@@ -1,12 +1,22 @@
-
+<!--
+    Needed because the element cannot use
+    scoped styles because there is no shadow
+    dom being used
+-->
 <style> ace-editor { display: block; } </style>
 
 <script type="text/javascript">
+    // ace-editor element
+    // Element that wraps ace editor and allows for binding to
+    // the `value` field
+    // The element uses the body of the tag as the defaul value
+    // if no value is specified otherwise
     class AceEditor extends Polymer.Element {
         static get is() { return 'ace-editor' }
 
         static get properties() {
             return {
+                // The of the editor
                 value: {
                     type: String,
                     value: '',
@@ -14,12 +24,14 @@
                     observer: '_valueObserver'
                 },
 
+                // The ace annotations to display
                 annotations: {
                     type: Array,
                     value: () => [],
                     observer: '_annotationsObserver'
                 },
 
+                // Handle to the editor
                 _editor: {
                     type: Object,
                     value: null                    
@@ -29,17 +41,23 @@
 
         /* Lifecycle */
         ready() {
+            // initialize the value before "ready()" is called
+            // to get the initial tag content
             this.value = this.innerText || this.value
+            
+            // Basic editor init
             super.ready()
             this._editor = ace.edit(this)
             this._editor.setTheme("ace/theme/monokai")
             this._editor.getSession().setMode("ace/mode/glsl")
             this._editor.setShowPrintMargin(false)
 
+            // Set the value and initial selection and annotation state
             this._editor.setValue(this.value)
             this._editor.session.setAnnotations(this.annotations)
             this._editor.selection.clearSelection()
 
+            // Bind to the editor changes
             this._editor.on('change', (e, ed) => this.value = ed.getValue())
         }
 
@@ -55,6 +73,8 @@
         }
 
         /* Overrides */
+        // This element is non-shadow-dom because it relies
+        // on styles that ace-editor injects into the page
         _attachDom(d) { this.appendChild(d) }
     }
 

@@ -6,7 +6,7 @@
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css?family=Roboto:100" rel="stylesheet">
 
-    <!-- Scripts -->
+    <!-- Libraries -->
     <script src="./node_modules/@webcomponents/webcomponentsjs/webcomponents-lite.js"></script>
     <script src="./node_modules/ace-builds/src-min/ace.js"></script>
     <script src="./node_modules/three/build/three.js"></script>
@@ -14,13 +14,15 @@
     <script src="./node_modules/@gkjohnson/javascript-utils/Debouncer.js"></script>
     <script src="./node_modules/@gkjohnson/javascript-utils/Mixin.js"  ></script>
 
+    <!-- Scripts -->
     <script src="./scripts/DebugShaders.js"></script>
 
-    <!-- Elements -->
+    <!-- Library Elements -->
     <link rel="import" href="./node_modules/@polymer/polymer/polymer-element.html" />
     <link rel="import" href="./node_modules/@polymer/polymer/lib/elements/dom-if.html"/>
     <link rel="import" href="./node_modules/@polymer/polymer/lib/elements/dom-repeat.html"/>
 
+    <!-- Elements -->
     <link rel="import" href="./elements/ace-editor.html" />
     <link rel="import" href="./elements/zoomable-image.html" />
     <link rel="import" href="./elements/image-magnifier.html" />
@@ -48,7 +50,6 @@
             border-radius: 5px;
             background-color: rgba(255,255,255,0.2);
         }
-
     </style>
 </head>
 <body>
@@ -56,7 +57,7 @@
     <script type="text/javascript">
     
         const se = document.querySelector('shader-editor')
-            const vs = `// Lighting
+        const vs = `// Lighting
 struct DirLight {
     vec3 color;
     vec3 direction;
