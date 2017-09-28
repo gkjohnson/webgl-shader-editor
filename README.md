@@ -40,8 +40,8 @@ val.r = 0;
 - [ ] Update UI so it's easier to inspect (local variables not persistent, etc)
 - [ ] Add some basic built in textures
 - [ ] Add the fragment output after the last modification of a variable so we can see the result after the full shader has run
+- [ ] Add some default uniform variables, such as time, render target size, etc
 
 - [ ] Texture upload
 - [ ] Uniform variable edit UI
 - [ ] Multi-pass shaders, stencil buffer, and screen post-effects
-- [ ] Add some default uniform variables, such as time, render target size, etc
