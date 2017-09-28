@@ -1,6 +1,22 @@
 <dom-module id="shader-preview">
     <template>
         <style type="text/css">
+            ::-webkit-scrollbar
+            {
+                width: 5px;
+                position: absolute;
+            }
+
+            ::-webkit-scrollbar-thumb
+            {
+                border-radius: 5px;
+                background-color: rgba(255,255,255,0.2);
+            }
+
+            [hidden] {
+                display: none !important;
+            }
+        
             #container {
                 display: flex;
                 flex-direction: column;
@@ -84,22 +100,6 @@
             .header {
                 font-weight: bold;
                 padding: 15px;
-            }
-
-            ::-webkit-scrollbar
-            {
-                width: 5px;
-                position: absolute;
-            }
-
-            ::-webkit-scrollbar-thumb
-            {
-                border-radius: 5px;
-                background-color: rgba(255,255,255,0.2);
-            }
-
-            [hidden] {
-                display: none !important;
             }
 
             #header {
@@ -204,29 +204,33 @@
     </template>
 </dom-module>
 <script type="text/javascript">
+    // shader-preview Element
+    // Element to preview, zoom in, and debug shader definitions
     class ShaderPreview extends Mixin(Polymer.Element, Debouncer) {
         static get is() { return 'shader-preview' }
 
         static get properties() {
             return {
+                // vertex shader to preview
                 vertexShader: {
                     type: String,
-                    value: '',
-                    notify: true
+                    value: ''
                 },
 
+                // fragment shader to preview
                 fragmentShader: {
                     type: String,
-                    value: '',
-                    notify: true,
+                    value: ''
                 },
 
+                // vertex shader compilation errors
                 vertexErrors: {
                     type: Array,
                     value: null,
                     notify: true
                 },
 
+                // fragment shader compilation errors
                 fragmentErrors: {
                     type: Array,
                     value: null,

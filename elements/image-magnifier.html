@@ -7,7 +7,7 @@
                 pointer-events: none;
             }
 
-            #image-magnifier {
+            #outline {
                 right: 0;
                 top: 0;
 
@@ -17,8 +17,19 @@
                 height: 90px;
                 pointer-events: none;
             }
+            
+            /* Magnifier Arrow */
+            #outline:before {
+                content: "";
+                width: 30px;
+                height: 30px;
+                top: 7px;
+                right: 7px;
+                position: absolute;
+                background: white;
+            }
 
-            #magnifier-container {
+            #container {
                 width: 80px;
                 height: 80px;
                 border: 5px solid white;
@@ -28,19 +39,9 @@
                 position: absolute;
             }
 
-            #magnifier-container img {
+            #container img {
                 position: relative;
                 image-rendering: pixelated;
-            }
-
-            #image-magnifier:before {
-                content: "";
-                width: 30px;
-                height: 30px;
-                top: 7px;
-                right: 7px;
-                position: absolute;
-                background: white;
             }
 
             #pixel-outline {
@@ -67,8 +68,8 @@
             }
         </style>
 
-        <div id="image-magnifier">
-            <div id="magnifier-container">
+        <div id="outline">
+            <div id="container">
                 <div id="pixel-outline"></div>
                 <zoomable-image
                     src="[[src]]"
@@ -88,10 +89,16 @@
     // A magnifying glass that zooms in to an image to give
     // pixel detail
 
+    // The magnifier points to the top-right of the container. Set
+    // the postion of the <image-magnifier> element to the point
+    // you want it to point to
+
     // TODO: allow for dynamic setting of the size of the magnifying
     // glass. The style limits it to 80x80 at the moment
     // TODO: Zoom is not very flexible, either. The styles basically dictate
     // that we expect a 20x zoom
+    // TODO: Make the positioning smart so will flip sides if it starts
+    // to run off the screen
     class ImageMagnifier extends Polymer.Element {
         static get is() { return 'image-magnifier' }
 
