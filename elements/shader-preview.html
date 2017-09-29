@@ -1,6 +1,7 @@
 <dom-module id="shader-preview">
     <template>
         <style type="text/css">
+            /* Util Classes */
             ::-webkit-scrollbar
             {
                 width: 5px;
@@ -16,7 +17,7 @@
             [hidden] {
                 display: none !important;
             }
-        
+
             #container {
                 display: flex;
                 flex-direction: column;
@@ -33,6 +34,7 @@
                 visibility: hidden;
             }
 
+            /* Debug Shader Displays */
             #debug-list {
                 display: flex;
                 flex-wrap: wrap;
@@ -68,6 +70,7 @@
                 opacity: 0.75;
             }
 
+            /* Local Variables Section */
             #local-variables-list {
                 padding: 10px;
                 overflow: hidden;
@@ -102,6 +105,7 @@
                 padding: 15px;
             }
 
+            /* Header */
             #header {
                 display: flex;
             }
@@ -150,7 +154,6 @@
                 background-size: cover;
 
             }
-
         </style>
         
         <image-magnifier
@@ -237,32 +240,42 @@
                     notify: true
                 },
 
+                // array of shaders to render, including the original
+                // and debug shaders. The original shader is always in
+                // index 0
                 _shaders: {
                     type: Array,
                     value: () => [],
                     computed: '_computeShaders(vertexShader, fragmentShader)'
                 },
 
+                // the objects representing rendered images
                 _images: {
                     type: Array,
                     value: () => []
                 },
 
+                // the index of the currently active image to render
+                // in the primary display spot
                 _activeImage: {
                     type: Number,
                     value: 0
                 },
 
+                // the source of the primary image
                 _primaryImageSrc: {
                     type: String,
                     computed: '_computeImageSrc(_images.*, _activeImage)'
                 },
 
+                // the list of local variable definitions from hovering over
+                // the image
                 _localVariables: {
                     type: Array,
                     value: null
                 },
 
+                // the type of geometry to display
                 _displayGeometry: {
                     type: String,
                     value: 'sphere',
@@ -321,22 +334,12 @@
         }
 
         // Utilities
-        _equals(a,b) {
-            return a === b
-        }
+        _equals(a,b) { return a === b }
 
-        _exists(a) {
-            return !!a
-        }
+        _exists(a) { return !!a }
 
-        _getLogErrors(logs, lineOffset = 0) {
-            return logs
-                .replace(String.fromCharCode(0), '')
-                .trim()
-                .split('\n')
-                .map(line => this._getLogError(line, lineOffset))
-        }
-
+        // parses the log definition from THREE.js to extract
+        // the line number and error
         _getLogError(log, lineOffset = 0) {
             const regex = /^ERROR: ([^:]+):([^:]+)\s*:/
             const matches = log.match(regex)
@@ -354,14 +357,21 @@
             return { row, col, log }
         }
 
+        // parses a set of logs
+        _getLogErrors(logs, lineOffset = 0) {
+            return logs
+                .replace(String.fromCharCode(0), '')
+                .trim()
+                .split('\n')
+                .map(line => this._getLogError(line, lineOffset))
+        }
+
+        // create a new material
         _getMaterial() {
             const mat = new THREE.ShaderMaterial({
-                uniforms: THREE.UniformsUtils.merge(
-                    [
+                uniforms: THREE.UniformsUtils.merge([
                         THREE.UniformsLib["lights"],
-                        {
-                            _negate_: { value: false }
-                        }
+                        { _negate_: { value: false } }
                     ]),
                 lights: true,
                 side: THREE.DoubleSide
@@ -369,12 +379,15 @@
             return mat
         }
 
+        // returns the name for the given image object index
         _getName(imgbase, index) {
             const img = imgbase.base[index]
             return img ? img.name : ''
         }
 
         // Private Functions
+        // reads, parses, and assigns the errors to the error properties
+        // for the given material
         _checkForError(mat) {
             const diag = mat.program.diagnostics
 
@@ -397,6 +410,9 @@
             }
         }
 
+        // Renders all the images and updates the _images array with the new
+        // image information
+        // If `activeOnly` is true, then only the primary image will be rendered
         _render(activeOnly = false) {
             if (!this._renderer) return
 
@@ -435,6 +451,7 @@
         }
 
         // Event Handlers
+        // Mouse hover events for inspecting local variables
         _imageMouseEnterHandler() {
             this.shadowRoot.querySelector('image-magnifier').style.visibility = 'visible'
         }
