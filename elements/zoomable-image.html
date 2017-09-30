@@ -52,6 +52,10 @@
 
     // Scroll wheel will zoom and right click will pan
 
+    // Events
+    // { pixel: { x, y } } is added to the event on mousemove event
+    // to add which pixel is being hovered over
+
     // TODO: Events are registered on the document in "ready", but never
     // removed. They should instead be registered in "attached" and removed
     // in "detached" so the element can be cleanly removed from the page
@@ -61,8 +65,6 @@
     // it was grabbed where your mouse has now drifted to, which feels a bit
     // odd. The offsets here should be done relative to where the mouse drag
     // began
-
-    // TODO: Move the pixel-hover event broadcast to here from shader-preview.html
 
     // TODO: Display the 'pixel-grid' after zooming in a certain amount
     // to better emphasize where pixels begin and end. This can be done
