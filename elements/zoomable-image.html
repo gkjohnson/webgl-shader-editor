@@ -56,10 +56,6 @@
     // { pixel: { x, y } } is added to the event on mousemove event
     // to add which pixel is being hovered over
 
-    // TODO: Events are registered on the document in "ready", but never
-    // removed. They should instead be registered in "attached" and removed
-    // in "detached" so the element can be cleanly removed from the page
-
     // TODO: If you're dragging and you hit the edge of where the image 
     // can be dragged, it doesn't "spring" back and behaves as though
     // it was grabbed where your mouse has now drifted to, which feels a bit
@@ -163,9 +159,11 @@
                 lastPageX = e.pageX
                 lastPageY = e.pageY
             })
+        }
 
+        connectedCallback() {
             // Allow for dragging across the page
-            document.addEventListener('mousemove', e => {
+            this.__mousemovecallback = e => {
                 if (!this._dragging) return
 
                 const deltaX = e.pageX - lastPageX
@@ -176,13 +174,21 @@
 
                 lastPageX = e.pageX
                 lastPageY = e.pageY
-            })
+            }
 
             // Drag end
-            document.addEventListener('mouseup', e => {
+            this.__mouseupcallback = e => {
                 if (e.which !== 2) return
                 this._dragging = false
-            })
+            }
+
+            document.addEventListener('mousemove',  this.__mousemovecallback)
+            document.addEventListener('mouseup',    this.__mouseupcallback)
+        }
+
+        disconnectedCallback() {
+            document.removeEventListener('mousemove',   this.__mousemovecallback)
+            document.removeEventListener('mouseup',     this.__mouseupcallback)
         }
 
         // Utilities
