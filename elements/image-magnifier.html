@@ -12,48 +12,40 @@
                 top: 0;
 
                 position: absolute;
-                z-index: 1000;
-                width: 90px;
-                height: 90px;
                 pointer-events: none;
             }
             
             /* Magnifier Arrow */
-            #outline:before {
+            #container:before {
                 content: "";
-                width: 30px;
-                height: 30px;
-                top: 7px;
-                right: 7px;
+                width: 50%;
+                height: 50%;
+                top: 0;
+                right: 0;
                 position: absolute;
                 background: white;
             }
 
             #container {
-                width: 80px;
-                height: 80px;
                 border: 5px solid white;
-                border-radius: 100px;
-                overflow: hidden;
                 background: #111;
                 position: absolute;
+                right: 0;
+                top: 0;
+                z-index: 1;
             }
 
-            #container img {
+            #image-wrapper {
+                width: 100%;
+                height: 100%;
+                overflow: hidden;
                 position: relative;
-                image-rendering: pixelated;
+                background: black;
             }
 
             #pixel-outline {
                 position: absolute;
                 border: 1px solid white;
-
-                /*
-                    -1px on each side for
-                    the outline
-                */
-                width: 18px;
-                height: 18px;
 
                 top: 30px;
                 left: 30px;
@@ -68,9 +60,18 @@
             }
         </style>
 
-        <div id="outline">
-            <div id="container">
-                <div id="pixel-outline"></div>
+        <div
+            id="container"
+            style$="[[_getContainerStyle(size)]]"
+        >
+            <div
+                id="pixel-outline"
+                style$="[[_getPixelOutlineStyle(size,scale)]]"
+            ></div>
+            <div
+                id="image-wrapper"
+                style$="[[_getBorderRadiusStyle(size)]]"
+            >
                 <zoomable-image
                     src="[[src]]"
                     scale="[[scale]]"
@@ -93,10 +94,6 @@
     // the postion of the <image-magnifier> element to the point
     // you want it to point to
 
-    // TODO: allow for dynamic setting of the size of the magnifying
-    // glass. The style limits it to 80x80 at the moment
-    // TODO: Zoom is not very flexible, either. The styles basically dictate
-    // that we expect a 20x zoom
     // TODO: Make the positioning smart so will flip sides if it starts
     // to run off the screen
     class ImageMagnifier extends Polymer.Element {
@@ -104,6 +101,13 @@
 
         static get properties() {
             return {
+                // The width and height of the magnifying
+                // circle
+                size: {
+                    type: Number,
+                    value: 80
+                },
+
                 // The zoom factor on the image
                 scale: {
                     type: Number,
@@ -138,6 +142,22 @@
         _getOffsetStyle(s) {
             const offset = -s / 2
             return `top:${offset}px; left:${offset}px;`
+        }
+
+        _getContainerStyle(size) {
+            return `width:${size}px; height:${size}px; border-radius:${size}px;`
+        }
+
+        _getPixelOutlineStyle(size, scale) {
+            // -1px on each side for
+            // the outline
+            const dim = scale - 2
+            const offset = (size - scale) / 2
+            return `width:${dim}px; height:${dim}px; top:${offset}px; left:${offset}px;`
+        }
+
+        _getBorderRadiusStyle(size) {
+            return `border-radius:${size}px;`
         }
     }
 
