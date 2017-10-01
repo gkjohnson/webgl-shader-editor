@@ -56,12 +56,6 @@
     // { pixel: { x, y } } is added to the event on mousemove event
     // to add which pixel is being hovered over
 
-    // TODO: If you're dragging and you hit the edge of where the image 
-    // can be dragged, it doesn't "spring" back and behaves as though
-    // it was grabbed where your mouse has now drifted to, which feels a bit
-    // odd. The offsets here should be done relative to where the mouse drag
-    // began
-
     // TODO: Display the 'pixel-grid' after zooming in a certain amount
     // to better emphasize where pixels begin and end. This can be done
     // using overlays gradient overlays
@@ -155,27 +149,27 @@
             super.connectedCallback()
 
             // Begin drag
-            let lastPageX, lastPageY
-            this.__movedowncallback = e => {
+            let stPageX, stPageY
+            let stXOffset, stYOffset
+            this.__mousedowncallback = e => {
                 if (e.which !== 2) return
                 this._dragging = true
                 
-                lastPageX = e.pageX
-                lastPageY = e.pageY
+                stXOffset = this.xOffset
+                stYOffset = this.yOffset
+                stPageX = e.pageX
+                stPageY = e.pageY
             }
 
             // Allow for dragging across the page
             this.__mousemovecallback = e => {
                 if (!this._dragging) return
 
-                const deltaX = e.pageX - lastPageX
-                const deltaY = e.pageY - lastPageY
+                const deltaX = e.pageX - stPageX
+                const deltaY = e.pageY - stPageY
 
-                this.xOffset += deltaX / this.scale
-                this.yOffset += deltaY / this.scale
-
-                lastPageX = e.pageX
-                lastPageY = e.pageY
+                this.xOffset = stXOffset + deltaX / this.scale
+                this.yOffset = stYOffset + deltaY / this.scale
             }
 
             // Drag end
@@ -191,7 +185,7 @@
 
         disconnectedCallback() {
             super.disconnectedCallback()
-            
+
             document.removeEventListener('mousedown',   this.__mousedowncallback)
             document.removeEventListener('mousemove',   this.__mousemovecallback)
             document.removeEventListener('mouseup',     this.__mouseupcallback)
