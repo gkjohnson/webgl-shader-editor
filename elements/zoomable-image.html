@@ -149,19 +149,21 @@
                 this.xOffset += xpxdelta
                 this.yOffset += ypxdelta
             })
+        }
+
+        connectedCallback() {
+            super.connectedCallback()
 
             // Begin drag
             let lastPageX, lastPageY
-            this.addEventListener('mousedown', e => {
+            this.__movedowncallback = e => {
                 if (e.which !== 2) return
                 this._dragging = true
                 
                 lastPageX = e.pageX
                 lastPageY = e.pageY
-            })
-        }
+            }
 
-        connectedCallback() {
             // Allow for dragging across the page
             this.__mousemovecallback = e => {
                 if (!this._dragging) return
@@ -182,11 +184,15 @@
                 this._dragging = false
             }
 
+            this.addEventListener('mousedown',      this.__mousedowncallback)
             document.addEventListener('mousemove',  this.__mousemovecallback)
             document.addEventListener('mouseup',    this.__mouseupcallback)
         }
 
         disconnectedCallback() {
+            super.disconnectedCallback()
+            
+            document.removeEventListener('mousedown',   this.__mousedowncallback)
             document.removeEventListener('mousemove',   this.__mousemovecallback)
             document.removeEventListener('mouseup',     this.__mouseupcallback)
         }
