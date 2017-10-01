@@ -23,6 +23,17 @@
             #zoom-image {
                 position: absolute;
             }
+
+            #grid {
+                width: 200%;
+                height: 200%;
+
+                opacity: 0.1;
+
+                position: absolute;
+                pointer-events: none;
+
+            }
         </style>
 
         <!--
@@ -38,9 +49,13 @@
             <img
                 id="zoom-image"
                 src="[[src]]"
-                style="[[_getStyle(scale, xOffset, yOffset)]]"
+                style="[[_getImageStyle(scale,xOffset,yOffset)]]"
                 on-mousemove="_imageMouseMoveHandler"
             />
+            <div
+                id="grid"
+                style$="[[_getGradientStyle(scale,xOffset,yOffset)]]"
+            ></div>
         </div>
     </template>
 </dom-module>
@@ -52,13 +67,11 @@
 
     // Scroll wheel will zoom and right click will pan
 
+    // A grid representing pixel edges is shown once scale is >= 7
+
     // Events
     // { pixel: { x, y } } is added to the event on mousemove event
     // to add which pixel is being hovered over
-
-    // TODO: Display the 'pixel-grid' after zooming in a certain amount
-    // to better emphasize where pixels begin and end. This can be done
-    // using overlays gradient overlays
     class ZoomableImage extends Polymer.Element {
         static get is() { return 'zoomable-image' }
 
@@ -193,14 +206,25 @@
 
         // Utilities
         // return the image style with the given offset
-        _getStyle(s, x, y) {
-            x = Math.floor(x)            
-            y = Math.floor(y)            
+        _getImageStyle(s, x, y) {
+            x = Math.floor(x)
+            y = Math.floor(y)
             x *= s
             y *= s
             s *= 100
 
             return `width:${s}%; top:${y}px; left:${x}px;`
+        }
+
+        _getGradientStyle(s, x, y) {
+            if (s < 7) return ''
+
+            const gradDef =`white 0, white 1px, transparent 1px, transparent ${s}px`
+            return `
+                background:
+                repeating-linear-gradient(180deg, ${gradDef}),
+                repeating-linear-gradient( 90deg, ${gradDef});
+            `
         }
 
         // Observers
