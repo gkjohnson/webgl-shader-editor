@@ -4221,7 +4221,7 @@ __webpack_require__(0);
 /* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
-/*__wc__loader*/!function(a){var b="\n    <title>WebGL Shader Editor</title>\n\n    \n    <link href=\"https://fonts.googleapis.com/css?family=Roboto:100\" rel=\"stylesheet\">\n\n    \n    \n    \n    \n    \n    \n    \n\n    \n\n    \n    \n    \n    \n\n    \n    \n    \n    \n    \n\n    <style type=\"text/css\">html,body{margin:0;padding:0;height:100%;font-weight:100;font-family:Roboto,sans-serif;}::-webkit-scrollbar{width:5px;position:absolute;}::-webkit-scrollbar-thumb{border-radius:5px;background-color:rgba(255,255,255,0.2);}</style>\n";if(a.head){var c=a.head,d=a.createElement("div");for(d.innerHTML=b;d.children.length>0;)c.appendChild(d.children[0])}else a.write(b)}(document);!function(a){var b="\n    <shader-editor></shader-editor>\n    \n\n";if(a.body){var c=a.body,d=a.createElement("div");for(d.innerHTML=b;d.children.length>0;)c.appendChild(d.children[0])}else a.write(b)}(document);
+/*__wc__loader*/!function(a){var b="\n    <title>WebGL Shader Editor</title>\n\n    \n    <link href=\"https://fonts.googleapis.com/css?family=Roboto:100\" rel=\"stylesheet\">\n\n    \n    \n    \n    \n    \n    \n    \n\n    \n    \n\n    \n    \n    \n    \n\n    \n    \n    \n    \n    \n    \n\n    <style type=\"text/css\">html,body{margin:0;padding:0;height:100%;font-weight:100;font-family:Roboto,sans-serif;}webgl-shader{display:none;}::-webkit-scrollbar{width:5px;position:absolute;}::-webkit-scrollbar-thumb{border-radius:5px;background-color:rgba(255,255,255,0.2);}</style>\n\n    ";if(a.head){var c=a.head,d=a.createElement("div");for(d.innerHTML=b;d.children.length>0;)c.appendChild(d.children[0])}else a.write(b)}(document);!function(a){var b="<webgl-shader vertex=\"\">\n        // Lighting\n        struct DirLight {\n            vec3 color;\n            vec3 direction;\n        };\n\n        uniform DirLight directionalLights[NUM_DIR_LIGHTS];\n        uniform vec3 ambientLightColor;\n\n        varying vec3 lighting;\n\n        void main() \n        {\n            vec3 worldNorm = (modelViewMatrix * vec4(normal, 0)).xyz;\n            \n            lighting = ambientLightColor;\n            for(int i = 0; i &lt; NUM_DIR_LIGHTS; i ++) {\n                DirLight dl = directionalLights[i];\n                lighting += clamp(dot(worldNorm, dl.direction), 0.0, 1.0) * dl.color;\n            } \n\n            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);\n        }\n    </webgl-shader>\n\n    <webgl-shader fragment=\"\">\n        varying vec3 lighting;\n\n        void main() {\n            vec3 rgb = vec3(1, 1, 1);\n\n            gl_FragColor = vec4(rgb * lighting, 1);\n        }\n    </webgl-shader>\n\n\n    <shader-editor></shader-editor>\n    \n\n";if(a.body){var c=a.body,d=a.createElement("div");for(d.innerHTML=b;d.children.length>0;)c.appendChild(d.children[0])}else a.write(b)}(document);
 __webpack_require__(13);
 
 __webpack_require__(15);
@@ -4253,46 +4253,27 @@ __webpack_require__(39);
 __webpack_require__(40);
 
 
-    
+        // dedents the shader based on the indentation of the
+        // first line with words
+        const dedent = sh => {
+            sh = sh.replace(/^[\s\n\r]*(\n|\r)/m, '')
+            const tabMatches = sh.match(/^\s+/)
+            const tab = tabMatches ? tabMatches[0] : ''
+            sh = sh.replace(new RegExp(`^${tab}`, 'gm'), '')
+            return sh
+        }
+
         const se = document.querySelector('shader-editor')
-            const vs = `// Lighting
-struct DirLight {
-    vec3 color;
-    vec3 direction;
-};
+        const vs = document.querySelector('webgl-shader[vertex]').textContent
+        const fs = document.querySelector('webgl-shader[fragment]').textContent
 
-uniform DirLight directionalLights[NUM_DIR_LIGHTS];
-uniform vec3 ambientLightColor;
-
-varying vec3 lighting;
-
-void main() 
-{
-    vec3 worldNorm = (modelViewMatrix * vec4(normal, 0)).xyz;
-    
-    lighting = ambientLightColor;
-    for(int i = 0; i < NUM_DIR_LIGHTS; i ++) {
-        DirLight dl = directionalLights[i];
-        lighting += clamp(dot(worldNorm, dl.direction), 0.0, 1.0) * dl.color;
-    } 
-
-    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-}`
-
-    const fs = `varying vec3 lighting;
-
-void main() {
-    vec3 rgb = vec3(1, 1, 1);
-
-    gl_FragColor = vec4(rgb * lighting, 1);
-}`
         window.onunload = () => {
             localStorage.setItem('vertexShader', se.vertexShader)
             localStorage.setItem('fragmentShader', se.fragmentShader)
         }
 
-        se.vertexShader = localStorage.getItem('vertexShader') || vs
-        se.fragmentShader = localStorage.getItem('fragmentShader') || fs
+        se.vertexShader = localStorage.getItem('vertexShader') || dedent(vs)
+        se.fragmentShader = localStorage.getItem('fragmentShader') || dedent(fs)
     
 
 
@@ -4378,7 +4359,7 @@ __webpack_require__(1)(__webpack_require__(26))
 /* 26 */
 /***/ (function(module, exports) {
 
-module.exports = "DebugShaders = {}\r\n\r\n;(function() {\r\n\r\n    const NEGATE_UNIFORM = '_negate_'\r\n    const variableRegex = /((((precision|varying|uniform|attribute)\\s+)?)((highp|mediump|lowp)\\s+)?)(vec4|vec3|vec2|float|int|uint|bool)\\s+([A-Za-z0-9]+)/\r\n    const canvas = document.createElement('canvas')\r\n    const ctx = canvas.getContext('2d')\r\n    canvas.width = 100\r\n    canvas.height = 100\r\n\r\n    const normalize = shader => {\r\n        return shader\r\n            .replace(/\\/\\/[^\\n]*\\n/g, '')               // comment line\r\n            .replace(/\\/\\*(\\*(?!\\/)|[^*])*\\*\\//, '')    // block comment\r\n            .replace(/(\\n|\\s)+/g, ' ')\r\n            .replace(/\\s*{\\s*/g, '\\n{\\n')\r\n            .replace(/\\s*}\\s*/g, '\\n}\\n')\r\n            .replace(/\\s*;\\s*/g, ';\\n')\r\n            .replace(/void\\s+main\\s*\\(\\)(\\s|\\n)*{/, 'void main() {')\r\n    }\r\n\r\n    const toGlFragColorLine = (type, name) => {\r\n        let r = 0\r\n        let g = 0\r\n        let b = 0\r\n        let a = 1\r\n        \r\n        const neg = `(${NEGATE_UNIFORM} ? -1.0 : 1.0)`\r\n\r\n        if (/^vec/.test(type)) {\r\n            // TODO: Pack these more so more of\r\n            // the data can be read back out, otherwise\r\n            // they're clamped from 0 to 1.0\r\n            r = `${name}.r * ${neg}`\r\n            g = `${name}.g * ${neg}`\r\n            if (/^vec(3|4)/.test(type)) b = `${name}.b * ${neg}`\r\n            if (/^vec4/.test(type)) a = `${name}.a * ${neg}`\r\n        }\r\n        else if(type === 'bool') {\r\n            r = `${name} ? 1 : 0`\r\n            g = r\r\n            b = r\r\n            a = r\r\n        }\r\n        else if(/^(int|uint)/.test(type)) {\r\n            r = `float(((${name} * int(${neg})) << 0 ) & 0xFF) / 0xFF`\r\n            g = `float(((${name} * int(${neg})) << 8 ) & 0xFF) / 0xFF`\r\n            b = `float(((${name} * int(${neg})) << 16) & 0xFF) / 0xFF`\r\n            a = `float(((${name} * int(${neg})) << 24) & 0xFF) / 0xFF`\r\n        }\r\n        else if(type === 'float') {\r\n            // TODO : Pack this into bytes so we can\r\n            // read it back out as a larger float\r\n            r = `${name}`\r\n        }\r\n\r\n        return `gl_FragColor = vec4(${r},${g},${b},${a});`\r\n    }\r\n\r\n    DebugShaders.enumerate = (vs, fs, negate = false) => {\r\n        vs = normalize(vs)\r\n        fs = normalize(fs)\r\n\r\n        const shaders = []\r\n        const fsVarying = []\r\n\r\n        // output color for each variable in the frag shader\r\n        const lines = fs.split('\\n')\r\n        lines\r\n            .forEach((line, i) => {\r\n                const matches = line.match(variableRegex)\r\n                if (matches) {\r\n                    const prefix = (matches[1] || '').trim()\r\n                    const type = matches[7].trim()\r\n                    const name = matches[8].trim()\r\n\r\n                    if (prefix) {\r\n                        if (prefix === 'varying') fsVarying.push({ type, name, line: i })\r\n                        return\r\n                    }\r\n\r\n                    const newlines = [].concat(lines)\r\n                    newlines[i] += '\\n' + toGlFragColorLine(type, name, negate) + '\\nreturn;\\n'\r\n\r\n                    shaders.push({\r\n                        type,\r\n                        name,\r\n                        vertexShader: vs,\r\n                        fragmentShader: newlines.join('\\n'),\r\n                        line: i\r\n                    })\r\n                }\r\n            })\r\n\r\n\r\n        // output color for each varying variable in the frag shader\r\n        fsVarying\r\n            .forEach(it => {\r\n                const mainSig = 'void main() {'\r\n                const res = fs.replace(mainSig, mainSig + '\\n' + toGlFragColorLine(it.type, it.name, negate) + '\\nreturn;\\n')\r\n                shaders.push({\r\n                    type: it.type,\r\n                    name: it.name,\r\n                    vertexShader: vs,\r\n                    fragmentShader: res,\r\n                    line: it.line\r\n                })\r\n            })\r\n\r\n        for(let i in shaders) {\r\n            shaders[i].fragmentShader = `\r\n            uniform bool ${NEGATE_UNIFORM};\r\n            ${shaders[i].fragmentShader}\r\n            `\r\n        }\r\n\r\n        return shaders\r\n    }\r\n\r\n    DebugShaders.readPixel = (img, x, y) => {\r\n        ctx.clearRect(0, 0, 1, 1)\r\n        ctx.drawImage(img, x, y, 1, 1, 0, 0, 1, 1)\r\n\r\n        const data = ctx.getImageData(0,0,1,1).data\r\n\r\n        return {\r\n            r: data[0],\r\n            g: data[1],\r\n            b: data[2],\r\n            a: data[3]\r\n        }\r\n    }\r\n\r\n    DebugShaders.pixelToArray = (px, type, prec = 5) => {\r\n        const cv = f => parseFloat((f / 255.0).toPrecision(prec))\r\n\r\n        if (type === 'vec2') return [cv(px.r), cv(px.g)]\r\n        if (type === 'vec3') return [cv(px.r), cv(px.g), cv(px.b)]\r\n        if (type === 'vec4') return [cv(px.r), cv(px.g), cv(px.b), cv(px.a)]\r\n        if (type === 'bool') return [!!px.r]\r\n        if (type === 'int'); // TODO\r\n        if (type === 'uint'); // TODO\r\n        if (type === 'float') return [cv(res.r)]\r\n    }\r\n})()"
+module.exports = "DebugShaders = {}\r\n\r\n;(function() {\r\n\r\n    const NEGATE_UNIFORM = '_negate_'\r\n    const variableRegex = /((((precision|varying|uniform|attribute)\\s+)?)((highp|mediump|lowp)\\s+)?)(vec4|vec3|vec2|float|int|uint|bool)\\s+([A-Za-z0-9]+)/\r\n    const canvas = document.createElement('canvas')\r\n    const ctx = canvas.getContext('2d')\r\n    canvas.width = 1\r\n    canvas.height = 1\r\n\r\n    const normalize = shader => {\r\n        return shader\r\n            .replace(/\\/\\/[^\\n]*\\n/g, '')               // comment line\r\n            .replace(/\\/\\*(\\*(?!\\/)|[^*])*\\*\\//, '')    // block comment\r\n            .replace(/(\\n|\\s)+/g, ' ')\r\n            .replace(/\\s*{\\s*/g, '\\n{\\n')\r\n            .replace(/\\s*}\\s*/g, '\\n}\\n')\r\n            .replace(/\\s*;\\s*/g, ';\\n')\r\n            .replace(/void\\s+main\\s*\\(\\)(\\s|\\n)*{/, 'void main() {')\r\n    }\r\n\r\n    const toGlFragColorLine = (type, name) => {\r\n        let r = 0\r\n        let g = 0\r\n        let b = 0\r\n        let a = 1\r\n        \r\n        const neg = `(${NEGATE_UNIFORM} ? -1.0 : 1.0)`\r\n\r\n        if (/^vec/.test(type)) {\r\n            // TODO: Pack these more so more of\r\n            // the data can be read back out, otherwise\r\n            // they're clamped from 0 to 1.0\r\n            r = `${name}.r * ${neg}`\r\n            g = `${name}.g * ${neg}`\r\n            if (/^vec(3|4)/.test(type)) b = `${name}.b * ${neg}`\r\n            if (/^vec4/.test(type)) a = `${name}.a * ${neg}`\r\n        }\r\n        else if(type === 'bool') {\r\n            r = `${name} ? 1 : 0`\r\n            g = r\r\n            b = r\r\n            a = r\r\n        }\r\n        else if(/^(int|uint)/.test(type)) {\r\n            r = `float(((${name} * int(${neg})) << 0 ) & 0xFF) / 0xFF`\r\n            g = `float(((${name} * int(${neg})) << 8 ) & 0xFF) / 0xFF`\r\n            b = `float(((${name} * int(${neg})) << 16) & 0xFF) / 0xFF`\r\n            a = `float(((${name} * int(${neg})) << 24) & 0xFF) / 0xFF`\r\n        }\r\n        else if(type === 'float') {\r\n            // TODO : Pack this into bytes so we can\r\n            // read it back out as a larger float\r\n            r = `${name}`\r\n        }\r\n\r\n        return `gl_FragColor = vec4(${r},${g},${b},${a});`\r\n    }\r\n\r\n    DebugShaders.enumerate = (vs, fs, negate = false) => {\r\n        vs = normalize(vs)\r\n        fs = normalize(fs)\r\n\r\n        const shaders = []\r\n        const fsVarying = []\r\n\r\n        // output color for each variable in the frag shader\r\n        const lines = fs.split('\\n')\r\n        lines\r\n            .forEach((line, i) => {\r\n                const matches = line.match(variableRegex)\r\n                if (matches) {\r\n                    const prefix = (matches[1] || '').trim()\r\n                    const type = matches[7].trim()\r\n                    const name = matches[8].trim()\r\n\r\n                    if (prefix) {\r\n                        if (prefix === 'varying') fsVarying.push({ type, name, line: i })\r\n                        return\r\n                    }\r\n\r\n                    const newlines = [].concat(lines)\r\n                    newlines[i] += '\\n' + toGlFragColorLine(type, name, negate) + '\\nreturn;\\n'\r\n\r\n                    shaders.push({\r\n                        type,\r\n                        name,\r\n                        vertexShader: vs,\r\n                        fragmentShader: newlines.join('\\n'),\r\n                        line: i\r\n                    })\r\n                }\r\n            })\r\n\r\n\r\n        // output color for each varying variable in the frag shader\r\n        fsVarying\r\n            .forEach(it => {\r\n                const mainSig = 'void main() {'\r\n                const res = fs.replace(mainSig, mainSig + '\\n' + toGlFragColorLine(it.type, it.name, negate) + '\\nreturn;\\n')\r\n                shaders.push({\r\n                    type: it.type,\r\n                    name: it.name,\r\n                    vertexShader: vs,\r\n                    fragmentShader: res,\r\n                    line: it.line\r\n                })\r\n            })\r\n\r\n        for(let i in shaders) {\r\n            shaders[i].fragmentShader = `\r\n            uniform bool ${NEGATE_UNIFORM};\r\n            ${shaders[i].fragmentShader}\r\n            `\r\n        }\r\n\r\n        return shaders\r\n    }\r\n\r\n    DebugShaders.readPixel = (img, x, y) => {\r\n        ctx.clearRect(0, 0, 1, 1)\r\n        ctx.drawImage(img, x, y, 1, 1, 0, 0, 1, 1)\r\n\r\n        const data = ctx.getImageData(0,0,1,1).data\r\n\r\n        return {\r\n            r: data[0],\r\n            g: data[1],\r\n            b: data[2],\r\n            a: data[3]\r\n        }\r\n    }\r\n\r\n    DebugShaders.pixelToArray = (px, type, prec = 5) => {\r\n        const cv = f => parseFloat((f / 255.0).toPrecision(prec))\r\n\r\n        if (type === 'vec2') return [cv(px.r), cv(px.g)]\r\n        if (type === 'vec3') return [cv(px.r), cv(px.g), cv(px.b)]\r\n        if (type === 'vec4') return [cv(px.r), cv(px.g), cv(px.b), cv(px.a)]\r\n        if (type === 'bool') return [!!px.r]\r\n        if (type === 'int'); // TODO\r\n        if (type === 'uint'); // TODO\r\n        if (type === 'float') return [cv(res.r)]\r\n    }\r\n})()"
 
 /***/ }),
 /* 27 */
@@ -7942,11 +7923,17 @@ __webpack_require__(9);
 
 /*__wc__loader*/!function(a){var b="<style>ace-editor{display:block;}</style>\n\n";if(a.head){var c=a.head,d=a.createElement("div");for(d.innerHTML=b;d.children.length>0;)c.appendChild(d.children[0])}else a.write(b)}(document);
 
+    // ace-editor element
+    // Element that wraps ace editor and allows for binding to
+    // the `value` field
+    // The element uses the body of the tag as the defaul value
+    // if no value is specified otherwise
     class AceEditor extends Polymer.Element {
         static get is() { return 'ace-editor' }
 
         static get properties() {
             return {
+                // The of the editor
                 value: {
                     type: String,
                     value: '',
@@ -7954,12 +7941,14 @@ __webpack_require__(9);
                     observer: '_valueObserver'
                 },
 
+                // The ace annotations to display
                 annotations: {
                     type: Array,
                     value: () => [],
                     observer: '_annotationsObserver'
                 },
 
+                // Handle to the editor
                 _editor: {
                     type: Object,
                     value: null                    
@@ -7969,17 +7958,23 @@ __webpack_require__(9);
 
         /* Lifecycle */
         ready() {
+            // initialize the value before "ready()" is called
+            // to get the initial tag content
             this.value = this.innerText || this.value
+            
+            // Basic editor init
             super.ready()
             this._editor = ace.edit(this)
             this._editor.setTheme("ace/theme/monokai")
             this._editor.getSession().setMode("ace/mode/glsl")
             this._editor.setShowPrintMargin(false)
 
+            // Set the value and initial selection and annotation state
             this._editor.setValue(this.value)
             this._editor.session.setAnnotations(this.annotations)
             this._editor.selection.clearSelection()
 
+            // Bind to the editor changes
             this._editor.on('change', (e, ed) => this.value = ed.getValue())
         }
 
@@ -7995,6 +7990,8 @@ __webpack_require__(9);
         }
 
         /* Overrides */
+        // This element is non-shadow-dom because it relies
+        // on styles that ace-editor injects into the page
         _attachDom(d) { this.appendChild(d) }
     }
 
@@ -8006,13 +8003,25 @@ __webpack_require__(9);
 /* 37 */
 /***/ (function(module, exports) {
 
-/*__wc__loader*/!function(a){var b="<dom-module id=\"zoomable-image\">\n    <template>\n        <style>:host{display:block;position:relative;}#proxy-image{display:block;visibility:hidden;}#zoom-container{width:100%;height:100%;position:absolute;overflow:hidden;top:0;left:0;}#zoom-image{position:absolute;}</style>\n\n        \n        <img id=\"proxy-image\" src=\"[[src]]\">\n\n        <div id=\"zoom-container\">\n            <img id=\"zoom-image\" src=\"[[src]]\" style=\"[[_getStyle(scale, xOffset, yOffset)]]\" on-mousemove=\"_imageMouseMoveHandler\">\n        </div>\n    </template>\n</dom-module>\n\n";if(a.body){var c=a.body,d=a.createElement("div");for(d.innerHTML=b;d.children.length>0;)c.appendChild(d.children[0])}else a.write(b)}(document);
+/*__wc__loader*/!function(a){var b="<dom-module id=\"zoomable-image\">\n    <template>\n        <style>:host{display:block;position:relative;}#proxy-image{display:block;visibility:hidden;}#zoom-container{width:100%;height:100%;position:absolute;overflow:hidden;top:0;left:0;}#zoom-image{position:absolute;}#grid{width:200%;height:200%;opacity:0.1;position:absolute;pointer-events:none;}</style>\n\n        \n        <img id=\"proxy-image\" src=\"[[src]]\">\n\n        <div id=\"zoom-container\">\n            <img id=\"zoom-image\" src=\"[[src]]\" style=\"[[_getImageStyle(scale,xOffset,yOffset)]]\" on-mousemove=\"_imageMouseMoveHandler\">\n            <div id=\"grid\" style$=\"[[_getGradientStyle(scale,xOffset,yOffset)]]\"></div>\n        </div>\n    </template>\n</dom-module>\n\n";if(a.body){var c=a.body,d=a.createElement("div");for(d.innerHTML=b;d.children.length>0;)c.appendChild(d.children[0])}else a.write(b)}(document);
 
+    // zoomable-image Element
+    // <img>-like element that allows for pixel-precise zooming and
+    // panning for closer image detail inspection
+
+    // Scroll wheel will zoom and right click will pan
+
+    // A grid representing pixel edges is shown once scale is >= 7
+
+    // Events
+    // { pixel: { x, y } } is added to the event on mousemove event
+    // to add which pixel is being hovered over
     class ZoomableImage extends Polymer.Element {
         static get is() { return 'zoomable-image' }
 
         static get properties() {
             return {
+                // The factor to zoom in by
                 scale: {
                     type: Number,
                     value: 1,
@@ -8020,21 +8029,28 @@ __webpack_require__(9);
                     observer: '_scaleObserver'
                 },
 
+                // The maximum scale allowed
                 maxScale: {
                     type: Number,
                     value: null
                 },
 
+                // Whether or not to clamp to pixel-perfect
+                // aligned offsets
                 clamp: {
                     type: Boolean,
                     value: false
                 },
 
+                // The source of the image to display
                 src: {
                     type: String,
                     value: ''
                 },
 
+                // The pixel offset for the image from the
+                // top left that the image has been panned by
+                // This value is not affected by scale
                 xOffset: {
                     type: Number,
                     value: 0,
@@ -8047,6 +8063,7 @@ __webpack_require__(9);
                     notify: true
                 },
 
+                // Whether or not the image is currently being dragged
                 _dragging: {
                     type: Boolean,
                     value: false
@@ -8062,6 +8079,7 @@ __webpack_require__(9);
         ready() {
             super.ready()
 
+            // Zoom in on scroll wheel
             this.addEventListener('wheel', e => {
                 const oldScale = this.scale
 
@@ -8082,39 +8100,59 @@ __webpack_require__(9);
                 this.xOffset += xpxdelta
                 this.yOffset += ypxdelta
             })
+        }
 
-            let lastPageX, lastPageY
-            this.addEventListener('mousedown', e => {
+        connectedCallback() {
+            super.connectedCallback()
+
+            // Begin drag
+            let stPageX, stPageY
+            let stXOffset, stYOffset
+            this.__mousedowncallback = e => {
                 if (e.which !== 2) return
                 this._dragging = true
                 
-                lastPageX = e.pageX
-                lastPageY = e.pageY
-            })
+                stXOffset = this.xOffset
+                stYOffset = this.yOffset
+                stPageX = e.pageX
+                stPageY = e.pageY
+            }
 
-            document.addEventListener('mouseup', e => {
-                if (e.which !== 2) return
-                this._dragging = false
-            })
-
-            document.addEventListener('mousemove', e => {
+            // Allow for dragging across the page
+            this.__mousemovecallback = e => {
                 if (!this._dragging) return
 
-                const deltaX = e.pageX - lastPageX
-                const deltaY = e.pageY - lastPageY
+                const deltaX = e.pageX - stPageX
+                const deltaY = e.pageY - stPageY
 
-                this.xOffset += deltaX / this.scale
-                this.yOffset += deltaY / this.scale
+                this.xOffset = stXOffset + deltaX / this.scale
+                this.yOffset = stYOffset + deltaY / this.scale
+            }
 
-                lastPageX = e.pageX
-                lastPageY = e.pageY
-            })
+            // Drag end
+            this.__mouseupcallback = e => {
+                if (e.which !== 2) return
+                this._dragging = false
+            }
+
+            this.addEventListener('mousedown',      this.__mousedowncallback)
+            document.addEventListener('mousemove',  this.__mousemovecallback)
+            document.addEventListener('mouseup',    this.__mouseupcallback)
+        }
+
+        disconnectedCallback() {
+            super.disconnectedCallback()
+
+            document.removeEventListener('mousedown',   this.__mousedowncallback)
+            document.removeEventListener('mousemove',   this.__mousemovecallback)
+            document.removeEventListener('mouseup',     this.__mouseupcallback)
         }
 
         // Utilities
-        _getStyle(s, x, y) {
-            x = Math.floor(x)            
-            y = Math.floor(y)            
+        // return the image style with the given offset
+        _getImageStyle(s, x, y) {
+            x = Math.floor(x)
+            y = Math.floor(y)
             x *= s
             y *= s
             s *= 100
@@ -8122,15 +8160,32 @@ __webpack_require__(9);
             return `width:${s}%; top:${y}px; left:${x}px;`
         }
 
+        _getGradientStyle(s, x, y) {
+            if (s < 7) return ''
+
+            const gradDef =`white 0, white 1px, transparent 1px, transparent ${s}px`
+            return `
+                background:
+                repeating-linear-gradient(180deg, ${gradDef}),
+                repeating-linear-gradient( 90deg, ${gradDef});
+            `
+        }
+
         // Observers
+        // clamp the scale between 1 and maxScale
         _scaleObserver(s) {
             s = Math.max(1, Math.min(this.maxScale || Infinity, s))
             if (this.scale !== s) this.scale = s
         }
 
+        // floor the pixel offsets so that they align to the
+        // precise pixel positions rather than allowing
+        // the pan to sit between pixels
         _offsetObserver(x, y, s, src, clamp) {
             if (!clamp) return
 
+            // use our proxy image, which auto-adjusts its size,
+            // to get the initial image size
             const prox = this.shadowRoot.querySelector('#proxy-image')
 
             const maxX = prox.width - prox.width / s
@@ -8164,38 +8219,54 @@ __webpack_require__(9);
 /* 38 */
 /***/ (function(module, exports) {
 
-/*__wc__loader*/!function(a){var b="<dom-module id=\"image-magnifier\">\n    <template>\n        <style>:host{display:block;position:absolute;pointer-events:none;}#image-magnifier{right:0;top:0;position:absolute;z-index:1000;width:90px;height:90px;pointer-events:none;}#magnifier-container{width:80px;height:80px;border:5px solid white;border-radius:100px;overflow:hidden;background:#111;position:absolute;}#magnifier-container img{position:relative;image-rendering:pixelated;}#image-magnifier:before{content:\"\";width:30px;height:30px;top:7px;right:7px;position:absolute;background:white;}#pixel-outline{position:absolute;border:1px solid white;/* -1px on each side for the outline */ width:18px;height:18px;top:30px;left:30px;z-index:1000;opacity:0.5;}zoomable-image{position:absolute;image-rendering:pixelated;}</style>\n\n        <div id=\"image-magnifier\">\n            <div id=\"magnifier-container\">\n                <div id=\"pixel-outline\"></div>\n                <zoomable-image src=\"[[src]]\" scale=\"[[scale]]\" x-offset=\"[[_toOffset(xPixel)]]\" y-offset=\"[[_toOffset(yPixel)]]\" style=\"[[_getOffsetStyle(scale)]]\"></zoomable-image>\n            </div>\n        </div>\n    </template>\n</dom-module>\n\n";if(a.body){var c=a.body,d=a.createElement("div");for(d.innerHTML=b;d.children.length>0;)c.appendChild(d.children[0])}else a.write(b)}(document);
+/*__wc__loader*/!function(a){var b="<dom-module id=\"image-magnifier\">\n    <template>\n        <style>:host{display:block;position:absolute;pointer-events:none;}#outline{right:0;top:0;position:absolute;pointer-events:none;}/* Magnifier Arrow */ #container:before{content:\"\";width:50%;height:50%;top:0;right:0;position:absolute;background:white;}#container{border:5px solid white;background:#111;position:absolute;right:0;top:0;z-index:1;}#image-wrapper{width:100%;height:100%;overflow:hidden;position:relative;background:black;}#pixel-outline{position:absolute;border:1px solid white;top:30px;left:30px;z-index:1000;opacity:0.5;}zoomable-image{position:absolute;image-rendering:pixelated;}</style>\n\n        <div id=\"container\" style$=\"[[_getContainerStyle(size)]]\">\n            <div id=\"pixel-outline\" style$=\"[[_getPixelOutlineStyle(size,scale)]]\"></div>\n            <div id=\"image-wrapper\" style$=\"[[_getBorderRadiusStyle(size)]]\">\n                <zoomable-image src=\"[[src]]\" scale=\"[[scale]]\" x-offset=\"[[_toOffset(xPixel)]]\" y-offset=\"[[_toOffset(yPixel)]]\" style=\"[[_getOffsetStyle(scale)]]\"></zoomable-image>\n            </div>\n        </div>\n    </template>\n</dom-module>\n\n";if(a.body){var c=a.body,d=a.createElement("div");for(d.innerHTML=b;d.children.length>0;)c.appendChild(d.children[0])}else a.write(b)}(document);
 
+    // image-magnifier Element
+    // A magnifying glass that zooms in to an image to give
+    // pixel detail
+
+    // The magnifier points to the top-right of the container. Set
+    // the postion of the <image-magnifier> element to the point
+    // you want it to point to
+
+    // TODO: Make the positioning smart so will flip sides if it starts
+    // to run off the screen
     class ImageMagnifier extends Polymer.Element {
         static get is() { return 'image-magnifier' }
 
         static get properties() {
             return {
-                scale: {
+                // The width and height of the magnifying
+                // circle
+                size: {
                     type: Number,
-                    value: 1,
-                    notify: true,
+                    value: 80
                 },
 
+                // The zoom factor on the image
+                scale: {
+                    type: Number,
+                    value: 1
+                },
+
+                // The image source to display
                 src: {
                     type: String,
                     value: ''
                 },
 
+                // The x pixel to zoom in on
                 xPixel: {
                     type: Number,
                     value: 0
                 },
 
+                // The y pixel to zoom in on
                 yPixel: {
                     type: Number,
                     value: 0
                 }
             }
-        }
-
-        static get observers() {
-            return ['_offsetObserver(xPixel, yPixel)']
         }
 
         // Utilities
@@ -8207,10 +8278,21 @@ __webpack_require__(9);
             const offset = -s / 2
             return `top:${offset}px; left:${offset}px;`
         }
-        
-        // Observers
-        _offsetObserver(x, y, s, src) {
 
+        _getContainerStyle(size) {
+            return `width:${size}px; height:${size}px; border-radius:${size}px;`
+        }
+
+        _getPixelOutlineStyle(size, scale) {
+            // -1px on each side for
+            // the outline
+            const dim = scale - 2
+            const offset = (size - scale) / 2
+            return `width:${dim}px; height:${dim}px; top:${offset}px; left:${offset}px;`
+        }
+
+        _getBorderRadiusStyle(size) {
+            return `border-radius:${size}px;`
         }
     }
 
@@ -8222,31 +8304,38 @@ __webpack_require__(9);
 /* 39 */
 /***/ (function(module, exports) {
 
-/*__wc__loader*/!function(a){var b="<dom-module id=\"shader-editor\">\n    <template>\n        <style type=\"text/css\">#container{display:flex;height:100%;}shader-preview{flex:1;max-width:400px;background:#111;color:white;}#editors{height:100%;display:flex;flex-direction:column;flex:2;}ace-editor{flex:1;}h5{padding:5px;margin:0;color:white;background:#272822;font-size:12px;}</style>\n        <div id=\"container\">\n            <div id=\"editors\">\n                <h5>Vertex Shader</h5>\n                <ace-editor value=\"{{ vertexShader }}\" annotations=\"[[ _errorsToAnnotations(vertexErrors) ]]\" type=\"glsl\"></ace-editor>\n                \n                <h5>Fragment Shader</h5>\n                <ace-editor value=\"{{ fragmentShader }}\" annotations=\"[[ _errorsToAnnotations(fragmentErrors) ]]\" type=\"glsl\"></ace-editor>\n            </div>\n            <shader-preview vertex-shader=\"[[ vertexShader ]]\" vertex-errors=\"{{ vertexErrors }}\" fragment-shader=\"[[ fragmentShader ]]\" fragment-errors=\"{{ fragmentErrors }}\"></shader-preview>\n        </div>\n    </template>\n</dom-module>\n";if(a.body){var c=a.body,d=a.createElement("div");for(d.innerHTML=b;d.children.length>0;)c.appendChild(d.children[0])}else a.write(b)}(document);
+/*__wc__loader*/!function(a){var b="<dom-module id=\"shader-editor\">\n    <template>\n        <style type=\"text/css\">#container{display:flex;height:100%;}#editors{height:100%;display:flex;flex-direction:column;flex:2;}shader-preview{flex:1;max-width:400px;background:#111;color:white;}ace-editor{flex:1;}h5{padding:5px;margin:0;color:white;background:#272822;font-size:12px;}</style>\n        <div id=\"container\">\n            <div id=\"editors\">\n                <h5>Vertex Shader</h5>\n                <ace-editor value=\"{{ vertexShader }}\" annotations=\"[[ _errorsToAnnotations(vertexErrors) ]]\" type=\"glsl\"></ace-editor>\n                \n                <h5>Fragment Shader</h5>\n                <ace-editor value=\"{{ fragmentShader }}\" annotations=\"[[ _errorsToAnnotations(fragmentErrors) ]]\" type=\"glsl\"></ace-editor>\n            </div>\n            <shader-preview vertex-shader=\"[[ vertexShader ]]\" vertex-errors=\"{{ vertexErrors }}\" fragment-shader=\"[[ fragmentShader ]]\" fragment-errors=\"{{ fragmentErrors }}\"></shader-preview>\n        </div>\n    </template>\n</dom-module>\n";if(a.body){var c=a.body,d=a.createElement("div");for(d.innerHTML=b;d.children.length>0;)c.appendChild(d.children[0])}else a.write(b)}(document);
 
+    // shader-editor element
+    // Element that contains a vertex and fragment shader editor
+    // and preview panel
     class ShaderEditor extends Polymer.Element {
         static get is() { return 'shader-editor' }
 
         static get properties() {
             return {
+                // The vertex shader value being editted
                 vertexShader: {
                     type: String,
                     value: '',
                     notify: true
                 },
 
+                // The fragment shader value being editted
                 fragmentShader: {
                     type: String,
                     value: '',
                     notify: true,
                 },
 
+                // The errors from compiling the vertex shader
                 vertexErrors: {
                     type: Array,
                     value: null,
                     notify: true
                 },
 
+                // The errors from compiling the fragment shader
                 fragmentErrors: {
                     type: Array,
                     value: null,
@@ -8254,8 +8343,6 @@ __webpack_require__(9);
                 }
             }
         }
-
-        _attachDom(d) { this.appendChild(d) }
 
         // Utilities
         _errorsToAnnotations(e) {
@@ -8270,6 +8357,13 @@ __webpack_require__(9);
                 }
             })
         }
+
+        // Overrides
+        // This does not use shadow dom because child
+        // the ace-editor child elements require that
+        // they be open
+        _attachDom(d) { this.appendChild(d) }
+
     }
  
     customElements.define(ShaderEditor.is, ShaderEditor)
@@ -8280,63 +8374,77 @@ __webpack_require__(9);
 /* 40 */
 /***/ (function(module, exports) {
 
-/*__wc__loader*/!function(a){var b="<dom-module id=\"shader-preview\">\n    <template>\n        <style type=\"text/css\">#container{display:flex;flex-direction:column;width:100%;height:100%;}#target{width:100%;image-rendering:pixelated;}image-magnifier{visibility:hidden;}#debug-list{display:flex;flex-wrap:wrap;width:100%;overflow-y:auto;}#debug-list .shader{flex:1;min-width:100px;max-width:200px;transition:opacity .25s ease;}#debug-list:hover .shader{opacity:0.25;}#debug-list:hover .shader:hover{opacity:1;}#debug-list .name{text-align:center;font-weight:900;font-size:14px;font-style:italic;white-space:pre;overflow:hidden;text-overflow:ellipsis;opacity:0.75;}#local-variables-list{padding:10px;overflow:hidden;}#local-variables-list .data{display:flex;padding:5px 10px;}#local-variables-list .data span{flex:1;font-size:14px;font-weight:900;}#local-variables-list .data .name{flex:2;opacity:0.75;white-space:pre;overflow:hidden;text-overflow:ellipsis;font-style:italic;}#debug-list .shader img{width:100%;}.header{font-weight:bold;padding:15px;}::-webkit-scrollbar{width:5px;position:absolute;}::-webkit-scrollbar-thumb{border-radius:5px;background-color:rgba(255,255,255,0.2);}[hidden]{display:none !important;}#header{display:flex;}#header .name{flex:1;font-weight:bold;padding:5px;display:inline-block;}#header .shape{padding:4px;opacity:0.5;transition:opacity .25s ease;}#header .shape:hover{opacity:1;}#header .shape[shape=\"plane\"]:before,#header .shape[shape=\"sphere\"]:before{content:'';width:18px;height:18px;background:white;display:block;}#header .shape[shape=\"sphere\"]:before{border-radius:100px;}#header .shape[shape=\"cube\"]:before{content:'cube';font-weight:bold;}</style>\n        \n        <image-magnifier scale=\"20\" src=\"[[_primaryImageSrc]]\"></image-magnifier>\n\n        <div id=\"container\">\n            <div id=\"header\">\n                <span class=\"name\">[[_getName(_images.*, _activeImage)]]</span>\n                <span class=\"shape\" on-click=\"_setShapeHandler\" shape=\"cube\" title=\"cube\"></span>\n                <span class=\"shape\" on-click=\"_setShapeHandler\" shape=\"sphere\" title=\"sphere\"></span>\n                <span class=\"shape\" on-click=\"_setShapeHandler\" shape=\"plane\" title=\"plane\"></span>\n            </div>\n            <zoomable-image id=\"target\" src=\"[[_primaryImageSrc]]\" max-scale=\"10\" on-mouseenter=\"_imageMouseEnterHandler\" on-mousemove=\"_imageMouseMoveHandler\" on-mouseleave=\"_imageMouseLeaveHandler\" clamp=\"\"></zoomable-image>\n            \n            <div class=\"header\">Local Fragment Shader Variables</div>\n            <div id=\"debug-list\" hidden$=\"[[_exists(_localVariables)]]\">\n                <template is=\"dom-repeat\" items=\"[[_images]]\">\n                    <div class=\"shader\" active$=\"[[_equals(index,_activeImage)]]\" on-click=\"_debugImageClickHandler\">\n                        <div class=\"name\">[[item.type]] [[item.name]]</div>\n                        <img src$=\"[[item.src]]\">\n                    </div>\n                </template>\n            </div>\n\n            <div id=\"local-variables-list\" hidden$=\"[[!_exists(_localVariables)]]\">\n                <template is=\"dom-repeat\" items=\"[[_localVariables]]\">\n                    <div class=\"data\">\n                        <span class=\"name\">[[item.type]] [[item.name]]</span>\n                        <span>[[item.data.0]]</span>\n                        <span>[[item.data.1]]</span>\n                        <span>[[item.data.2]]</span>\n                        <span>[[item.data.3]]</span>\n                    </div>\n                </template>\n            </div>\n        </div>\n    </template>\n</dom-module>\n";if(a.body){var c=a.body,d=a.createElement("div");for(d.innerHTML=b;d.children.length>0;)c.appendChild(d.children[0])}else a.write(b)}(document);
+/*__wc__loader*/!function(a){var b="<dom-module id=\"shader-preview\">\n    <template>\n        <style type=\"text/css\">/* Util Classes */ ::-webkit-scrollbar{width:5px;position:absolute;}::-webkit-scrollbar-thumb{border-radius:5px;background-color:rgba(255,255,255,0.2);}[hidden]{display:none !important;}#container{display:flex;flex-direction:column;width:100%;height:100%;}#target{width:100%;image-rendering:pixelated;}image-magnifier{visibility:hidden;z-index:1000;}/* Debug Shader Displays */ #debug-list{display:flex;flex-wrap:wrap;width:100%;overflow-y:auto;}#debug-list .shader{flex:1;min-width:100px;max-width:200px;transition:opacity .25s ease;}#debug-list:hover .shader{opacity:0.25;}#debug-list:hover .shader:hover{opacity:1;}#debug-list .name{text-align:center;font-weight:900;font-size:14px;font-style:italic;white-space:pre;overflow:hidden;text-overflow:ellipsis;opacity:0.75;}/* Local Variables Section */ #local-variables-list{padding:10px;overflow:hidden;}#local-variables-list .data{display:flex;padding:5px 10px;}#local-variables-list .data span{flex:1;font-size:14px;font-weight:900;}#local-variables-list .data .name{flex:2;opacity:0.75;white-space:pre;overflow:hidden;text-overflow:ellipsis;font-style:italic;}#debug-list .shader img{width:100%;}.header{font-weight:bold;padding:15px;}/* Header */ #header{display:flex;}#header .name{flex:1;font-weight:bold;padding:5px;display:inline-block;}#header .shape{padding:4px;opacity:0.5;transition:opacity .25s ease;}#header .shape:hover{opacity:1;}#header .shape:before{content:'';width:18px;height:18px;display:block;}#header .shape[shape=\"plane\"]:before,#header .shape[shape=\"sphere\"]:before{background:white;}#header .shape[shape=\"sphere\"]:before{border-radius:100px;}#header .shape[shape=\"plane\"]:before{width:16px;height:16px;margin:1px;}#header .shape[shape=\"cube\"]:before{content:'cube';background-size:cover;}</style>\n        \n        <image-magnifier scale=\"20\" src=\"[[_primaryImageSrc]]\"></image-magnifier>\n\n        <div id=\"container\">\n            <div id=\"header\">\n                <span class=\"name\">[[_getName(_images.*, _activeImage)]]</span>\n                <span class=\"shape\" on-click=\"_setShapeHandler\" shape=\"cube\" title=\"cube\"></span>\n                <span class=\"shape\" on-click=\"_setShapeHandler\" shape=\"sphere\" title=\"sphere\"></span>\n                <span class=\"shape\" on-click=\"_setShapeHandler\" shape=\"plane\" title=\"plane\"></span>\n            </div>\n            <zoomable-image id=\"target\" src=\"[[_primaryImageSrc]]\" max-scale=\"10\" on-mouseenter=\"_imageMouseEnterHandler\" on-mousemove=\"_imageMouseMoveHandler\" on-mouseleave=\"_imageMouseLeaveHandler\" clamp=\"\"></zoomable-image>\n            \n            <div class=\"header\">Local Fragment Shader Variables</div>\n            <div id=\"debug-list\" hidden$=\"[[_exists(_localVariables)]]\">\n                <template is=\"dom-repeat\" items=\"[[_images]]\">\n                    <div class=\"shader\" active$=\"[[_equals(index,_activeImage)]]\" on-click=\"_debugImageClickHandler\">\n                        <div class=\"name\">[[item.type]] [[item.name]]</div>\n                        <img src$=\"[[item.src]]\">\n                    </div>\n                </template>\n            </div>\n\n            <div id=\"local-variables-list\" hidden$=\"[[!_exists(_localVariables)]]\">\n                <template is=\"dom-repeat\" items=\"[[_localVariables]]\">\n                    <div class=\"data\">\n                        <span class=\"name\">[[item.type]] [[item.name]]</span>\n                        <span>[[item.data.0]]</span>\n                        <span>[[item.data.1]]</span>\n                        <span>[[item.data.2]]</span>\n                        <span>[[item.data.3]]</span>\n                    </div>\n                </template>\n            </div>\n        </div>\n    </template>\n</dom-module>\n";if(a.body){var c=a.body,d=a.createElement("div");for(d.innerHTML=b;d.children.length>0;)c.appendChild(d.children[0])}else a.write(b)}(document);
 
+    // shader-preview Element
+    // Element to preview, zoom in, and debug shader definitions
     class ShaderPreview extends Mixin(Polymer.Element, Debouncer) {
         static get is() { return 'shader-preview' }
 
         static get properties() {
             return {
+                // vertex shader to preview
                 vertexShader: {
                     type: String,
-                    value: '',
-                    notify: true
+                    value: ''
                 },
 
+                // fragment shader to preview
                 fragmentShader: {
                     type: String,
-                    value: '',
-                    notify: true,
+                    value: ''
                 },
 
+                // vertex shader compilation errors
                 vertexErrors: {
                     type: Array,
                     value: null,
                     notify: true
                 },
 
+                // fragment shader compilation errors
                 fragmentErrors: {
                     type: Array,
                     value: null,
                     notify: true
                 },
 
+                // array of shaders to render, including the original
+                // and debug shaders. The original shader is always in
+                // index 0
                 _shaders: {
                     type: Array,
                     value: () => [],
                     computed: '_computeShaders(vertexShader, fragmentShader)'
                 },
 
+                // the objects representing rendered images
                 _images: {
                     type: Array,
                     value: () => []
                 },
 
+                // the index of the currently active image to render
+                // in the primary display spot
                 _activeImage: {
                     type: Number,
                     value: 0
                 },
 
+                // the source of the primary image
                 _primaryImageSrc: {
                     type: String,
                     computed: '_computeImageSrc(_images.*, _activeImage)'
                 },
 
+                // the list of local variable definitions from hovering over
+                // the image
                 _localVariables: {
                     type: Array,
                     value: null
                 },
 
+                // the type of geometry to display
                 _displayGeometry: {
                     type: String,
                     value: 'sphere',
@@ -8395,22 +8503,12 @@ __webpack_require__(9);
         }
 
         // Utilities
-        _equals(a,b) {
-            return a === b
-        }
+        _equals(a,b) { return a === b }
 
-        _exists(a) {
-            return !!a
-        }
+        _exists(a) { return !!a }
 
-        _getLogErrors(logs, lineOffset = 0) {
-            return logs
-                .replace(String.fromCharCode(0), '')
-                .trim()
-                .split('\n')
-                .map(line => this._getLogError(line, lineOffset))
-        }
-
+        // parses the log definition from THREE.js to extract
+        // the line number and error
         _getLogError(log, lineOffset = 0) {
             const regex = /^ERROR: ([^:]+):([^:]+)\s*:/
             const matches = log.match(regex)
@@ -8428,14 +8526,21 @@ __webpack_require__(9);
             return { row, col, log }
         }
 
+        // parses a set of logs
+        _getLogErrors(logs, lineOffset = 0) {
+            return logs
+                .replace(String.fromCharCode(0), '')
+                .trim()
+                .split('\n')
+                .map(line => this._getLogError(line, lineOffset))
+        }
+
+        // create a new material
         _getMaterial() {
             const mat = new THREE.ShaderMaterial({
-                uniforms: THREE.UniformsUtils.merge(
-                    [
+                uniforms: THREE.UniformsUtils.merge([
                         THREE.UniformsLib["lights"],
-                        {
-                            _negate_: { value: false }
-                        }
+                        { _negate_: { value: false } }
                     ]),
                 lights: true,
                 side: THREE.DoubleSide
@@ -8443,12 +8548,15 @@ __webpack_require__(9);
             return mat
         }
 
+        // returns the name for the given image object index
         _getName(imgbase, index) {
             const img = imgbase.base[index]
             return img ? img.name : ''
         }
 
         // Private Functions
+        // reads, parses, and assigns the errors to the error properties
+        // for the given material
         _checkForError(mat) {
             const diag = mat.program.diagnostics
 
@@ -8471,6 +8579,9 @@ __webpack_require__(9);
             }
         }
 
+        // Renders all the images and updates the _images array with the new
+        // image information
+        // If `activeOnly` is true, then only the primary image will be rendered
         _render(activeOnly = false) {
             if (!this._renderer) return
 
@@ -8509,6 +8620,7 @@ __webpack_require__(9);
         }
 
         // Event Handlers
+        // Mouse hover events for inspecting local variables
         _imageMouseEnterHandler() {
             this.shadowRoot.querySelector('image-magnifier').style.visibility = 'visible'
         }
