@@ -131,7 +131,7 @@
             return ['_offsetObserver(xOffset, yOffset, scale, src, clamp)']
         }
 
-        // Lifecycle
+        /* Lifecycle */
         ready() {
             super.ready()
 
@@ -204,7 +204,7 @@
             document.removeEventListener('mouseup',     this.__mouseupcallback)
         }
 
-        // Utilities
+        /* Utilities */
         // return the image style with the given offset
         _getImageStyle(s, x, y) {
             x = Math.floor(x)
@@ -227,7 +227,7 @@
             `
         }
 
-        // Observers
+        /* Observers */
         // clamp the scale between 1 and maxScale
         _scaleObserver(s) {
             s = Math.max(1, Math.min(this.maxScale || Infinity, s))
@@ -255,7 +255,7 @@
             if (this.yOffset !== y) this.yOffset = y
         }
 
-        // Event Handlers
+        /* Event Handlers */
         _imageMouseMoveHandler(e) {
             const xpx = Math.floor(e.offsetX / this.scale)
             const ypx = Math.floor(e.offsetY / this.scale)

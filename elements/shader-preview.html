@@ -294,7 +294,7 @@
             return [ '_shadersObserver(_shaders)' ]
         }
 
-        // Lifecycle Functions
+        /* Lifecycle Functions */
         ready() {
             super.ready()
 
@@ -339,7 +339,7 @@
             this._render()
         }
 
-        // Utilities
+        /* Utilities */
         _equals(a,b) { return a === b }
 
         _exists(a) { return !!a }
@@ -391,7 +391,7 @@
             return img ? img.name : ''
         }
 
-        // Private Functions
+        /* Private Functions */
         // reads, parses, and assigns the errors to the error properties
         // for the given material
         _checkForError(mat) {
@@ -456,7 +456,7 @@
             })
         }
 
-        // Event Handlers
+        /* Event Handlers */
         // Mouse hover events for inspecting local variables
         _imageMouseEnterHandler() {
             this.shadowRoot.querySelector('image-magnifier').style.visibility = 'visible'
@@ -504,7 +504,7 @@
             this._displayGeometry = e.target.getAttribute('shape')
         }
 
-        // Computed Variables
+        /* Computed Variables */
         _computeShaders(vs, fs) {
             const prim = {
                 type: 'vec4',
@@ -522,7 +522,7 @@
             return images.base[i] ? images.base[i].src : ''
         }
 
-        // Observers
+        /* Observers */
         _shadersObserver(shaders) {
 
             // expand or shorten the array if necessary
