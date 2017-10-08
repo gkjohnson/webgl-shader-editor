@@ -15,6 +15,10 @@ module.exports = {
             {
                 test: /\.js$/,
                 use: [{ loader: 'script-loader' }]
+            },
+            {
+                test: /\.(jpg|jpeg|png)/,
+                use: [{ loader: 'url-loader' }]
             }
         ]
     },
