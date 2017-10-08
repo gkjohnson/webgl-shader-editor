@@ -2,10 +2,11 @@
   "name": "webgl-shader-editor",
   "version": "1.0.0",
   "description": "Realtime editor for creating webgl shaders",
-  "main": "electron-app.js",
+  "main": "electron/app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "serve": "static-server",
+    "electron": "electron .",
     "build": "webpack"
   },
   "repository": {
