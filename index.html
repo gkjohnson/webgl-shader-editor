@@ -67,11 +67,13 @@
         uniform vec3 ambientLightColor;
 
         varying vec3 lighting;
+        varying vec2 texcoord;
 
         void main() 
         {
             vec3 worldNorm = (modelViewMatrix * vec4(normal, 0)).xyz;
             
+            texcoord = uv;
             lighting = ambientLightColor;
             for(int i = 0; i < NUM_DIR_LIGHTS; i ++) {
                 DirLight dl = directionalLights[i];
@@ -84,9 +86,15 @@
 
     <webgl-shader fragment>
         varying vec3 lighting;
+        varying vec2 texcoord;
+
+        uniform sampler2D texture0;
+        uniform sampler2D texture1;
+        uniform sampler2D texture2;
 
         void main() {
             vec3 rgb = vec3(1, 1, 1);
+            rgb *= texture2D(texture0, texcoord).xyz;
 
             gl_FragColor = vec4(rgb * lighting, 1);
         }
@@ -105,6 +113,11 @@
             return sh
         }
 
+        const resetShaders = () => {
+            se.vertexShader = dedent(vs)
+            se.fragmentShader = dedent(fs)
+        }
+
         const se = document.querySelector('shader-editor')
         const vs = document.querySelector('webgl-shader[vertex]').textContent
         const fs = document.querySelector('webgl-shader[fragment]').textContent
@@ -116,6 +129,11 @@
 
         se.vertexShader = localStorage.getItem('vertexShader') || dedent(vs)
         se.fragmentShader = localStorage.getItem('fragmentShader') || dedent(fs)
+        se.textures = {
+            'texture0': '/textures/checkerboard.png',
+            'texture1': '/textures/clouds.png',
+            'texture2': '/textures/random.png'
+        }
     </script>
 </body>
 </html>

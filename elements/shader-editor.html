@@ -53,6 +53,7 @@
                 vertex-errors="{{ vertexErrors }}"
                 fragment-shader="[[ fragmentShader ]]"
                 fragment-errors="{{ fragmentErrors }}"
+                textures="[[textures]]"
             ></shader-preview>
         </div>
     </template>
@@ -92,6 +93,12 @@
                     type: Array,
                     value: null,
                     notify: true
+                },
+
+                // Textures to render the preview with
+                textures: {
+                    type: Object,
+                    value: () => { return {} }
                 }
             }
         }

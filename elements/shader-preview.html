@@ -232,6 +232,14 @@
                     value: ''
                 },
 
+                // a map of "uniform name" : "texture path" to load
+                // the application
+                textures: {
+                    type: Object,
+                    value: () => { return {} },
+                    observer: '_texturesObserver'
+                },
+
                 // vertex shader compilation errors
                 vertexErrors: {
                     type: Array,
@@ -286,12 +294,21 @@
                     type: String,
                     value: 'sphere',
                     observer: '_displayGeometryObserver'
+                },
+
+                // the textures that have been loaded
+                _loadedTextures: {
+                    type: Object,
+                    value: () => { return {} }
                 }
             }
         }
 
         static get observers() {
-            return [ '_shadersObserver(_shaders)' ]
+            return [
+                '_shadersObserver(_shaders)',
+                '_deepLoadedTexturesObserver(_loadedTextures.*)'
+            ]
         }
 
         /* Lifecycle Functions */
@@ -392,6 +409,24 @@
         }
 
         /* Private Functions */
+        _updateTextureUniforms(mat) {
+            for (let key in mat.uniforms) {
+                if (mat.uniforms[key].type !== 't') continue
+
+                if (!(key in this._loadedTextures)) {
+                    delete mat.uniforms[key]
+                }
+            }
+
+            for (let key in this._loadedTextures) {
+                mat.uniforms[key] = {
+                    type:   't',
+                    value:  this._loadedTextures[key].texture,
+                    texture: this._loadedTextures[key].texture
+                }
+            }
+        }
+
         // reads, parses, and assigns the errors to the error properties
         // for the given material
         _checkForError(mat) {
@@ -436,6 +471,9 @@
                 if (this.fragmentErrors || this.vertexErrors) {
                     this.set(`${setpref}.src`, '')
                 } else {
+                    const material = this._images[i].material
+                    this._updateTextureUniforms(material)
+
                     this._meshes[this._displayGeometry].material = this._images[i].material
                     
                     this._images[i].material.uniforms._negate_.value = false
@@ -523,6 +561,43 @@
         }
 
         /* Observers */
+        _texturesObserver(textures) {
+            for (let key in this._loadedTextures) {
+                const removed = !(key in textures)
+                const changed = !removed && this._loadedTextures[key].source !== textures[key] 
+
+                if (removed || changed) {
+                    this._loadedTextures[key].dispose()
+                    this.set(`_loadedTextures.${key}`, undefined)
+                }
+            }
+
+            for (let key in textures) {
+                if (!(key in this._loadedTextures)) {
+                    const thisKey = key
+                    this.set(`_loadedTextures.${key}`, {
+                        source: textures[key],
+                        texture: new THREE.TextureLoader().load(
+                            textures[key],
+
+                            // // texture loaded callkback
+                            // texture => this.set(`_loadedTextures.${thisKey}.texture`, texture),
+                            
+                            // // load percentage callback
+                            // null,
+
+                            // // error callback
+                            // () => this.set(`_loadedTextures.${thisKey}`, undefined)
+                        )
+                    })
+                }
+            }
+        }
+
+        _deepLoadedTexturesObserver() {
+            this.debounce('rerender', () => this._render(), 500)
+        }
+
         _shadersObserver(shaders) {
 
             // expand or shorten the array if necessary
@@ -556,7 +631,7 @@
             })
 
             this._render(true)
-            this.debounce('render-all-shader-updates', () => this._render(), 500)
+            this.debounce('rerender', () => this._render(), 500)
         }
 
         _displayGeometryObserver(newgeom, oldgeom) {
