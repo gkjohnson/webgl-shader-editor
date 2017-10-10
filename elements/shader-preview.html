@@ -300,7 +300,14 @@
                 _loadedTextures: {
                     type: Object,
                     value: () => { return {} }
-                }
+                },
+
+                // the target size to render to
+                // TODO: Respect when this changes
+                _renderSize: {
+                    type: Number,
+                    value: 400
+                } 
             }
         }
 
@@ -318,7 +325,7 @@
             const scene = new THREE.Scene()
             const renderer = new THREE.WebGLRenderer({ antialias: false, alpha: true })
             renderer.setPixelRatio(window.devicePixelRatio)
-            renderer.setSize(400, 400)
+            renderer.setSize(this._renderSize, this._renderSize)
             renderer.setClearColor(0x000000, 0)
 
             const camera = new THREE.PerspectiveCamera(75, 1, 0.1, 50)
