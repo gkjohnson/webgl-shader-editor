@@ -335,7 +335,6 @@
             const meshes = {
                 cube: new THREE.Mesh(new THREE.BoxGeometry( 5, 5, 5, 50, 50, 50 ), null ),
                 plane: new THREE.Mesh(new THREE.PlaneGeometry( 5, 5, 100, 100 ), null ),
-                // sphere: new THREE.Mesh(new THREE.SphereGeometry( 5, 100, 100 ), null ),
                 sphere: new THREE.Mesh(new THREE.IcosahedronGeometry(5, 5), null),
             }
             scene.add( meshes[this._displayGeometry] );
@@ -416,7 +415,7 @@
         }
 
         /* Private Functions */
-        _updateTextureUniforms(mat) {
+        _updateUniforms(mat) {
             for (let key in mat.uniforms) {
                 if (mat.uniforms[key].type !== 't') continue
 
@@ -432,6 +431,9 @@
                     texture: this._loadedTextures[key].texture
                 }
             }
+
+            const res = this._renderSize
+            mat.uniforms.screenSize = { type: '4f', value: [res, res, 1 / res, 1 / res] }
         }
 
         // reads, parses, and assigns the errors to the error properties
