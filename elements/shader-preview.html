@@ -348,8 +348,8 @@
             orbit.enableZoom = false
             orbit.enablePan = false
             orbit.enableKeys = false
-            orbit.addEventListener('change', () => this._render(true))
-            target.addEventListener('mouseup', () => this._render())
+            orbit.addEventListener('change', () => this._render(true, true))
+            target.addEventListener('mouseup', () => this._render(false, true))
 
             this._renderer = renderer
             this._scene = scene
@@ -460,44 +460,56 @@
         // Renders all the images and updates the _images array with the new
         // image information
         // If `activeOnly` is true, then only the primary image will be rendered
-        _render(activeOnly = false) {
+        _render(activeOnly = false, skipIfErrors = false) {
             if (!this._renderer) return
-
-            this.vertexErrors = null
-            this.fragmentErrors = null
+            if (skipIfErrors && (this.vertexErrors || this.fragmentErrors)) return
 
             // assign the new shaders to the images being rendered
             this._shaders.forEach((s, i) => {
                 if (activeOnly && i !== this._activeImage) return
-                    
-                const fs = s.fragmentShader
-                const vs = s.vertexShader
 
-                const setpref = `_images.${i}`
-                if (this.fragmentErrors || this.vertexErrors) {
-                    this.set(`${setpref}.src`, '')
-                } else {
-                    const material = this._images[i].material
-                    this._updateUniforms(material)
-
-                    this._meshes[this._displayGeometry].material = this._images[i].material
-                    
-                    this._images[i].material.uniforms._negate_.value = false
-                    this._renderer.render(this._scene, this._camera)
-                    this.set(`${setpref}.src`, this._renderer.domElement.toDataURL('image/png'))
-
-                    this._images[i].material.uniforms._negate_.value = true
-                    this._renderer.render(this._scene, this._camera)
-                    this.set(`${setpref}.negsrc`, this._renderer.domElement.toDataURL('image/png'))
-
-                    // only check for errors on the first go because thats
-                    // the one that the user is writing
-                    if (i === 0) this._checkForError(this._images[i].material)
-                }
-
-                this._images[i].img.src = this._images[i].src
-                this._images[i].negimg.src = this._images[i].negsrc
+                this._renderFrame(i)
             })
+        }
+
+        // Rerender a particular frame
+        _renderFrame(i) {
+            // reset the errors if we're about to render
+            // the primary shader because that's the only
+            // we care about errors on
+            if (i === 0) {
+                this.vertexErrors = null
+                this.fragmentErrors = null
+            }
+
+            const s = this._shaders[i]
+            const fs = s.fragmentShader
+            const vs = s.vertexShader
+
+            const setpref = `_images.${i}`
+            if (this.fragmentErrors || this.vertexErrors) {
+                this.set(`${setpref}.src`, '')
+            } else {
+                const material = this._images[i].material
+                this._updateUniforms(material)
+
+                this._meshes[this._displayGeometry].material = this._images[i].material
+                
+                this._images[i].material.uniforms._negate_.value = false
+                this._renderer.render(this._scene, this._camera)
+                this.set(`${setpref}.src`, this._renderer.domElement.toDataURL('image/png'))
+
+                this._images[i].material.uniforms._negate_.value = true
+                this._renderer.render(this._scene, this._camera)
+                this.set(`${setpref}.negsrc`, this._renderer.domElement.toDataURL('image/png'))
+
+                // only check for errors on the first go because thats
+                // the one that the user is writing
+                if (i === 0) this._checkForError(this._images[i].material)
+            }
+
+            this._images[i].img.src = this._images[i].src
+            this._images[i].negimg.src = this._images[i].negsrc
         }
 
         /* Event Handlers */
@@ -585,11 +597,11 @@
                         source: textures[key],
                         texture: new THREE.TextureLoader().load(
                             textures[key],
-                            () => this.debounce('rerender', () => this._render(), 250),
+                            () => this.debounce('rerender', () => this._render(false, true), 250),
                             null,
                             () => {
                                 this.set(`_loadedTextures.${key}`, undefined)
-                                this.debounce('rerender', () => this._render(), 250)
+                                this.debounce('rerender', () => this._render(false, true), 250)
                             }
                         )
                     })
@@ -629,8 +641,8 @@
                 item.material.needsUpdate = true
             })
 
-            this.debounce('rerender-primary', () => this._render(true), 250)
-            this.debounce('rerender', () => this._render(), 500)
+            this.debounce('rerender-primary', () => this._renderFrame(0), 250)
+            this.debounce('rerender', () => this._render(false, true), 500)
         }
 
         _displayGeometryObserver(newgeom, oldgeom) {
@@ -639,7 +651,7 @@
             this._scene.remove(this._meshes[oldgeom])
             this._scene.add(this._meshes[newgeom])
 
-            this._render()
+            this._render(false, true)
         }
     }
  
