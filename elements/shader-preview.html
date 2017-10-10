@@ -312,10 +312,7 @@
         }
 
         static get observers() {
-            return [
-                '_shadersObserver(_shaders)',
-                '_deepLoadedTexturesObserver(_loadedTextures.*)'
-            ]
+            return ['_shadersObserver(_shaders)']
         }
 
         /* Lifecycle Functions */
@@ -588,23 +585,16 @@
                         source: textures[key],
                         texture: new THREE.TextureLoader().load(
                             textures[key],
-
-                            // // texture loaded callkback
-                            // texture => this.set(`_loadedTextures.${thisKey}.texture`, texture),
-                            
-                            // // load percentage callback
-                            // null,
-
-                            // // error callback
-                            // () => this.set(`_loadedTextures.${thisKey}`, undefined)
+                            () => this.debounce('rerender', () => this._render(), 250),
+                            null,
+                            () => {
+                                this.set(`_loadedTextures.${key}`, undefined)
+                                this.debounce('rerender', () => this._render(), 250)
+                            }
                         )
                     })
                 }
             }
-        }
-
-        _deepLoadedTexturesObserver() {
-            this.debounce('rerender', () => this._render(), 500)
         }
 
         _shadersObserver(shaders) {
