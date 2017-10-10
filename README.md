@@ -40,7 +40,7 @@ val.r = 0;
 - [ ] Update UI so it's easier to inspect (local variables not persistent, etc)
 - [ ] Add the fragment output after the last modification of a variable so we can see the result after the full shader has run
 - [ ] Provide non-varying local vertex-shader variables
-- [ ] Add some default uniform variables, such as time, render target size, etc (per-frame update-able textures may be difficult because of how long and how many targets we're rendering)
+- [ ] Add some default uniform variables, such as time, etc (per-frame update-able variables could maybe only work with the current active image / variable)
 
 - [ ] Texture upload
 - [ ] Uniform variable edit UI
