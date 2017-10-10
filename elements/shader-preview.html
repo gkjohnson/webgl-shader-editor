@@ -215,7 +215,7 @@
 <script type="text/javascript">
     // shader-preview Element
     // Element to preview, zoom in, and debug shader definitions
-    class ShaderPreview extends Mixin(Polymer.Element, Debouncer) {
+    class ShaderPreview extends Mixin(Polymer.Element, Debouncer, Animator) {
         static get is() { return 'shader-preview' }
 
         static get properties() {
@@ -359,6 +359,19 @@
             this._render()
         }
 
+        connectedCallback() {
+            super.connectedCallback()
+            this.animate('animate', () => this._render(true, true))
+        }
+
+        disconnectedCallback() {
+            super.disconnectedCallback()
+            // TODO: Dispose of everything here?
+            // Or make an explicit "dispose" function?
+            this.clearAnimations()
+            this.clearDebounce()
+        }
+
         /* Utilities */
         _equals(a,b) { return a === b }
 
@@ -431,6 +444,7 @@
 
             const res = this._renderSize
             mat.uniforms.screenSize = { type: '4f', value: [res, res, 1 / res, 1 / res] }
+            mat.uniforms.time = { type: 'f', value: window.performance.now() }
         }
 
         // reads, parses, and assigns the errors to the error properties
