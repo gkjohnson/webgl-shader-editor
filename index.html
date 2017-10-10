@@ -97,13 +97,24 @@
         uniform sampler2D texture0;     // checkerboard
         uniform sampler2D texture1;     // clouds
         uniform sampler2D texture2;     // random noise
+        uniform vec4 screenSize;
 
         void main() {
             vec3 rgb = vec3(1, 1, 1);
             vec4 val = texture2D(texture0, texcoord) * texture2D(texture1, texcoord);
             rgb *= val.xyz;
+            
+            vec2 st;
+            st.x = gl_FragCoord.x / 2.0;
+            st.x -= floor(st.x);
 
-            gl_FragColor = vec4(rgb * lighting, 1);
+            st.y = gl_FragCoord.y / 2.0;
+            st.y -= floor(st.y);
+            
+            if (floor(st.x + 0.5) == 0.0) discard;
+            if (floor(st.y + 0.5) == 0.0) discard;
+            
+            gl_FragColor = vec4(rgb, 1);//vec4(rgb * lighting, 1);
         }
     </webgl-shader>
 </head>
