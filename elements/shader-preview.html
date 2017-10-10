@@ -481,7 +481,7 @@
                     this.set(`${setpref}.src`, '')
                 } else {
                     const material = this._images[i].material
-                    this._updateTextureUniforms(material)
+                    this._updateUniforms(material)
 
                     this._meshes[this._displayGeometry].material = this._images[i].material
                     
