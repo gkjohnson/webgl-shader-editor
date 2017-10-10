@@ -63,6 +63,9 @@
             vec3 direction;
         };
 
+        uniform sampler2D texture0;
+        uniform sampler2D texture1;
+        uniform sampler2D texture2;
         uniform DirLight directionalLights[NUM_DIR_LIGHTS];
         uniform vec3 ambientLightColor;
 
@@ -78,9 +81,12 @@
             for(int i = 0; i < NUM_DIR_LIGHTS; i ++) {
                 DirLight dl = directionalLights[i];
                 lighting += clamp(dot(worldNorm, dl.direction), 0.0, 1.0) * dl.color;
-            } 
+            }
+            
+            vec3 sample = texture2D(texture1, uv).xyz;
+            vec3 pos = position + normal * sample;
 
-            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
         }
     </webgl-shader>
 
@@ -88,13 +94,14 @@
         varying vec3 lighting;
         varying vec2 texcoord;
 
-        uniform sampler2D texture0;
-        uniform sampler2D texture1;
-        uniform sampler2D texture2;
+        uniform sampler2D texture0;     // checkerboard
+        uniform sampler2D texture1;     // clouds
+        uniform sampler2D texture2;     // random noise
 
         void main() {
             vec3 rgb = vec3(1, 1, 1);
-            rgb *= texture2D(texture0, texcoord).xyz;
+            vec4 val = texture2D(texture0, texcoord) * texture2D(texture1, texcoord);
+            rgb *= val.xyz;
 
             gl_FragColor = vec4(rgb * lighting, 1);
         }
