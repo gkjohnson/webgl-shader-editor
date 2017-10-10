@@ -639,7 +639,7 @@
                 item.material.needsUpdate = true
             })
 
-            this._render(true)
+            this.debounce('rerender-primary', () => this._render(true), 250)
             this.debounce('rerender', () => this._render(), 500)
         }
 
