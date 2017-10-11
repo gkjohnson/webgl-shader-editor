@@ -61,7 +61,7 @@
             #debug-list .name {
                 text-align: center;
                 font-weight: 900;
-                font-size: 14px;
+                font-size: 12px;
                 font-style: italic;
 
                 white-space: pre;
@@ -84,7 +84,7 @@
 
             #local-variables-list .data span {
                 flex: 1;
-                font-size: 14px;
+                font-size: 12px;
                 font-weight: 900;
             }
 
@@ -193,6 +193,7 @@
                         on-click="_debugImageClickHandler"
                     >
                         <div class="name">[[item.type]] [[item.name]]</div>
+                        <div class="name">[[item.fromShader]]</div>
                         <img src$="[[item.src]]" />
                     </div>
                 </template>
@@ -645,7 +646,8 @@
                     src: '',
                     negsrc: '',
                     name: '',
-                    type: ''
+                    type: '',
+                    fromShader: ''
                 })
             }
 
@@ -655,6 +657,7 @@
 
                 this.set(`${setpref}.name`, s.name)
                 this.set(`${setpref}.type`, s.type)
+                this.set(`${setpref}.fromShader`, s.fromShader)
 
                 item.material.vertexShader = s.vertexShader
                 item.material.fragmentShader = s.fragmentShader
