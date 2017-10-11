@@ -107,12 +107,13 @@ DebugShaders = {}
                 const type = matches[7].trim()
                 const name = matches[8].trim()
 
-                if (prefix) return;
-                
+                if (prefix) return
+                if (/(int|uint)/g.test(type)) return
+
                 const newVarName = `_out_${name}_`
                 const varyingLine = `varying ${type} ${newVarName};`
                 const newLines = [varyingLine].concat(lines)
-                newLines[i + 1] += `\n${newVarName} = ${name};\n`
+                newLines[vsRange.end] = `\n${newVarName} = ${name};\n` + newLines[vsRange.end]
 
                 const newvs = newLines.join('\n')
                 const newfs = `${varyingLine}\n${fs}`.replace(MAIN_SIG, MAIN_SIG + '\n' + toGlFragColorLine(type, newVarName) + '\nreturn;\n')
@@ -144,11 +145,11 @@ DebugShaders = {}
                     if (prefix === 'varying') fsVarying.push({ type, name, line: i })
                     return
                 }
-
+                if (/(int|uint)/g.test(type)) return
                 if (i < fsRange.start || i > fsRange.end) return
 
                 const newlines = [].concat(lines)
-                newlines[i] += '\n' + toGlFragColorLine(type, name) + '\nreturn;\n'
+                newlines[fsRange.end] = '\n' + toGlFragColorLine(type, name) + '\nreturn;\n' + newlines[fsRange.end]
 
                 shaders.push({
                     type,
