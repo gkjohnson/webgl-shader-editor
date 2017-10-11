@@ -11,7 +11,6 @@ DebugShaders = {}
     canvas.width = 1
     canvas.height = 1
 
-
     const normalize = shader => {
         return shader
             .replace(/\/\/[^\n]*\n/g, '')               // comment line
@@ -21,6 +20,30 @@ DebugShaders = {}
             .replace(/\s*}\s*/g, '\n}\n')
             .replace(/\s*;\s*/g, ';\n')
             .replace(/void\s+main\s*\(\)(\s|\n)*{/, MAIN_SIG)
+    }
+
+    const getMainFuncRange = shader => {
+        const st = shader.indexOf(MAIN_SIG)
+        const bef = shader.substr(0, st)
+        const aft = shader.substr(st)
+
+        const befLines = bef.replace(/[^\n]/g, '').length
+        const aftBraces = aft.replace(/[^{}\n]*/g, '')
+
+        let started = false
+        let braceCount = 0
+        let lines = 0
+        for (let i = 0; i < aftBraces.length; i ++) {
+            const ch = aftBraces[i]
+            if (ch === '{') braceCount ++
+            if (ch === '}') braceCount --
+            if (ch === '\n') lines ++
+
+            if (braceCount > 0) started = true
+            if (started && braceCount === 0) break;
+        }
+
+        return { start: befLines, end: befLines + lines }
     }
 
     const toGlFragColorLine = (type, name) => {
@@ -65,12 +88,18 @@ DebugShaders = {}
         vs = normalize(vs)
         fs = normalize(fs)
 
+        const vsRange = getMainFuncRange(vs)
+        const fsRange = getMainFuncRange(fs)
+        
         const shaders = []
         const fsVarying = []
 
         // output color for each variable in the frag shader
         let lines = vs.split('\n')
         lines.forEach((line, i) => {
+            if (i < vsRange.start || i > vsRange.end) return
+            if (/for|while/g.test(line)) return
+
             const matches = line.match(variableRegex)
             if (matches) {
                 const prefix = (matches[1] || '').trim()
@@ -79,54 +108,65 @@ DebugShaders = {}
 
                 if (prefix) return;
                 
-                const newVarName = `_out__${name}__`
+                const newVarName = `_out_${name}_`
                 const varyingLine = `varying ${type} ${newVarName};`
                 const newLines = [varyingLine].concat(lines)
-                newLines[i] += `\n${newVarName} = ${name};\nreturn;\n`
+                newLines[i + 1] += `\n${newVarName} = ${name};\n`
 
                 const newvs = newLines.join('\n')
-                const newfs = `${varyingLine}\n${fs}`.replace(MAIN_SIG, MAIN_SIG + '\n' + toGlFragColorLine(type, name, negate) + '\nreturn;\n')
+                const newfs = `${varyingLine}\n${fs}`.replace(MAIN_SIG, MAIN_SIG + '\n' + toGlFragColorLine(type, newVarName) + '\nreturn;\n')
 
+                shaders.push({
+                    type,
+                    name,
+                    vertexShader: newvs,
+                    fragmentShader: newfs,
+                    line: i,
+                    fromShader: 'vertex'
+                })
             }
         })
 
         lines = fs.split('\n')
         lines.forEach((line, i) => {
-                const matches = line.match(variableRegex)
-                if (matches) {
-                    const prefix = (matches[1] || '').trim()
-                    const type = matches[7].trim()
-                    const name = matches[8].trim()
+            const matches = line.match(variableRegex)
+            if (matches) {
+                const prefix = (matches[1] || '').trim()
+                const type = matches[7].trim()
+                const name = matches[8].trim()
 
-                    if (prefix) {
-                        if (prefix === 'varying') fsVarying.push({ type, name, line: i })
-                        return
-                    }
-
-                    const newlines = [].concat(lines)
-                    newlines[i] += '\n' + toGlFragColorLine(type, name, negate) + '\nreturn;\n'
-
-                    shaders.push({
-                        type,
-                        name,
-                        vertexShader: vs,
-                        fragmentShader: newlines.join('\n'),
-                        line: i
-                    })
+                if (prefix) {
+                    if (prefix === 'varying') fsVarying.push({ type, name, line: i })
+                    return
                 }
-            })
 
+                if (i < fsRange.start || i > fsRange.end) return
+
+                const newlines = [].concat(lines)
+                newlines[i] += '\n' + toGlFragColorLine(type, name) + '\nreturn;\n'
+
+                shaders.push({
+                    type,
+                    name,
+                    vertexShader: vs,
+                    fragmentShader: newlines.join('\n'),
+                    line: i,
+                    fromShader: 'fragment'
+                })
+            }
+        })
 
         // output color for each varying variable in the frag shader
         fsVarying
             .forEach(it => {
-                const res = fs.replace(MAIN_SIG, MAIN_SIG + '\n' + toGlFragColorLine(it.type, it.name, negate) + '\nreturn;\n')
+                const res = fs.replace(MAIN_SIG, MAIN_SIG + '\n' + toGlFragColorLine(it.type, it.name) + '\nreturn;\n')
                 shaders.push({
                     type: it.type,
                     name: it.name,
                     vertexShader: vs,
                     fragmentShader: res,
-                    line: it.line
+                    line: it.line,
+                    fromShader: 'fragment'
                 })
             })
 
@@ -161,8 +201,8 @@ DebugShaders = {}
         if (type === 'vec3') return [cv(px.r), cv(px.g), cv(px.b)]
         if (type === 'vec4') return [cv(px.r), cv(px.g), cv(px.b), cv(px.a)]
         if (type === 'bool') return [!!px.r]
-        if (type === 'int'); // TODO
-        if (type === 'uint'); // TODO
+        if (type === 'int');    // TODO
+        if (type === 'uint');   // TODO
         if (type === 'float') return [cv(res.r)]
     }
 })()

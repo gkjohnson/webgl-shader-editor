@@ -452,6 +452,8 @@
         // reads, parses, and assigns the errors to the error properties
         // for the given material
         _checkForError(mat) {
+            if (!mat.program) return
+                
             const diag = mat.program.diagnostics
 
             if (!diag || !diag.fragmentShader.log) {
