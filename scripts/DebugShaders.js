@@ -3,11 +3,14 @@ DebugShaders = {}
 ;(function() {
 
     const NEGATE_UNIFORM = '_negate_'
+    const MAIN_SIG = 'void main() {'
+
     const variableRegex = /((((precision|varying|uniform|attribute)\s+)?)((highp|mediump|lowp)\s+)?)(vec4|vec3|vec2|float|int|uint|bool)\s+([A-Za-z0-9]+)/
     const canvas = document.createElement('canvas')
     const ctx = canvas.getContext('2d')
     canvas.width = 1
     canvas.height = 1
+
 
     const normalize = shader => {
         return shader
@@ -17,7 +20,7 @@ DebugShaders = {}
             .replace(/\s*{\s*/g, '\n{\n')
             .replace(/\s*}\s*/g, '\n}\n')
             .replace(/\s*;\s*/g, ';\n')
-            .replace(/void\s+main\s*\(\)(\s|\n)*{/, 'void main() {')
+            .replace(/void\s+main\s*\(\)(\s|\n)*{/, MAIN_SIG)
     }
 
     const toGlFragColorLine = (type, name) => {
@@ -66,9 +69,29 @@ DebugShaders = {}
         const fsVarying = []
 
         // output color for each variable in the frag shader
-        const lines = fs.split('\n')
-        lines
-            .forEach((line, i) => {
+        let lines = vs.split('\n')
+        lines.forEach((line, i) => {
+            const matches = line.match(variableRegex)
+            if (matches) {
+                const prefix = (matches[1] || '').trim()
+                const type = matches[7].trim()
+                const name = matches[8].trim()
+
+                if (prefix) return;
+                
+                const newVarName = `_out__${name}__`
+                const varyingLine = `varying ${type} ${newVarName};`
+                const newLines = [varyingLine].concat(lines)
+                newLines[i] += `\n${newVarName} = ${name};\nreturn;\n`
+
+                const newvs = newLines.join('\n')
+                const newfs = `${varyingLine}\n${fs}`.replace(MAIN_SIG, MAIN_SIG + '\n' + toGlFragColorLine(type, name, negate) + '\nreturn;\n')
+
+            }
+        })
+
+        lines = fs.split('\n')
+        lines.forEach((line, i) => {
                 const matches = line.match(variableRegex)
                 if (matches) {
                     const prefix = (matches[1] || '').trim()
@@ -97,8 +120,7 @@ DebugShaders = {}
         // output color for each varying variable in the frag shader
         fsVarying
             .forEach(it => {
-                const mainSig = 'void main() {'
-                const res = fs.replace(mainSig, mainSig + '\n' + toGlFragColorLine(it.type, it.name, negate) + '\nreturn;\n')
+                const res = fs.replace(MAIN_SIG, MAIN_SIG + '\n' + toGlFragColorLine(it.type, it.name, negate) + '\nreturn;\n')
                 shaders.push({
                     type: it.type,
                     name: it.name,
