@@ -11,17 +11,18 @@ DebugShaders = {}
     canvas.width = 1
     canvas.height = 1
 
+    // Clean up the shader to make it easer to parse
     const normalize = shader => {
         return shader
-            .replace(/\/\/[^\n]*\n/g, '')               // comment line
-            .replace(/\/\*(\*(?!\/)|[^*])*\*\//, '')    // block comment
-            .replace(/(\n|\s)+/g, ' ')
-            .replace(/\s*{\s*/g, '\n{\n')
-            .replace(/\s*}\s*/g, '\n}\n')
-            .replace(/\s*;\s*/g, ';\n')
-            .replace(/void\s+main\s*\(\)(\s|\n)*{/, MAIN_SIG)
+            .replace(/\/\/[^\n]*\n/g, '')               // remove comment line
+            .replace(/\/\*(\*(?!\/)|[^*])*\*\//, '')    // remove block comment
+            .replace(/(\n|\s)+/g, ' ')                  // replace newlines or whitespace with a single space
+            .replace(/\s*({|})\s*/g, '\n$1\n')          // compress the area around braces
+            .replace(/\s*;\s*/g, ';\n')                 // replace newlines after semicolons
+            .replace(/void\s+main\s*\(\)(\s|\n)*{/, MAIN_SIG)   // clean up the main function signature
     }
 
+    // Find the line range between which the main function lives
     const getMainFuncRange = shader => {
         const st = shader.indexOf(MAIN_SIG)
         const bef = shader.substr(0, st)
@@ -30,6 +31,7 @@ DebugShaders = {}
         const befLines = bef.replace(/[^\n]/g, '').length
         const aftBraces = aft.replace(/[^{}\n]*/g, '')
 
+        // count the braces to the end of the main function body
         let started = false
         let braceCount = 0
         let lines = 0
@@ -46,6 +48,8 @@ DebugShaders = {}
         return { start: befLines, end: befLines + lines }
     }
 
+    // get a line that outputs the given variable of type
+    // as a fragment color
     const toGlFragColorLine = (type, name) => {
         let r = 0
         let g = 0
@@ -94,7 +98,8 @@ DebugShaders = {}
         const shaders = []
         const fsVarying = []
 
-        // output color for each variable in the frag shader
+        // generate shaders for outputing colors for each variable
+        // in the vertex shader
         let lines = vs.split('\n')
         lines.forEach((line, i) => {
             if (i < vsRange.start || i > vsRange.end) return
@@ -127,8 +132,12 @@ DebugShaders = {}
             }
         })
 
+        // generate shaders for outputing colors for each variable
+        // in the fragmnet shader
         lines = fs.split('\n')
         lines.forEach((line, i) => {
+            if (/for|while/g.test(line)) return
+            
             const matches = line.match(variableRegex)
             if (matches) {
                 const prefix = (matches[1] || '').trim()
@@ -170,6 +179,8 @@ DebugShaders = {}
                 })
             })
 
+        // prefix the _negate_ uniform on each shader which is
+        // used to invert the color of each output
         for(let i in shaders) {
             shaders[i].fragmentShader = `
             uniform bool ${NEGATE_UNIFORM};
