@@ -334,7 +334,7 @@ __webpack_require__(0);
 /***/ (function(module, exports, __webpack_require__) {
 
 /*__wc__loader*/
-__webpack_require__(27);
+__webpack_require__(29);
 
 
 (function() {
@@ -439,13 +439,13 @@ __webpack_require__(0);
 
 __webpack_require__(2);
 
-__webpack_require__(31);
+__webpack_require__(33);
 
 __webpack_require__(5);
 
-__webpack_require__(32);
+__webpack_require__(34);
 
-__webpack_require__(33);
+__webpack_require__(35);
 
 
 (function() {
@@ -4221,7 +4221,7 @@ __webpack_require__(0);
 /* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
-/*__wc__loader*/!function(a){var b="\n    <title>WebGL Shader Editor</title>\n\n    \n    <link href=\"https://fonts.googleapis.com/css?family=Roboto:100\" rel=\"stylesheet\">\n\n    \n    \n    \n    \n    \n    \n    \n\n    \n    \n\n    \n    \n    \n    \n\n    \n    \n    \n    \n    \n    \n\n    <style type=\"text/css\">html,body{margin:0;padding:0;height:100%;font-weight:100;font-family:Roboto,sans-serif;}webgl-shader{display:none;}::-webkit-scrollbar{width:5px;position:absolute;}::-webkit-scrollbar-thumb{border-radius:5px;background-color:rgba(255,255,255,0.2);}</style>\n\n    ";if(a.head){var c=a.head,d=a.createElement("div");for(d.innerHTML=b;d.children.length>0;)c.appendChild(d.children[0])}else a.write(b)}(document);!function(a){var b="<webgl-shader vertex=\"\">\n        // Lighting\n        struct DirLight {\n            vec3 color;\n            vec3 direction;\n        };\n\n        uniform DirLight directionalLights[NUM_DIR_LIGHTS];\n        uniform vec3 ambientLightColor;\n\n        varying vec3 lighting;\n\n        void main() \n        {\n            vec3 worldNorm = (modelViewMatrix * vec4(normal, 0)).xyz;\n            \n            lighting = ambientLightColor;\n            for(int i = 0; i &lt; NUM_DIR_LIGHTS; i ++) {\n                DirLight dl = directionalLights[i];\n                lighting += clamp(dot(worldNorm, dl.direction), 0.0, 1.0) * dl.color;\n            } \n\n            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);\n        }\n    </webgl-shader>\n\n    <webgl-shader fragment=\"\">\n        varying vec3 lighting;\n\n        void main() {\n            vec3 rgb = vec3(1, 1, 1);\n\n            gl_FragColor = vec4(rgb * lighting, 1);\n        }\n    </webgl-shader>\n\n\n    <shader-editor></shader-editor>\n    \n\n";if(a.body){var c=a.body,d=a.createElement("div");for(d.innerHTML=b;d.children.length>0;)c.appendChild(d.children[0])}else a.write(b)}(document);
+/*__wc__loader*/!function(a){var b="\n    <title>WebGL Shader Editor</title>\n\n    \n    <link href=\"https://fonts.googleapis.com/css?family=Roboto:100\" rel=\"stylesheet\">\n\n    \n    \n    \n    \n    \n    \n    \n    \n\n    \n    \n\n    \n    \n    \n    \n\n    \n    \n    \n    \n    \n    \n\n    <style type=\"text/css\">html,body{margin:0;padding:0;height:100%;font-weight:100;font-family:Roboto,sans-serif;}webgl-shader{display:none;}::-webkit-scrollbar{width:5px;position:absolute;}::-webkit-scrollbar-thumb{border-radius:5px;background-color:rgba(255,255,255,0.2);}</style>\n\n    ";if(a.head){var c=a.head,d=a.createElement("div");for(d.innerHTML=b;d.children.length>0;)c.appendChild(d.children[0])}else a.write(b)}(document);!function(a){var b="<webgl-shader vertex=\"\">\n        // Lighting\n        struct DirLight {\n            vec3 color;\n            vec3 direction;\n        };\n\n        uniform float time;\n        uniform sampler2D texture0;\n        uniform sampler2D texture1;\n        uniform sampler2D texture2;\n        uniform DirLight directionalLights[NUM_DIR_LIGHTS];\n        uniform vec3 ambientLightColor;\n\n        varying vec3 lighting;\n        varying vec2 texcoord;\n\n        void main() \n        {\n            vec3 worldNorm = (modelViewMatrix * vec4(normal, 0)).xyz;\n            \n            texcoord = uv;\n            lighting = ambientLightColor;\n            for(int i = 0; i &lt; NUM_DIR_LIGHTS; i ++) {\n                DirLight dl = directionalLights[i];\n                lighting += clamp(dot(worldNorm, dl.direction), 0.0, 1.0) * dl.color;\n            }\n            \n            vec3 sample = texture2D(texture1, uv).xyz;\n            vec3 pos = position + normal * sample * sin(time * 0.001);\n\n            gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);\n        }\n    </webgl-shader>\n\n    <webgl-shader fragment=\"\">\n        varying vec3 lighting;\n        varying vec2 texcoord;\n\n        uniform sampler2D texture0;     // checkerboard\n        uniform sampler2D texture1;     // clouds\n        uniform sampler2D texture2;     // random noise\n        uniform vec4 screenSize;\n\n        void main() {\n            vec3 rgb = vec3(1, 1, 1);\n            vec4 val = texture2D(texture0, texcoord) * texture2D(texture1, texcoord);\n            rgb *= val.xyz;\n            \n            vec2 st;\n            st.x = gl_FragCoord.x / 2.0;\n            st.x -= floor(st.x);\n\n            st.y = gl_FragCoord.y / 2.0;\n            st.y -= floor(st.y);\n            \n            if (floor(st.x + 0.5) == 0.0) discard;\n            if (floor(st.y + 0.5) == 0.0) discard;\n            \n            gl_FragColor = vec4(rgb, 1);//vec4(rgb * lighting, 1);\n        }\n    </webgl-shader>\n\n\n    <shader-editor></shader-editor>\n    \n\n";if(a.body){var c=a.body,d=a.createElement("div");for(d.innerHTML=b;d.children.length>0;)c.appendChild(d.children[0])}else a.write(b)}(document);
 __webpack_require__(13);
 
 __webpack_require__(15);
@@ -4236,11 +4236,9 @@ __webpack_require__(23);
 
 __webpack_require__(25);
 
+__webpack_require__(27);
+
 __webpack_require__(4);
-
-__webpack_require__(34);
-
-__webpack_require__(35);
 
 __webpack_require__(36);
 
@@ -4251,6 +4249,10 @@ __webpack_require__(38);
 __webpack_require__(39);
 
 __webpack_require__(40);
+
+__webpack_require__(41);
+
+__webpack_require__(42);
 
 
         // dedents the shader based on the indentation of the
@@ -4263,6 +4265,11 @@ __webpack_require__(40);
             return sh
         }
 
+        const resetShaders = () => {
+            se.vertexShader = dedent(vs)
+            se.fragmentShader = dedent(fs)
+        }
+
         const se = document.querySelector('shader-editor')
         const vs = document.querySelector('webgl-shader[vertex]').textContent
         const fs = document.querySelector('webgl-shader[fragment]').textContent
@@ -4272,8 +4279,15 @@ __webpack_require__(40);
             localStorage.setItem('fragmentShader', se.fragmentShader)
         }
 
+
+        const path = /\.bundle\.html$/.test(location.href) ? '..' : '.'
         se.vertexShader = localStorage.getItem('vertexShader') || dedent(vs)
         se.fragmentShader = localStorage.getItem('fragmentShader') || dedent(fs)
+        se.textures = {
+            'texture0': `${path}/textures/checkerboard.png`,
+            'texture1': `${path}/textures/clouds.png`,
+            'texture2': `${path}/textures/random.png`
+        }
     
 
 
@@ -4347,7 +4361,7 @@ __webpack_require__(1)(__webpack_require__(24))
 /* 24 */
 /***/ (function(module, exports) {
 
-module.exports = "(function(module){\r\n    module.Mixin = function(superClass, ...args) {\r\n        const __mixinargs__ = args\r\n\r\n        class Mixed extends superClass{\r\n            constructor() {\r\n                super(...arguments)\r\n\r\n                for (let arg of __mixinargs__) {\r\n                    Object.assign(this, new arg())\r\n\r\n                    for (let key of Object.getOwnPropertyNames(arg.prototype)) {\r\n                        if (key === 'constructor') continue\r\n\r\n                        this[key] = function() {\r\n                            return arg.prototype[key].call(this, ...arguments)\r\n                        }\r\n                    }\r\n                }\r\n            }\r\n        }\r\n\r\n        return Mixed\r\n    }\r\n})(typeof window !== 'undefined' && window || module && (module.exports = {}))"
+module.exports = "(function(module) {\r\n\r\n    // platform agnostic next frame functions\r\n    const _requestAnimationFrame = (function() {\r\n        if (typeof process !== 'undefined' && process.nextTick) return f => process.nextTick(f)\r\n        if (typeof requestAnimationFrame !== 'undefined') return f => requestAnimationFrame(f)\r\n        return f => setTimeout(f, 0)\r\n    })()\r\n\r\n    const _cancelAnimationFrame = (function() {\r\n        if (typeof process !== 'undefined' && process.nextTick) return null\r\n        if (typeof requestAnimationFrame !== 'undefined') return f => cancelAnimationFrame(f)\r\n        return id => clearTimeout() \r\n    })()\r\n\r\n    module.Animator = class {\r\n        constructor() {\r\n            this.__animations = {}\r\n        }\r\n\r\n        // Returns whether or not there are any animations\r\n        hasAnimations() {\r\n            return !!Object.keys(this.__animations).length\r\n        }\r\n\r\n        animate(key, func, callNow = true) {\r\n            if (key == null || !func) return\r\n\r\n            this.clearAnimation(key)\r\n            this.__animations[key] = { func, handle: -1 }\r\n\r\n            let frame = 0\r\n\r\n            // Returns whether or not the current\r\n            // animation is cancelled\r\n            // Needed because node does not have\r\n            // a cancel function for NextTick \r\n            const _cancelled = () => !(key in this.__animations) || this.__animations[key].func !== func\r\n\r\n            // Fires the next animation frame request\r\n            const _request = () => {\r\n                this.__animations[key].handle = _requestAnimationFrame(_do)\r\n            }\r\n\r\n            // Calls the function and fires the next\r\n            // animation frame\r\n            const _do = () => {\r\n                if (_cancelled()) return\r\n\r\n                func(frame)\r\n                frame++\r\n\r\n                if (!_cancelled()) _request()\r\n            }\r\n\r\n            if (callNow) _do()\r\n            else _request()\r\n        }\r\n\r\n        // Clears the given animation key\r\n        // Clears all animations if no key is given\r\n        clearAnimation(key) {\r\n            if (key == null) {\r\n                for (let k in this.__animations) this.clearAnimation(k)\r\n            } else if (key in this.__animations) {\r\n                _cancelAnimationFrame && _cancelAnimationFrame(this.__animations[key].handle)\r\n                delete this.__animations[key]\r\n            }\r\n        }\r\n    }\r\n})(typeof window !== 'undefined' && window || module && (module.exports = {}))"
 
 /***/ }),
 /* 25 */
@@ -4359,26 +4373,38 @@ __webpack_require__(1)(__webpack_require__(26))
 /* 26 */
 /***/ (function(module, exports) {
 
-module.exports = "DebugShaders = {}\r\n\r\n;(function() {\r\n\r\n    const NEGATE_UNIFORM = '_negate_'\r\n    const variableRegex = /((((precision|varying|uniform|attribute)\\s+)?)((highp|mediump|lowp)\\s+)?)(vec4|vec3|vec2|float|int|uint|bool)\\s+([A-Za-z0-9]+)/\r\n    const canvas = document.createElement('canvas')\r\n    const ctx = canvas.getContext('2d')\r\n    canvas.width = 1\r\n    canvas.height = 1\r\n\r\n    const normalize = shader => {\r\n        return shader\r\n            .replace(/\\/\\/[^\\n]*\\n/g, '')               // comment line\r\n            .replace(/\\/\\*(\\*(?!\\/)|[^*])*\\*\\//, '')    // block comment\r\n            .replace(/(\\n|\\s)+/g, ' ')\r\n            .replace(/\\s*{\\s*/g, '\\n{\\n')\r\n            .replace(/\\s*}\\s*/g, '\\n}\\n')\r\n            .replace(/\\s*;\\s*/g, ';\\n')\r\n            .replace(/void\\s+main\\s*\\(\\)(\\s|\\n)*{/, 'void main() {')\r\n    }\r\n\r\n    const toGlFragColorLine = (type, name) => {\r\n        let r = 0\r\n        let g = 0\r\n        let b = 0\r\n        let a = 1\r\n        \r\n        const neg = `(${NEGATE_UNIFORM} ? -1.0 : 1.0)`\r\n\r\n        if (/^vec/.test(type)) {\r\n            // TODO: Pack these more so more of\r\n            // the data can be read back out, otherwise\r\n            // they're clamped from 0 to 1.0\r\n            r = `${name}.r * ${neg}`\r\n            g = `${name}.g * ${neg}`\r\n            if (/^vec(3|4)/.test(type)) b = `${name}.b * ${neg}`\r\n            if (/^vec4/.test(type)) a = `${name}.a * ${neg}`\r\n        }\r\n        else if(type === 'bool') {\r\n            r = `${name} ? 1 : 0`\r\n            g = r\r\n            b = r\r\n            a = r\r\n        }\r\n        else if(/^(int|uint)/.test(type)) {\r\n            r = `float(((${name} * int(${neg})) << 0 ) & 0xFF) / 0xFF`\r\n            g = `float(((${name} * int(${neg})) << 8 ) & 0xFF) / 0xFF`\r\n            b = `float(((${name} * int(${neg})) << 16) & 0xFF) / 0xFF`\r\n            a = `float(((${name} * int(${neg})) << 24) & 0xFF) / 0xFF`\r\n        }\r\n        else if(type === 'float') {\r\n            // TODO : Pack this into bytes so we can\r\n            // read it back out as a larger float\r\n            r = `${name}`\r\n        }\r\n\r\n        return `gl_FragColor = vec4(${r},${g},${b},${a});`\r\n    }\r\n\r\n    DebugShaders.enumerate = (vs, fs, negate = false) => {\r\n        vs = normalize(vs)\r\n        fs = normalize(fs)\r\n\r\n        const shaders = []\r\n        const fsVarying = []\r\n\r\n        // output color for each variable in the frag shader\r\n        const lines = fs.split('\\n')\r\n        lines\r\n            .forEach((line, i) => {\r\n                const matches = line.match(variableRegex)\r\n                if (matches) {\r\n                    const prefix = (matches[1] || '').trim()\r\n                    const type = matches[7].trim()\r\n                    const name = matches[8].trim()\r\n\r\n                    if (prefix) {\r\n                        if (prefix === 'varying') fsVarying.push({ type, name, line: i })\r\n                        return\r\n                    }\r\n\r\n                    const newlines = [].concat(lines)\r\n                    newlines[i] += '\\n' + toGlFragColorLine(type, name, negate) + '\\nreturn;\\n'\r\n\r\n                    shaders.push({\r\n                        type,\r\n                        name,\r\n                        vertexShader: vs,\r\n                        fragmentShader: newlines.join('\\n'),\r\n                        line: i\r\n                    })\r\n                }\r\n            })\r\n\r\n\r\n        // output color for each varying variable in the frag shader\r\n        fsVarying\r\n            .forEach(it => {\r\n                const mainSig = 'void main() {'\r\n                const res = fs.replace(mainSig, mainSig + '\\n' + toGlFragColorLine(it.type, it.name, negate) + '\\nreturn;\\n')\r\n                shaders.push({\r\n                    type: it.type,\r\n                    name: it.name,\r\n                    vertexShader: vs,\r\n                    fragmentShader: res,\r\n                    line: it.line\r\n                })\r\n            })\r\n\r\n        for(let i in shaders) {\r\n            shaders[i].fragmentShader = `\r\n            uniform bool ${NEGATE_UNIFORM};\r\n            ${shaders[i].fragmentShader}\r\n            `\r\n        }\r\n\r\n        return shaders\r\n    }\r\n\r\n    DebugShaders.readPixel = (img, x, y) => {\r\n        ctx.clearRect(0, 0, 1, 1)\r\n        ctx.drawImage(img, x, y, 1, 1, 0, 0, 1, 1)\r\n\r\n        const data = ctx.getImageData(0,0,1,1).data\r\n\r\n        return {\r\n            r: data[0],\r\n            g: data[1],\r\n            b: data[2],\r\n            a: data[3]\r\n        }\r\n    }\r\n\r\n    DebugShaders.pixelToArray = (px, type, prec = 5) => {\r\n        const cv = f => parseFloat((f / 255.0).toPrecision(prec))\r\n\r\n        if (type === 'vec2') return [cv(px.r), cv(px.g)]\r\n        if (type === 'vec3') return [cv(px.r), cv(px.g), cv(px.b)]\r\n        if (type === 'vec4') return [cv(px.r), cv(px.g), cv(px.b), cv(px.a)]\r\n        if (type === 'bool') return [!!px.r]\r\n        if (type === 'int'); // TODO\r\n        if (type === 'uint'); // TODO\r\n        if (type === 'float') return [cv(res.r)]\r\n    }\r\n})()"
+module.exports = "(function(module){\r\n    module.Mixin = function(superClass, ...args) {\r\n        const __mixinargs__ = args\r\n\r\n        class Mixed extends superClass{\r\n            constructor() {\r\n                super(...arguments)\r\n\r\n                for (let arg of __mixinargs__) {\r\n                    Object.assign(this, new arg())\r\n\r\n                    for (let key of Object.getOwnPropertyNames(arg.prototype)) {\r\n                        if (key === 'constructor') continue\r\n\r\n                        this[key] = function() {\r\n                            return arg.prototype[key].call(this, ...arguments)\r\n                        }\r\n                    }\r\n                }\r\n            }\r\n        }\r\n\r\n        return Mixed\r\n    }\r\n})(typeof window !== 'undefined' && window || module && (module.exports = {}))"
 
 /***/ }),
 /* 27 */
 /***/ (function(module, exports, __webpack_require__) {
 
+__webpack_require__(1)(__webpack_require__(28))
+
+/***/ }),
+/* 28 */
+/***/ (function(module, exports) {
+
+module.exports = "DebugShaders = {}\r\n\r\n;(function() {\r\n\r\n    const NEGATE_UNIFORM = '_negate_'\r\n    const MAIN_SIG = 'void main() {'\r\n\r\n    const variableRegex = /((((precision|varying|uniform|attribute)\\s+)?)((highp|mediump|lowp)\\s+)?)(vec4|vec3|vec2|float|int|uint|bool)\\s+([A-Za-z0-9]+)/\r\n\r\n    // Clean up the shader to make it easer to parse\r\n    const normalize = shader => {\r\n        return shader\r\n            .replace(/\\/\\/[^\\n]*\\n/g, '')               // remove comment line\r\n            .replace(/\\/\\*(\\*(?!\\/)|[^*])*\\*\\//g, '')   // remove block comment\r\n            .replace(/(\\n|\\s)+/g, ' ')                  // replace newlines or whitespace with a single space\r\n            .replace(/\\s*({|})\\s*/g, '\\n$1\\n')          // compress the area around braces\r\n            .replace(/\\s*;\\s*/g, ';\\n')                 // replace newlines after semicolons\r\n            .replace(/(return|discard)\\s*;/g, ';')      // remove any early discards or returns\r\n            .replace(/void\\s+main\\s*\\(\\)(\\s|\\n)*{/, MAIN_SIG)   // clean up the main function signature\r\n    }\r\n\r\n    // Find the line range between which the main function lives\r\n    const getMainFuncRange = shader => {\r\n        const st = shader.indexOf(MAIN_SIG)\r\n        const bef = shader.substr(0, st)\r\n        const aft = shader.substr(st)\r\n\r\n        const befLines = bef.replace(/[^\\n]/g, '').length\r\n        const aftBraces = aft.replace(/[^{}\\n]*/g, '')\r\n\r\n        // count the braces to the end of the main function body\r\n        let started = false\r\n        let braceCount = 0\r\n        let lines = 0\r\n        for (let i = 0; i < aftBraces.length; i ++) {\r\n            const ch = aftBraces[i]\r\n            if (ch === '{') braceCount ++\r\n            if (ch === '}') braceCount --\r\n            if (ch === '\\n') lines ++\r\n\r\n            if (braceCount > 0) started = true\r\n            if (started && braceCount === 0) break;\r\n        }\r\n\r\n        return { start: befLines, end: befLines + lines }\r\n    }\r\n\r\n    // get a line that outputs the given variable of type\r\n    // as a fragment color\r\n    const toGlFragColorLine = (type, name) => {\r\n        let r = 0\r\n        let g = 0\r\n        let b = 0\r\n        let a = 1\r\n        \r\n        const neg = `(${NEGATE_UNIFORM} ? -1.0 : 1.0)`\r\n\r\n        if (/^vec/.test(type)) {\r\n            // TODO: Pack these more so more of\r\n            // the data can be read back out, otherwise\r\n            // they're clamped from 0 to 1.0\r\n            r = `${name}.r * ${neg}`\r\n            g = `${name}.g * ${neg}`\r\n            if (/^vec(3|4)/.test(type)) b = `${name}.b * ${neg}`\r\n            if (/^vec4/.test(type)) a = `${name}.a * ${neg}`\r\n        }\r\n        else if(type === 'bool') {\r\n            r = `${name} ? 1 : 0`\r\n            g = r\r\n            b = r\r\n            a = r\r\n        }\r\n        else if(/^(int|uint)/.test(type)) {\r\n            r = `float(((${name} * int(${neg})) << 0 ) & 0xFF) / 0xFF`\r\n            g = `float(((${name} * int(${neg})) << 8 ) & 0xFF) / 0xFF`\r\n            b = `float(((${name} * int(${neg})) << 16) & 0xFF) / 0xFF`\r\n            a = `float(((${name} * int(${neg})) << 24) & 0xFF) / 0xFF`\r\n        }\r\n        else if(type === 'float') {\r\n            // TODO : Pack this into bytes so we can\r\n            // read it back out as a larger float\r\n            r = `${name}`\r\n        }\r\n\r\n        return `gl_FragColor = vec4(${r},${g},${b},${a});`\r\n    }\r\n\r\n    DebugShaders.enumerate = (vs, fs, negate = false) => {\r\n        vs = normalize(vs)\r\n        fs = normalize(fs)\r\n\r\n        const vsRange = getMainFuncRange(vs)\r\n        const fsRange = getMainFuncRange(fs)\r\n        \r\n        const shaders = []\r\n        const fsVarying = []\r\n\r\n        // generate shaders for outputing colors for each variable\r\n        // in the vertex shader\r\n        let lines = vs.split('\\n')\r\n        lines.forEach((line, i) => {\r\n            if (i < vsRange.start || i > vsRange.end) return\r\n            if (/for|while/g.test(line)) return\r\n\r\n            const matches = line.match(variableRegex)\r\n            if (matches) {\r\n                const prefix = (matches[1] || '').trim()\r\n                const type = matches[7].trim()\r\n                const name = matches[8].trim()\r\n\r\n                if (prefix) return\r\n                if (/(int|uint)/g.test(type)) return\r\n\r\n                const newVarName = `_out_${name}_`\r\n                const varyingLine = `varying ${type} ${newVarName};`\r\n                const newLines = [varyingLine].concat(lines)\r\n                newLines[vsRange.end] = `\\n${newVarName} = ${name};\\n` + newLines[vsRange.end]\r\n\r\n                const newvs = newLines.join('\\n')\r\n                const newfs = `${varyingLine}\\n${fs}`.replace(MAIN_SIG, MAIN_SIG + '\\n' + toGlFragColorLine(type, newVarName) + '\\nreturn;\\n')\r\n\r\n                shaders.push({\r\n                    type,\r\n                    name,\r\n                    vertexShader: newvs,\r\n                    fragmentShader: newfs,\r\n                    line: i,\r\n                    fromShader: 'vertex'\r\n                })\r\n            }\r\n        })\r\n\r\n        // generate shaders for outputing colors for each variable\r\n        // in the fragmnet shader\r\n        lines = fs.split('\\n')\r\n        lines.forEach((line, i) => {\r\n            if (/for|while/g.test(line)) return\r\n            \r\n            const matches = line.match(variableRegex)\r\n            if (matches) {\r\n                const prefix = (matches[1] || '').trim()\r\n                const type = matches[7].trim()\r\n                const name = matches[8].trim()\r\n\r\n                if (prefix) {\r\n                    if (prefix === 'varying') fsVarying.push({ type, name, line: i })\r\n                    return\r\n                }\r\n                if (/(int|uint)/g.test(type)) return\r\n                if (i < fsRange.start || i > fsRange.end) return\r\n\r\n                const newlines = [].concat(lines)\r\n                newlines[fsRange.end] = '\\n' + toGlFragColorLine(type, name) + '\\nreturn;\\n' + newlines[fsRange.end]\r\n\r\n                shaders.push({\r\n                    type,\r\n                    name,\r\n                    vertexShader: vs,\r\n                    fragmentShader: newlines.join('\\n'),\r\n                    line: i,\r\n                    fromShader: 'fragment'\r\n                })\r\n            }\r\n        })\r\n\r\n        // output color for each varying variable in the frag shader\r\n        fsVarying\r\n            .forEach(it => {\r\n                const res = fs.replace(MAIN_SIG, MAIN_SIG + '\\n' + toGlFragColorLine(it.type, it.name) + '\\nreturn;\\n')\r\n                shaders.push({\r\n                    type: it.type,\r\n                    name: it.name,\r\n                    vertexShader: vs,\r\n                    fragmentShader: res,\r\n                    line: it.line,\r\n                    fromShader: 'fragment'\r\n                })\r\n            })\r\n\r\n        // prefix the _negate_ uniform on each shader which is\r\n        // used to invert the color of each output\r\n        for(let i in shaders) {\r\n            shaders[i].fragmentShader = `\r\n            uniform bool ${NEGATE_UNIFORM};\r\n            ${shaders[i].fragmentShader}\r\n            `\r\n        }\r\n\r\n        return shaders\r\n    }\r\n\r\n    DebugShaders.readPixel = (ctx, x, y) => {\r\n        const data = ctx.getImageData(x, y, 1, 1).data\r\n\r\n        return {\r\n            r: data[0],\r\n            g: data[1],\r\n            b: data[2],\r\n            a: data[3]\r\n        }\r\n    }\r\n\r\n    DebugShaders.pixelToArray = (px, type, prec = 5) => {\r\n        const cv = f => parseFloat((f / 255.0).toPrecision(prec))\r\n\r\n        if (type === 'vec2') return [cv(px.r), cv(px.g)]\r\n        if (type === 'vec3') return [cv(px.r), cv(px.g), cv(px.b)]\r\n        if (type === 'vec4') return [cv(px.r), cv(px.g), cv(px.b), cv(px.a)]\r\n        if (type === 'bool') return [!!px.r]\r\n        if (type === 'int');    // TODO\r\n        if (type === 'uint');   // TODO\r\n        if (type === 'float') return [cv(res.r)]\r\n    }\r\n})()"
+
+/***/ }),
+/* 29 */
+/***/ (function(module, exports, __webpack_require__) {
+
 /*__wc__loader*/
 __webpack_require__(0);
 
-__webpack_require__(28);
+__webpack_require__(30);
 
 __webpack_require__(2);
 
 __webpack_require__(5);
 
-__webpack_require__(29);
+__webpack_require__(31);
 
 __webpack_require__(3);
 
-__webpack_require__(30);
+__webpack_require__(32);
 
 __webpack_require__(6);
 
@@ -5206,7 +5232,7 @@ __webpack_require__(6);
 
 
 /***/ }),
-/* 28 */
+/* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*__wc__loader*/
@@ -5269,7 +5295,7 @@ __webpack_require__(3);
 
 
 /***/ }),
-/* 29 */
+/* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*__wc__loader*/
@@ -5421,7 +5447,7 @@ __webpack_require__(3);
 
 
 /***/ }),
-/* 30 */
+/* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*__wc__loader*/
@@ -5557,7 +5583,7 @@ __webpack_require__(3);
 
 
 /***/ }),
-/* 31 */
+/* 33 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*__wc__loader*/
@@ -5838,7 +5864,7 @@ __webpack_require__(0);
 
 
 /***/ }),
-/* 32 */
+/* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*__wc__loader*/
@@ -6461,7 +6487,7 @@ __webpack_require__(7);
 
 
 /***/ }),
-/* 33 */
+/* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*__wc__loader*/
@@ -6943,7 +6969,7 @@ __webpack_require__(2);
 
 
 /***/ }),
-/* 34 */
+/* 36 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*__wc__loader*/
@@ -7216,7 +7242,7 @@ __webpack_require__(11);
 
 
 /***/ }),
-/* 35 */
+/* 37 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*__wc__loader*/
@@ -7918,7 +7944,7 @@ __webpack_require__(9);
 
 
 /***/ }),
-/* 36 */
+/* 38 */
 /***/ (function(module, exports) {
 
 /*__wc__loader*/!function(a){var b="<style>ace-editor{display:block;}</style>\n\n";if(a.head){var c=a.head,d=a.createElement("div");for(d.innerHTML=b;d.children.length>0;)c.appendChild(d.children[0])}else a.write(b)}(document);
@@ -8000,7 +8026,7 @@ __webpack_require__(9);
 
 
 /***/ }),
-/* 37 */
+/* 39 */
 /***/ (function(module, exports) {
 
 /*__wc__loader*/!function(a){var b="<dom-module id=\"zoomable-image\">\n    <template>\n        <style>:host{display:block;position:relative;}#proxy-image{display:block;visibility:hidden;}#zoom-container{width:100%;height:100%;position:absolute;overflow:hidden;top:0;left:0;}#zoom-image{position:absolute;}#grid{width:200%;height:200%;opacity:0.1;position:absolute;pointer-events:none;}</style>\n\n        \n        <img id=\"proxy-image\" src=\"[[src]]\">\n\n        <div id=\"zoom-container\">\n            <img id=\"zoom-image\" src=\"[[src]]\" style=\"[[_getImageStyle(scale,xOffset,yOffset)]]\" on-mousemove=\"_imageMouseMoveHandler\">\n            <div id=\"grid\" style$=\"[[_getGradientStyle(scale,xOffset,yOffset)]]\"></div>\n        </div>\n    </template>\n</dom-module>\n\n";if(a.body){var c=a.body,d=a.createElement("div");for(d.innerHTML=b;d.children.length>0;)c.appendChild(d.children[0])}else a.write(b)}(document);
@@ -8216,7 +8242,7 @@ __webpack_require__(9);
 
 
 /***/ }),
-/* 38 */
+/* 40 */
 /***/ (function(module, exports) {
 
 /*__wc__loader*/!function(a){var b="<dom-module id=\"image-magnifier\">\n    <template>\n        <style>:host{display:block;position:absolute;pointer-events:none;}#outline{right:0;top:0;position:absolute;pointer-events:none;}/* Magnifier Arrow */ #container:before{content:\"\";width:50%;height:50%;top:0;right:0;position:absolute;background:white;}#container{border:5px solid white;background:#111;position:absolute;right:0;top:0;z-index:1;}#image-wrapper{width:100%;height:100%;overflow:hidden;position:relative;background:black;}#pixel-outline{position:absolute;border:1px solid white;top:30px;left:30px;z-index:1000;opacity:0.5;}zoomable-image{position:absolute;image-rendering:pixelated;}</style>\n\n        <div id=\"container\" style$=\"[[_getContainerStyle(size)]]\">\n            <div id=\"pixel-outline\" style$=\"[[_getPixelOutlineStyle(size,scale)]]\"></div>\n            <div id=\"image-wrapper\" style$=\"[[_getBorderRadiusStyle(size)]]\">\n                <zoomable-image src=\"[[src]]\" scale=\"[[scale]]\" x-offset=\"[[_toOffset(xPixel)]]\" y-offset=\"[[_toOffset(yPixel)]]\" style=\"[[_getOffsetStyle(scale)]]\"></zoomable-image>\n            </div>\n        </div>\n    </template>\n</dom-module>\n\n";if(a.body){var c=a.body,d=a.createElement("div");for(d.innerHTML=b;d.children.length>0;)c.appendChild(d.children[0])}else a.write(b)}(document);
@@ -8298,10 +8324,10 @@ __webpack_require__(9);
 
 
 /***/ }),
-/* 39 */
+/* 41 */
 /***/ (function(module, exports) {
 
-/*__wc__loader*/!function(a){var b="<dom-module id=\"shader-editor\">\n    <template>\n        <style type=\"text/css\">#container{display:flex;height:100%;}#editors{height:100%;display:flex;flex-direction:column;flex:2;}shader-preview{flex:1;max-width:400px;background:#111;color:white;}ace-editor{flex:1;}h5{padding:5px;margin:0;color:white;background:#272822;font-size:12px;}</style>\n        <div id=\"container\">\n            <div id=\"editors\">\n                <h5>Vertex Shader</h5>\n                <ace-editor value=\"{{ vertexShader }}\" annotations=\"[[ _errorsToAnnotations(vertexErrors) ]]\" type=\"glsl\"></ace-editor>\n                \n                <h5>Fragment Shader</h5>\n                <ace-editor value=\"{{ fragmentShader }}\" annotations=\"[[ _errorsToAnnotations(fragmentErrors) ]]\" type=\"glsl\"></ace-editor>\n            </div>\n            <shader-preview vertex-shader=\"[[ vertexShader ]]\" vertex-errors=\"{{ vertexErrors }}\" fragment-shader=\"[[ fragmentShader ]]\" fragment-errors=\"{{ fragmentErrors }}\"></shader-preview>\n        </div>\n    </template>\n</dom-module>\n";if(a.body){var c=a.body,d=a.createElement("div");for(d.innerHTML=b;d.children.length>0;)c.appendChild(d.children[0])}else a.write(b)}(document);
+/*__wc__loader*/!function(a){var b="<dom-module id=\"shader-editor\">\n    <template>\n        <style type=\"text/css\">#container{display:flex;height:100%;}#editors{height:100%;display:flex;flex-direction:column;flex:2;}shader-preview{flex:1;max-width:400px;background:#272822;color:white;}ace-editor{flex:1;}h5{padding:5px;margin:0;color:white;background:#272822;font-size:12px;}</style>\n        <div id=\"container\">\n            <div id=\"editors\">\n                <h5>Vertex Shader</h5>\n                <ace-editor value=\"{{ vertexShader }}\" annotations=\"[[ _errorsToAnnotations(vertexErrors) ]]\" type=\"glsl\"></ace-editor>\n                \n                <h5>Fragment Shader</h5>\n                <ace-editor value=\"{{ fragmentShader }}\" annotations=\"[[ _errorsToAnnotations(fragmentErrors) ]]\" type=\"glsl\"></ace-editor>\n            </div>\n            <shader-preview vertex-shader=\"[[ vertexShader ]]\" vertex-errors=\"{{ vertexErrors }}\" fragment-shader=\"[[ fragmentShader ]]\" fragment-errors=\"{{ fragmentErrors }}\" textures=\"[[textures]]\"></shader-preview>\n        </div>\n    </template>\n</dom-module>\n";if(a.body){var c=a.body,d=a.createElement("div");for(d.innerHTML=b;d.children.length>0;)c.appendChild(d.children[0])}else a.write(b)}(document);
 
     // shader-editor element
     // Element that contains a vertex and fragment shader editor
@@ -8337,6 +8363,12 @@ __webpack_require__(9);
                     type: Array,
                     value: null,
                     notify: true
+                },
+
+                // Textures to render the preview with
+                textures: {
+                    type: Object,
+                    value: () => { return {} }
                 }
             }
         }
@@ -8368,14 +8400,14 @@ __webpack_require__(9);
 
 
 /***/ }),
-/* 40 */
+/* 42 */
 /***/ (function(module, exports) {
 
-/*__wc__loader*/!function(a){var b="<dom-module id=\"shader-preview\">\n    <template>\n        <style type=\"text/css\">/* Util Classes */ ::-webkit-scrollbar{width:5px;position:absolute;}::-webkit-scrollbar-thumb{border-radius:5px;background-color:rgba(255,255,255,0.2);}[hidden]{display:none !important;}#container{display:flex;flex-direction:column;width:100%;height:100%;}#target{width:100%;image-rendering:pixelated;}image-magnifier{visibility:hidden;z-index:1000;}/* Debug Shader Displays */ #debug-list{display:flex;flex-wrap:wrap;width:100%;overflow-y:auto;}#debug-list .shader{flex:1;min-width:100px;max-width:200px;transition:opacity .25s ease;}#debug-list:hover .shader{opacity:0.25;}#debug-list:hover .shader:hover{opacity:1;}#debug-list .name{text-align:center;font-weight:900;font-size:14px;font-style:italic;white-space:pre;overflow:hidden;text-overflow:ellipsis;opacity:0.75;}/* Local Variables Section */ #local-variables-list{padding:10px;overflow:hidden;}#local-variables-list .data{display:flex;padding:5px 10px;}#local-variables-list .data span{flex:1;font-size:14px;font-weight:900;}#local-variables-list .data .name{flex:2;opacity:0.75;white-space:pre;overflow:hidden;text-overflow:ellipsis;font-style:italic;}#debug-list .shader img{width:100%;}.header{font-weight:bold;padding:15px;}/* Header */ #header{display:flex;}#header .name{flex:1;font-weight:bold;padding:5px;display:inline-block;}#header .shape{padding:4px;opacity:0.5;transition:opacity .25s ease;}#header .shape:hover{opacity:1;}#header .shape:before{content:'';width:18px;height:18px;display:block;}#header .shape[shape=\"plane\"]:before,#header .shape[shape=\"sphere\"]:before{background:white;}#header .shape[shape=\"sphere\"]:before{border-radius:100px;}#header .shape[shape=\"plane\"]:before{width:16px;height:16px;margin:1px;}#header .shape[shape=\"cube\"]:before{/* TODO:The cube image cannot properly be loaded with webpack at the moment */ /*content:'cube';*/ background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAAAkCAYAAADhAJiYAAAACXBIWXMAAAsTAAALEwEAmpwYAAAKT2lDQ1BQaG90b3Nob3AgSUNDIHByb2ZpbGUAAHjanVNnVFPpFj333vRCS4iAlEtvUhUIIFJCi4AUkSYqIQkQSoghodkVUcERRUUEG8igiAOOjoCMFVEsDIoK2AfkIaKOg6OIisr74Xuja9a89+bN/rXXPues852zzwfACAyWSDNRNYAMqUIeEeCDx8TG4eQuQIEKJHAAEAizZCFz/SMBAPh+PDwrIsAHvgABeNMLCADATZvAMByH/w/qQplcAYCEAcB0kThLCIAUAEB6jkKmAEBGAYCdmCZTAKAEAGDLY2LjAFAtAGAnf+bTAICd+Jl7AQBblCEVAaCRACATZYhEAGg7AKzPVopFAFgwABRmS8Q5ANgtADBJV2ZIALC3AMDOEAuyAAgMADBRiIUpAAR7AGDIIyN4AISZABRG8lc88SuuEOcqAAB4mbI8uSQ5RYFbCC1xB1dXLh4ozkkXKxQ2YQJhmkAuwnmZGTKBNA/g88wAAKCRFRHgg/P9eM4Ors7ONo62Dl8t6r8G/yJiYuP+5c+rcEAAAOF0ftH+LC+zGoA7BoBt/qIl7gRoXgugdfeLZrIPQLUAoOnaV/Nw+H48PEWhkLnZ2eXk5NhKxEJbYcpXff5nwl/AV/1s+X48/Pf14L7iJIEyXYFHBPjgwsz0TKUcz5IJhGLc5o9H/LcL//wd0yLESWK5WCoU41EScY5EmozzMqUiiUKSKcUl0v9k4t8s+wM+3zUAsGo+AXuRLahdYwP2SycQWHTA4vcAAPK7b8HUKAgDgGiD4c93/+8//UegJQCAZkmScQAAXkQkLlTKsz/HCAAARKCBKrBBG/TBGCzABhzBBdzBC/xgNoRCJMTCQhBCCmSAHHJgKayCQiiGzbAdKmAv1EAdNMBRaIaTcA4uwlW4Dj1wD/phCJ7BKLyBCQRByAgTYSHaiAFiilgjjggXmYX4IcFIBBKLJCDJiBRRIkuRNUgxUopUIFVIHfI9cgI5h1xGupE7yAAygvyGvEcxlIGyUT3UDLVDuag3GoRGogvQZHQxmo8WoJvQcrQaPYw2oefQq2gP2o8+Q8cwwOgYBzPEbDAuxsNCsTgsCZNjy7EirAyrxhqwVqwDu4n1Y8+xdwQSgUXACTYEd0IgYR5BSFhMWE7YSKggHCQ0EdoJNwkDhFHCJyKTqEu0JroR+cQYYjIxh1hILCPWEo8TLxB7iEPENyQSiUMyJ7mQAkmxpFTSEtJG0m5SI+ksqZs0SBojk8naZGuyBzmULCAryIXkneTD5DPkG+Qh8lsKnWJAcaT4U+IoUspqShnlEOU05QZlmDJBVaOaUt2ooVQRNY9aQq2htlKvUYeoEzR1mjnNgxZJS6WtopXTGmgXaPdpr+h0uhHdlR5Ol9BX0svpR+iX6AP0dwwNhhWDx4hnKBmbGAcYZxl3GK+YTKYZ04sZx1QwNzHrmOeZD5lvVVgqtip8FZHKCpVKlSaVGyovVKmqpqreqgtV81XLVI+pXlN9rkZVM1PjqQnUlqtVqp1Q61MbU2epO6iHqmeob1Q/pH5Z/YkGWcNMw09DpFGgsV/jvMYgC2MZs3gsIWsNq4Z1gTXEJrHN2Xx2KruY/R27iz2qqaE5QzNKM1ezUvOUZj8H45hx+Jx0TgnnKKeX836K3hTvKeIpG6Y0TLkxZVxrqpaXllirSKtRq0frvTau7aedpr1Fu1n7gQ5Bx0onXCdHZ4/OBZ3nU9lT3acKpxZNPTr1ri6qa6UbobtEd79up+6Ynr5egJ5Mb6feeb3n+hx9L/1U/W36p/VHDFgGswwkBtsMzhg8xTVxbzwdL8fb8VFDXcNAQ6VhlWGX4YSRudE8o9VGjUYPjGnGXOMk423GbcajJgYmISZLTepN7ppSTbmmKaY7TDtMx83MzaLN1pk1mz0x1zLnm+eb15vft2BaeFostqi2uGVJsuRaplnutrxuhVo5WaVYVVpds0atna0l1rutu6cRp7lOk06rntZnw7Dxtsm2qbcZsOXYBtuutm22fWFnYhdnt8Wuw+6TvZN9un2N/T0HDYfZDqsdWh1+c7RyFDpWOt6azpzuP33F9JbpL2dYzxDP2DPjthPLKcRpnVOb00dnF2e5c4PziIuJS4LLLpc+Lpsbxt3IveRKdPVxXeF60vWdm7Obwu2o26/uNu5p7ofcn8w0nymeWTNz0MPIQ+BR5dE/C5+VMGvfrH5PQ0+BZ7XnIy9jL5FXrdewt6V3qvdh7xc+9j5yn+M+4zw33jLeWV/MN8C3yLfLT8Nvnl+F30N/I/9k/3r/0QCngCUBZwOJgUGBWwL7+Hp8Ib+OPzrbZfay2e1BjKC5QRVBj4KtguXBrSFoyOyQrSH355jOkc5pDoVQfujW0Adh5mGLw34MJ4WHhVeGP45wiFga0TGXNXfR3ENz30T6RJZE3ptnMU85ry1KNSo+qi5qPNo3ujS6P8YuZlnM1VidWElsSxw5LiquNm5svt/87fOH4p3iC+N7F5gvyF1weaHOwvSFpxapLhIsOpZATIhOOJTwQRAqqBaMJfITdyWOCnnCHcJnIi/RNtGI2ENcKh5O8kgqTXqS7JG8NXkkxTOlLOW5hCepkLxMDUzdmzqeFpp2IG0yPTq9MYOSkZBxQqohTZO2Z+pn5mZ2y6xlhbL+xW6Lty8elQfJa7OQrAVZLQq2QqboVFoo1yoHsmdlV2a/zYnKOZarnivN7cyzytuQN5zvn//tEsIS4ZK2pYZLVy0dWOa9rGo5sjxxedsK4xUFK4ZWBqw8uIq2Km3VT6vtV5eufr0mek1rgV7ByoLBtQFr6wtVCuWFfevc1+1dT1gvWd+1YfqGnRs+FYmKrhTbF5cVf9go3HjlG4dvyr+Z3JS0qavEuWTPZtJm6ebeLZ5bDpaql+aXDm4N2dq0Dd9WtO319kXbL5fNKNu7g7ZDuaO/PLi8ZafJzs07P1SkVPRU+lQ27tLdtWHX+G7R7ht7vPY07NXbW7z3/T7JvttVAVVN1WbVZftJ+7P3P66Jqun4lvttXa1ObXHtxwPSA/0HIw6217nU1R3SPVRSj9Yr60cOxx++/p3vdy0NNg1VjZzG4iNwRHnk6fcJ3/ceDTradox7rOEH0x92HWcdL2pCmvKaRptTmvtbYlu6T8w+0dbq3nr8R9sfD5w0PFl5SvNUyWna6YLTk2fyz4ydlZ19fi753GDborZ752PO32oPb++6EHTh0kX/i+c7vDvOXPK4dPKy2+UTV7hXmq86X23qdOo8/pPTT8e7nLuarrlca7nuer21e2b36RueN87d9L158Rb/1tWeOT3dvfN6b/fF9/XfFt1+cif9zsu72Xcn7q28T7xf9EDtQdlD3YfVP1v+3Njv3H9qwHeg89HcR/cGhYPP/pH1jw9DBY+Zj8uGDYbrnjg+OTniP3L96fynQ89kzyaeF/6i/suuFxYvfvjV69fO0ZjRoZfyl5O/bXyl/erA6xmv28bCxh6+yXgzMV70VvvtwXfcdx3vo98PT+R8IH8o/2j5sfVT0Kf7kxmTk/8EA5jz/GMzLdsAAAAgY0hSTQAAeiUAAICDAAD5/wAAgOkAAHUwAADqYAAAOpgAABdvkl/FRgAAAWJJREFUeNrsmE8rBVEcht+5yYa7k5Xy51pfvoDCwsZisrZQYseKrR3d8g0s2CqUT0CWEslCKWV5sSP5073qsTlyG5cx95yZsThPTc009evp1Ezv+wsAOWBeUq+kiqRnq0mAzdUHbPPFCTBiM9NGZgao8p03YA3oyEpoCNgjnlMgTFOoDVgCHknGBtDtWqgMHNA618CUC6EisAI84IZNYLBVoVHgHPfcA3NJhIpABaiRLvtAKU5o0nwdWXELLDY6BJE/9YWksrIn+LwpRF685iDz0vhQ0D/DC3khL+SFvJAXshQq5O0QFajnGT2aCS1IOspQ5kbSdFxzbTeZ9y7FpFgD1pvVo99CfumPhTApZ8CYTS+bNdnXlndzKp0uiuIAsGMhcwyMp9HtQ+AqgcgTsGxqeGrLhi7T1+M4BIazXMeEwOUPzTTRqbgSktkBrQJ1I7ML9NvMDByt9CYk9Ujash30MQCRzzmAePKvMQAAAABJRU5ErkJggg==);background-size:cover;}</style>\n        \n        <image-magnifier scale=\"20\" src=\"[[_primaryImageSrc]]\"></image-magnifier>\n\n        <div id=\"container\">\n            <div id=\"header\">\n                <span class=\"name\">[[_getName(_images.*, _activeImage)]]</span>\n                <span class=\"shape\" on-click=\"_setShapeHandler\" shape=\"cube\" title=\"cube\"></span>\n                <span class=\"shape\" on-click=\"_setShapeHandler\" shape=\"sphere\" title=\"sphere\"></span>\n                <span class=\"shape\" on-click=\"_setShapeHandler\" shape=\"plane\" title=\"plane\"></span>\n            </div>\n            <zoomable-image id=\"target\" src=\"[[_primaryImageSrc]]\" max-scale=\"10\" on-mouseenter=\"_imageMouseEnterHandler\" on-mousemove=\"_imageMouseMoveHandler\" on-mouseleave=\"_imageMouseLeaveHandler\" clamp=\"\"></zoomable-image>\n            \n            <div class=\"header\">Local Fragment Shader Variables</div>\n            <div id=\"debug-list\" hidden$=\"[[_exists(_localVariables)]]\">\n                <template is=\"dom-repeat\" items=\"[[_images]]\">\n                    <div class=\"shader\" active$=\"[[_equals(index,_activeImage)]]\" on-click=\"_debugImageClickHandler\">\n                        <div class=\"name\">[[item.type]] [[item.name]]</div>\n                        <img src$=\"[[item.src]]\">\n                    </div>\n                </template>\n            </div>\n\n            <div id=\"local-variables-list\" hidden$=\"[[!_exists(_localVariables)]]\">\n                <template is=\"dom-repeat\" items=\"[[_localVariables]]\">\n                    <div class=\"data\">\n                        <span class=\"name\">[[item.type]] [[item.name]]</span>\n                        <span>[[item.data.0]]</span>\n                        <span>[[item.data.1]]</span>\n                        <span>[[item.data.2]]</span>\n                        <span>[[item.data.3]]</span>\n                    </div>\n                </template>\n            </div>\n        </div>\n    </template>\n</dom-module>\n";if(a.body){var c=a.body,d=a.createElement("div");for(d.innerHTML=b;d.children.length>0;)c.appendChild(d.children[0])}else a.write(b)}(document);
+/*__wc__loader*/!function(a){var b="<dom-module id=\"shader-preview\">\n    <template>\n        <style type=\"text/css\">/* Util Classes */ ::-webkit-scrollbar{width:5px;position:absolute;}::-webkit-scrollbar-thumb{border-radius:5px;background-color:rgba(255,255,255,0.2);}[hidden]{display:none !important;}#container{display:flex;flex-direction:column;width:100%;height:100%;}#target{width:100%;image-rendering:pixelated;}image-magnifier{visibility:hidden;z-index:1000;}/* Debug Shader Displays */ #debug-list{display:flex;flex-wrap:wrap;width:100%;overflow-y:auto;}#debug-list .shader{flex:1;min-width:100px;max-width:200px;transition:opacity .25s ease;}#debug-list:hover .shader{opacity:0.25;}#debug-list:hover .shader:hover{opacity:1;}#debug-list .name{text-align:center;font-weight:900;font-size:12px;font-style:italic;white-space:pre;overflow:hidden;text-overflow:ellipsis;opacity:0.75;}/* Local Variables Section */ #local-variables-list{padding:10px;overflow:hidden;}#local-variables-list .data{display:flex;padding:5px 10px;}#local-variables-list .data span{flex:1;font-size:12px;font-weight:900;}#local-variables-list .data .name{flex:2;opacity:0.75;white-space:pre;overflow:hidden;text-overflow:ellipsis;font-style:italic;}#debug-list .shader img{width:100%;}.header{font-weight:bold;padding:15px;}/* Header */ #header{display:flex;}#header .name{flex:1;font-weight:bold;padding:5px;display:inline-block;}#header .shape{padding:4px;opacity:0.5;transition:opacity .25s ease;}#header .shape:hover{opacity:1;}#header .shape:before{content:'';width:18px;height:18px;display:block;}#header .shape[shape=\"plane\"]:before,#header .shape[shape=\"sphere\"]:before{background:white;}#header .shape[shape=\"sphere\"]:before{border-radius:100px;}#header .shape[shape=\"plane\"]:before{width:16px;height:16px;margin:1px;}#header .shape[shape=\"cube\"]:before{/* TODO:The cube image cannot properly be loaded with webpack at the moment */ /*content:'cube';*/ background-image:url(data:image/png;base64,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);background-size:cover;}</style>\n        \n        <image-magnifier scale=\"20\" src=\"[[_primaryImageSrc]]\"></image-magnifier>\n\n        <div id=\"container\">\n            <div id=\"header\">\n                <span class=\"name\">[[_getName(_images.*, _activeImage)]]</span>\n                <span class=\"shape\" on-click=\"_setShapeHandler\" shape=\"cube\" title=\"cube\"></span>\n                <span class=\"shape\" on-click=\"_setShapeHandler\" shape=\"sphere\" title=\"sphere\"></span>\n                <span class=\"shape\" on-click=\"_setShapeHandler\" shape=\"plane\" title=\"plane\"></span>\n            </div>\n            <zoomable-image id=\"target\" src=\"[[_primaryImageSrc]]\" max-scale=\"10\" on-mouseenter=\"_imageMouseEnterHandler\" on-mousemove=\"_imageMouseMoveHandler\" on-mouseleave=\"_imageMouseLeaveHandler\" clamp=\"\"></zoomable-image>\n            \n            <div class=\"header\">Local Fragment Shader Variables</div>\n            <div id=\"debug-list\" hidden$=\"[[_exists(_localVariables)]]\">\n                <template is=\"dom-repeat\" items=\"[[_images]]\">\n                    <div class=\"shader\" active$=\"[[_equals(index,_activeImage)]]\" on-click=\"_debugImageClickHandler\">\n                        <div class=\"name\">[[item.type]] [[item.name]]</div>\n                        <div class=\"name\">[[item.fromShader]]</div>\n                        <img src$=\"[[item.src]]\">\n                    </div>\n                </template>\n            </div>\n\n            <div id=\"local-variables-list\" hidden$=\"[[!_exists(_localVariables)]]\">\n                <template is=\"dom-repeat\" items=\"[[_localVariables]]\">\n                    <div class=\"data\">\n                        <span class=\"name\">[[item.type]] [[item.name]]</span>\n                        <span>[[item.data.0]]</span>\n                        <span>[[item.data.1]]</span>\n                        <span>[[item.data.2]]</span>\n                        <span>[[item.data.3]]</span>\n                    </div>\n                </template>\n            </div>\n        </div>\n    </template>\n</dom-module>\n";if(a.body){var c=a.body,d=a.createElement("div");for(d.innerHTML=b;d.children.length>0;)c.appendChild(d.children[0])}else a.write(b)}(document);
 
     // shader-preview Element
     // Element to preview, zoom in, and debug shader definitions
-    class ShaderPreview extends Mixin(Polymer.Element, Debouncer) {
+    class ShaderPreview extends Mixin(Polymer.Element, Debouncer, Animator) {
         static get is() { return 'shader-preview' }
 
         static get properties() {
@@ -8390,6 +8422,14 @@ __webpack_require__(9);
                 fragmentShader: {
                     type: String,
                     value: ''
+                },
+
+                // a map of "uniform name" : "texture path" to load
+                // the application
+                textures: {
+                    type: Object,
+                    value: () => { return {} },
+                    observer: '_texturesObserver'
                 },
 
                 // vertex shader compilation errors
@@ -8446,12 +8486,25 @@ __webpack_require__(9);
                     type: String,
                     value: 'sphere',
                     observer: '_displayGeometryObserver'
-                }
+                },
+
+                // the textures that have been loaded
+                _loadedTextures: {
+                    type: Object,
+                    value: () => { return {} }
+                },
+
+                // the target size to render to
+                // TODO: Respect when this changes
+                _renderSize: {
+                    type: Number,
+                    value: 400
+                } 
             }
         }
 
         static get observers() {
-            return [ '_shadersObserver(_shaders)' ]
+            return ['_shadersObserver(_shaders)']
         }
 
         /* Lifecycle Functions */
@@ -8461,7 +8514,7 @@ __webpack_require__(9);
             const scene = new THREE.Scene()
             const renderer = new THREE.WebGLRenderer({ antialias: false, alpha: true })
             renderer.setPixelRatio(window.devicePixelRatio)
-            renderer.setSize(400, 400)
+            renderer.setSize(this._renderSize, this._renderSize)
             renderer.setClearColor(0x000000, 0)
 
             const camera = new THREE.PerspectiveCamera(75, 1, 0.1, 50)
@@ -8471,7 +8524,6 @@ __webpack_require__(9);
             const meshes = {
                 cube: new THREE.Mesh(new THREE.BoxGeometry( 5, 5, 5, 50, 50, 50 ), null ),
                 plane: new THREE.Mesh(new THREE.PlaneGeometry( 5, 5, 100, 100 ), null ),
-                // sphere: new THREE.Mesh(new THREE.SphereGeometry( 5, 100, 100 ), null ),
                 sphere: new THREE.Mesh(new THREE.IcosahedronGeometry(5, 5), null),
             }
             scene.add( meshes[this._displayGeometry] );
@@ -8488,8 +8540,10 @@ __webpack_require__(9);
             orbit.enableZoom = false
             orbit.enablePan = false
             orbit.enableKeys = false
-            orbit.addEventListener('change', () => this._render(true))
-            target.addEventListener('mouseup', () => this._render())
+            orbit.addEventListener('change', () => {
+                this._render(true, true)
+                this.debounce('rerender', () => this._render(false, true), 500)
+            })
 
             this._renderer = renderer
             this._scene = scene
@@ -8497,6 +8551,19 @@ __webpack_require__(9);
             this._meshes = meshes
 
             this._render()
+        }
+
+        connectedCallback() {
+            super.connectedCallback()
+            this.animate('animate', () => this._render(true, true))
+        }
+
+        disconnectedCallback() {
+            super.disconnectedCallback()
+            // TODO: Dispose of everything here?
+            // Or make an explicit "dispose" function?
+            this.clearAnimations()
+            this.clearDebounce()
         }
 
         /* Utilities */
@@ -8552,9 +8619,33 @@ __webpack_require__(9);
         }
 
         /* Private Functions */
+        _updateUniforms(mat) {
+            for (let key in mat.uniforms) {
+                if (mat.uniforms[key].type !== 't') continue
+
+                if (!(key in this._loadedTextures)) {
+                    delete mat.uniforms[key]
+                }
+            }
+
+            for (let key in this._loadedTextures) {
+                mat.uniforms[key] = {
+                    type:   't',
+                    value:  this._loadedTextures[key].texture,
+                    texture: this._loadedTextures[key].texture
+                }
+            }
+
+            const res = this._renderSize
+            mat.uniforms.screenSize = { type: '4f', value: [res, res, 1 / res, 1 / res] }
+            mat.uniforms.time = { type: 'f', value: window.performance.now() }
+        }
+
         // reads, parses, and assigns the errors to the error properties
         // for the given material
         _checkForError(mat) {
+            if (!mat.program) return
+                
             const diag = mat.program.diagnostics
 
             if (!diag || !diag.fragmentShader.log) {
@@ -8579,41 +8670,67 @@ __webpack_require__(9);
         // Renders all the images and updates the _images array with the new
         // image information
         // If `activeOnly` is true, then only the primary image will be rendered
-        _render(activeOnly = false) {
+        _render(activeOnly = false, skipIfErrors = false) {
             if (!this._renderer) return
+            if (skipIfErrors && (this.vertexErrors || this.fragmentErrors)) return
 
-            this.vertexErrors = null
-            this.fragmentErrors = null
+            if (activeOnly) {
+                this._renderFrame(this._activeImage)
+            } else {
+                // TODO: Roll this over multiple frames so it's a bit
+                // faster to draw. This includes the negative frame
+                // as well
+                this._shaders.forEach((s, i) => this._renderFrame(i))
+            }
+        }
 
-            // assign the new shaders to the images being rendered
-            this._shaders.forEach((s, i) => {
-                if (activeOnly && i !== this._activeImage) return
-                    
-                const fs = s.fragmentShader
-                const vs = s.vertexShader
+        // Rerender a particular frame
+        _renderFrame(i) {
+            // reset the errors if we're about to render
+            // the primary shader because that's the only
+            // we care about errors on
+            if (i === 0) {
+                this.vertexErrors = null
+                this.fragmentErrors = null
+            }
 
-                const setpref = `_images.${i}`
-                if (this.fragmentErrors || this.vertexErrors) {
-                    this.set(`${setpref}.src`, '')
-                } else {
-                    this._meshes[this._displayGeometry].material = this._images[i].material
-                    
-                    this._images[i].material.uniforms._negate_.value = false
-                    this._renderer.render(this._scene, this._camera)
-                    this.set(`${setpref}.src`, this._renderer.domElement.toDataURL('image/png'))
+            const s = this._shaders[i]
+            const fs = s.fragmentShader
+            const vs = s.vertexShader
+            const item = this._images[i]
+            const de = this._renderer.domElement
 
-                    this._images[i].material.uniforms._negate_.value = true
-                    this._renderer.render(this._scene, this._camera)
-                    this.set(`${setpref}.negsrc`, this._renderer.domElement.toDataURL('image/png'))
+            const setpref = `_images.${i}`
+            if (this.fragmentErrors || this.vertexErrors) {
+                this.set(`${setpref}.src`, '')
+            } else {
+                const material = item.material
+                this._updateUniforms(material)
 
-                    // only check for errors on the first go because thats
-                    // the one that the user is writing
-                    if (i === 0) this._checkForError(this._images[i].material)
-                }
+                this._meshes[this._displayGeometry].material = item.material
+                
+                // non-negated
+                item.material.uniforms._negate_.value = false
+                this._renderer.render(this._scene, this._camera)
 
-                this._images[i].img.src = this._images[i].src
-                this._images[i].negimg.src = this._images[i].negsrc
-            })
+                this.set(`${setpref}.src`, de.toDataURL('image/png'))
+                item.img.width = de.width
+                item.img.height = de.height
+                item.ctx.drawImage(de, 0, 0)
+
+                // negated
+                item.material.uniforms._negate_.value = true
+                this._renderer.render(this._scene, this._camera)
+
+                this.set(`${setpref}.negsrc`, de.toDataURL('image/png'))
+                item.negimg.width = de.width
+                item.negimg.height = de.height
+                item.negctx.drawImage(de, 0, 0)
+
+                // only check for errors on the first go because thats
+                // the one that the user is writing
+                if (i === 0) this._checkForError(item.material)
+            }
         }
 
         /* Event Handlers */
@@ -8633,10 +8750,10 @@ __webpack_require__(9);
 
             const arr = []
             this._images.forEach(item => {
-                const px = DebugShaders.readPixel(item.img, e.pixel.x, e.pixel.y)
+                const px = DebugShaders.readPixel(item.ctx, e.pixel.x, e.pixel.y)
                 const data = DebugShaders.pixelToArray(px, item.type)
                 
-                const negpx = DebugShaders.readPixel(item.negimg, e.pixel.x, e.pixel.y)
+                const negpx = DebugShaders.readPixel(item.negctx, e.pixel.x, e.pixel.y)
                 const negdata = DebugShaders.pixelToArray(negpx, item.type)
 
                 for(let i in data) data[i] = data[i] || -negdata[i]
@@ -8683,6 +8800,36 @@ __webpack_require__(9);
         }
 
         /* Observers */
+        _texturesObserver(textures) {
+            for (let key in this._loadedTextures) {
+                const removed = !(key in textures)
+                const changed = !removed && this._loadedTextures[key].source !== textures[key] 
+
+                if (removed || changed) {
+                    this._loadedTextures[key].dispose()
+                    this.set(`_loadedTextures.${key}`, undefined)
+                }
+            }
+
+            for (let key in textures) {
+                if (!(key in this._loadedTextures)) {
+                    const thisKey = key
+                    this.set(`_loadedTextures.${key}`, {
+                        source: textures[key],
+                        texture: new THREE.TextureLoader().load(
+                            textures[key],
+                            () => this.debounce('rerender', () => this._render(false, true), 250),
+                            null,
+                            () => {
+                                this.set(`_loadedTextures.${key}`, undefined)
+                                this.debounce('rerender', () => this._render(false, true), 250)
+                            }
+                        )
+                    })
+                }
+            }
+        }
+
         _shadersObserver(shaders) {
 
             // expand or shorten the array if necessary
@@ -8692,14 +8839,19 @@ __webpack_require__(9);
             }
 
             while (this._images.length < this._shaders.length) {
+                const c = document.createElement('canvas')
+                const nc = document.createElement('canvas')
                 this.push('_images', {
-                    img: new Image(),
-                    negimg: new Image(),
+                    img: c,
+                    ctx: c.getContext('2d'),
+                    negimg: nc,
+                    negctx: nc.getContext('2d'),
                     material: this._getMaterial(),
                     src: '',
                     negsrc: '',
                     name: '',
-                    type: ''
+                    type: '',
+                    fromShader: ''
                 })
             }
 
@@ -8709,14 +8861,15 @@ __webpack_require__(9);
 
                 this.set(`${setpref}.name`, s.name)
                 this.set(`${setpref}.type`, s.type)
+                this.set(`${setpref}.fromShader`, s.fromShader)
 
                 item.material.vertexShader = s.vertexShader
                 item.material.fragmentShader = s.fragmentShader
                 item.material.needsUpdate = true
             })
 
-            this._render(true)
-            this.debounce('render-all-shader-updates', () => this._render(), 500)
+            this.debounce('rerender-primary', () => this._renderFrame(0), 250)
+            this.debounce('rerender', () => this._render(false, true), 500)
         }
 
         _displayGeometryObserver(newgeom, oldgeom) {
@@ -8725,7 +8878,7 @@ __webpack_require__(9);
             this._scene.remove(this._meshes[oldgeom])
             this._scene.add(this._meshes[newgeom])
 
-            this._render()
+            this._render(false, true)
         }
     }
  

@@ -147,12 +147,14 @@
             localStorage.setItem('fragmentShader', se.fragmentShader)
         }
 
+
+        const path = /\.bundle\.html$/.test(location.href) ? '..' : '.'
         se.vertexShader = localStorage.getItem('vertexShader') || dedent(vs)
         se.fragmentShader = localStorage.getItem('fragmentShader') || dedent(fs)
         se.textures = {
-            'texture0': '/textures/checkerboard.png',
-            'texture1': '/textures/clouds.png',
-            'texture2': '/textures/random.png'
+            'texture0': `${path}/textures/checkerboard.png`,
+            'texture1': `${path}/textures/clouds.png`,
+            'texture2': `${path}/textures/random.png`
         }
     </script>
 </body>
