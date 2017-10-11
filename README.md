@@ -38,9 +38,9 @@ val.r = 0;
 
 ## TODO
 - [ ] Update UI so it's easier to inspect (local variables not persistent, etc)
-- [ ] Add the fragment output after the last modification of a variable so we can see the result after the full shader has run
-- [ ] Add pause button for animated variables
+- [ ] Use canvases for everything instead of image tags and `toDataURL`
 
+- [ ] Add pause button for animated variables
 - [ ] Texture upload
 - [ ] Uniform variable edit UI
 - [ ] Multi-pass shaders, stencil buffer, and screen post-effects
