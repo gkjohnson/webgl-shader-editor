@@ -480,12 +480,14 @@
             if (!this._renderer) return
             if (skipIfErrors && (this.vertexErrors || this.fragmentErrors)) return
 
-            // assign the new shaders to the images being rendered
-            this._shaders.forEach((s, i) => {
-                if (activeOnly && i !== this._activeImage) return
-
-                this._renderFrame(i)
-            })
+            if (activeOnly) {
+                this._renderFrame(this._activeImage)
+            } else {
+                // TODO: Roll this over multiple frames so it's a bit
+                // faster to draw. This includes the negative frame
+                // as well
+                this._shaders.forEach((s, i) => this._renderFrame(i))
+            }
         }
 
         // Rerender a particular frame
