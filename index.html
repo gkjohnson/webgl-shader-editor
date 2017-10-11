@@ -64,6 +64,7 @@
             vec3 direction;
         };
 
+        uniform float time;
         uniform sampler2D texture0;
         uniform sampler2D texture1;
         uniform sampler2D texture2;
@@ -85,7 +86,7 @@
             }
             
             vec3 sample = texture2D(texture1, uv).xyz;
-            vec3 pos = position + normal * sample;
+            vec3 pos = position + normal * sample * sin(time * 0.001);
 
             gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
         }

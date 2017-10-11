@@ -348,8 +348,10 @@
             orbit.enableZoom = false
             orbit.enablePan = false
             orbit.enableKeys = false
-            orbit.addEventListener('change', () => this._render(true, true))
-            target.addEventListener('mouseup', () => this._render(false, true))
+            orbit.addEventListener('change', () => {
+                this._render(true, true)
+                this.debounce('rerender', () => this._render(false, true), 500)
+            })
 
             this._renderer = renderer
             this._scene = scene
