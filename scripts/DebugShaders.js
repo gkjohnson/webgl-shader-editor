@@ -6,10 +6,6 @@ DebugShaders = {}
     const MAIN_SIG = 'void main() {'
 
     const variableRegex = /((((precision|varying|uniform|attribute)\s+)?)((highp|mediump|lowp)\s+)?)(vec4|vec3|vec2|float|int|uint|bool)\s+([A-Za-z0-9]+)/
-    const canvas = document.createElement('canvas')
-    const ctx = canvas.getContext('2d')
-    canvas.width = 1
-    canvas.height = 1
 
     // Clean up the shader to make it easer to parse
     const normalize = shader => {
@@ -191,11 +187,8 @@ DebugShaders = {}
         return shaders
     }
 
-    DebugShaders.readPixel = (img, x, y) => {
-        ctx.clearRect(0, 0, 1, 1)
-        ctx.drawImage(img, x, y, 1, 1, 0, 0, 1, 1)
-
-        const data = ctx.getImageData(0,0,1,1).data
+    DebugShaders.readPixel = (ctx, x, y) => {
+        const data = ctx.getImageData(x, y, 1, 1).data
 
         return {
             r: data[0],

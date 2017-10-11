@@ -559,10 +559,10 @@
 
             const arr = []
             this._images.forEach(item => {
-                const px = DebugShaders.readPixel(item.img, e.pixel.x, e.pixel.y)
+                const px = DebugShaders.readPixel(item.ctx, e.pixel.x, e.pixel.y)
                 const data = DebugShaders.pixelToArray(px, item.type)
                 
-                const negpx = DebugShaders.readPixel(item.negimg, e.pixel.x, e.pixel.y)
+                const negpx = DebugShaders.readPixel(item.negctx, e.pixel.x, e.pixel.y)
                 const negdata = DebugShaders.pixelToArray(negpx, item.type)
 
                 for(let i in data) data[i] = data[i] || -negdata[i]
