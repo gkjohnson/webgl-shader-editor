@@ -11,10 +11,11 @@ DebugShaders = {}
     const normalize = shader => {
         return shader
             .replace(/\/\/[^\n]*\n/g, '')               // remove comment line
-            .replace(/\/\*(\*(?!\/)|[^*])*\*\//, '')    // remove block comment
+            .replace(/\/\*(\*(?!\/)|[^*])*\*\//g, '')   // remove block comment
             .replace(/(\n|\s)+/g, ' ')                  // replace newlines or whitespace with a single space
             .replace(/\s*({|})\s*/g, '\n$1\n')          // compress the area around braces
             .replace(/\s*;\s*/g, ';\n')                 // replace newlines after semicolons
+            .replace(/(return|discard)\s*;/g, ';')      // remove any early discards or returns
             .replace(/void\s+main\s*\(\)(\s|\n)*{/, MAIN_SIG)   // clean up the main function signature
     }
 
