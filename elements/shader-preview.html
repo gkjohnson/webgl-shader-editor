@@ -506,31 +506,40 @@
             const s = this._shaders[i]
             const fs = s.fragmentShader
             const vs = s.vertexShader
+            const item = this._images[i]
+            const de = this._renderer.domElement
 
             const setpref = `_images.${i}`
             if (this.fragmentErrors || this.vertexErrors) {
                 this.set(`${setpref}.src`, '')
             } else {
-                const material = this._images[i].material
+                const material = item.material
                 this._updateUniforms(material)
 
-                this._meshes[this._displayGeometry].material = this._images[i].material
+                this._meshes[this._displayGeometry].material = item.material
                 
-                this._images[i].material.uniforms._negate_.value = false
+                // non-negated
+                item.material.uniforms._negate_.value = false
                 this._renderer.render(this._scene, this._camera)
-                this.set(`${setpref}.src`, this._renderer.domElement.toDataURL('image/png'))
 
-                this._images[i].material.uniforms._negate_.value = true
+                this.set(`${setpref}.src`, de.toDataURL('image/png'))
+                item.img.width = de.width
+                item.img.height = de.height
+                item.ctx.drawImage(de, 0, 0)
+
+                // negated
+                item.material.uniforms._negate_.value = true
                 this._renderer.render(this._scene, this._camera)
-                this.set(`${setpref}.negsrc`, this._renderer.domElement.toDataURL('image/png'))
+
+                this.set(`${setpref}.negsrc`, de.toDataURL('image/png'))
+                item.negimg.width = de.width
+                item.negimg.height = de.height
+                item.negctx.drawImage(de, 0, 0)
 
                 // only check for errors on the first go because thats
                 // the one that the user is writing
-                if (i === 0) this._checkForError(this._images[i].material)
+                if (i === 0) this._checkForError(item.material)
             }
-
-            this._images[i].img.src = this._images[i].src
-            this._images[i].negimg.src = this._images[i].negsrc
         }
 
         /* Event Handlers */
@@ -639,9 +648,13 @@
             }
 
             while (this._images.length < this._shaders.length) {
+                const c = document.createElement('canvas')
+                const nc = document.createElement('canvas')
                 this.push('_images', {
-                    img: new Image(),
-                    negimg: new Image(),
+                    img: c,
+                    ctx: c.getContext('2d'),
+                    negimg: nc,
+                    negctx: nc.getContext('2d'),
                     material: this._getMaterial(),
                     src: '',
                     negsrc: '',
