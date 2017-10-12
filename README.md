@@ -24,17 +24,6 @@ The vertex and fragment shader being written are saved and reloaded on refresh
 
 ## Caveats
 - Because colors are stored as 4 8bit values, there is a severe loss of precision when reading out floating point values.
-- The debug views of local variable values are only relevant after their initial declararation. Further modifications to the variable are not output:
-```glsl
-vec4 val = vec4(1,1,1,1);
-
-// auto inserted variable output
-gl_Position = val;
-return;
-
-// not accounted for!
-val.r = 0;
-```
 
 ## TODO
 - [ ] Update UI so it's easier to inspect (local variables not persistent, etc)
