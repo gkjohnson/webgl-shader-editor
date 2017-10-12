@@ -4,6 +4,7 @@
             #container {
                 display: flex;
                 height: 100%;
+                background: #272822;
             }
 
             #editors {
@@ -13,48 +14,60 @@
                 flex: 2;
             }
 
-            shader-preview {
+            #preview {
                 flex: 1;
                 max-width: 400px;
-                background: #272822;
                 color: white;
+                display: flex;
+                flex-direction: column;
+                height: 100%;
+            }
+
+            shader-preview {
+                flex: 1;
+                overflow: hidden;
             }
 
             ace-editor {
                 flex: 1;
             }
 
-            h5 {
+            h2 {
                 padding: 5px;
-                margin: 0;
+                margin: 5px 10px;
                 color: white;
-                background: #272822;
-                font-size: 12px;
+                /*font-size: 25px;*/
+                font-weight: 100;
+                border-bottom: 1px solid white;
+                opacity: 0.5;
             }
         </style>
         <div id="container">
             <div id="editors">
-                <h5>Vertex Shader</h5>
+                <h2>Vertex Shader</h2>
                 <ace-editor
                     value="{{ vertexShader }}"
                     annotations="[[ _errorsToAnnotations(vertexErrors) ]]"
                     type="glsl"
                 ></ace-editor>
                 
-                <h5>Fragment Shader</h5>
+                <h2>Fragment Shader</h2>
                 <ace-editor
                     value="{{ fragmentShader }}"
                     annotations="[[ _errorsToAnnotations(fragmentErrors) ]]"
                     type="glsl"
                 ></ace-editor>
             </div>
-            <shader-preview
-                vertex-shader="[[ vertexShader ]]"
-                vertex-errors="{{ vertexErrors }}"
-                fragment-shader="[[ fragmentShader ]]"
-                fragment-errors="{{ fragmentErrors }}"
-                textures="[[textures]]"
-            ></shader-preview>
+            <div id="preview">
+                <h2>Preview</h2>
+                <shader-preview
+                    vertex-shader="[[ vertexShader ]]"
+                    vertex-errors="{{ vertexErrors }}"
+                    fragment-shader="[[ fragmentShader ]]"
+                    fragment-errors="{{ fragmentErrors }}"
+                    textures="[[textures]]"
+                ></shader-preview>
+            </div>
         </div>
     </template>
 </dom-module>
