@@ -68,33 +68,31 @@
             }
         }
 
-        /* Private Functions */
-        _render() {
-            this.debounce('rerender', () => {
-                const src = this.src
-                const prx = this.shadowRoot.querySelector('[slot="size-proxy"]')
-                const tgt = this.shadowRoot.querySelector('[slot="zoom-element"]')
-                this.ctx = this.ctx || tgt.getContext('2d')
+        /* Public API */
+        redraw() {
+            const src = this.src
+            const prx = this.shadowRoot.querySelector('[slot="size-proxy"]')
+            const tgt = this.shadowRoot.querySelector('[slot="zoom-element"]')
+            this.ctx = this.ctx || tgt.getContext('2d')
 
-                this.ctx.clearRect(0, 0, tgt.width, tgt.height)
-                if (src) {
-                    prx.setAttribute('style', `width:${src.width}px; height:${src.height}px;`)
+            this.ctx.clearRect(0, 0, tgt.width, tgt.height)
+            if (src) {
+                prx.setAttribute('style', `width:${src.width}px; height:${src.height}px;`)
 
-                    tgt.width = src.width
-                    tgt.height = src.height
-                
-                    this.ctx.drawImage(src, 0, 0)
-                }
-            }, 0)
+                tgt.width = src.width
+                tgt.height = src.height
+            
+                this.ctx.drawImage(src, 0, 0)
+            }
         }
 
         /* Observers */
-        _srcObserver(src) { this._render() }
+        _srcObserver(src) { if (!this.autoRender) this.redraw() }
 
         _autoRenderObserver(animate) {
             this.clearAnimation('render-loop')
             if (animate) {
-                this.animate('render-loop', () => this._render())
+                this.animate('render-loop', () => this.redraw())
             }
         }
     }
