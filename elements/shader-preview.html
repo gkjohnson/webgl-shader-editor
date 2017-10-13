@@ -663,8 +663,9 @@
             im.xPixel = e.pixel.x
             im.yPixel = e.pixel.y
 
-            // TODO: sampling all the data seems to cause slowness / stuttering
-
+            // Sampling causes a bit of slowness when rendering, so we don't render when
+            // the user is hovering, and we stop sampling when they rotate the model
+            // or mouse off
             const arr = []
             this._images.forEach(item => {
                 const px = DebugShaders.readPixel(item.ctx, e.pixel.x, e.pixel.y)
