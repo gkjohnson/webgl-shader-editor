@@ -316,6 +316,26 @@
                 _debugCanvases: {
                     type: Array,
                     value: () => []
+                },
+
+                // whether or not to suspen hover events, which prevent
+                // animation
+                _suspendHover: {
+                    type: Boolean,
+                    value: false
+                },
+
+                // Time used for uniform variables in the shader materials
+                _time: {
+                    type: Number,
+                    value: 0
+                },
+
+                // the last render time so we can pause the animation and
+                // have a smooth step forward
+                _lastFrameTime: {
+                    type: Number,
+                    value: () => window.performance.now()
                 }
             }
         }
@@ -357,6 +377,10 @@
             orbit.enableZoom = false
             orbit.enablePan = false
             orbit.enableKeys = false
+            orbit.addEventListener('change', () => {
+                this._suspendHover = true
+                this.debounce('suspend-hover-change', () => this._suspendHover = false, 250)
+            })
 
             this._renderer = renderer
             this._scene = scene
@@ -368,7 +392,16 @@
 
         connectedCallback() {
             super.connectedCallback()
-            this.animate('animate', () => this._render(false, true))
+            this.animate('animate', () => {
+                if (!this._localVariables || this._suspendHover) {
+                    const delta = window.performance.now() - this._lastFrameTime
+                    this._time += delta
+                    this._render(false, true)
+                }
+
+                this._lastFrameTime = window.performance.now()
+
+            })
         }
 
         disconnectedCallback() {
@@ -452,7 +485,7 @@
 
             const res = this._renderSize
             mat.uniforms.screenSize = { type: '4f', value: [res, res, 1 / res, 1 / res] }
-            mat.uniforms.time = { type: 'f', value: window.performance.now() }
+            mat.uniforms.time = { type: 'f', value: this._time }
         }
 
         // reads, parses, and assigns the errors to the error properties
@@ -610,12 +643,16 @@
 
         /* Event Handlers */
         // Mouse hover events for inspecting local variables
-        _imageMouseEnterHandler() {
-            this.shadowRoot.querySelector('image-magnifier').style.visibility = 'visible'
-        }
-
         _imageMouseMoveHandler(e) {
             const im = this.shadowRoot.querySelector('image-magnifier')
+
+            if (this._suspendHover) {
+                this._localVariables = null
+                im.style.visibility = 'hidden'
+                return
+            }
+
+            im.style.visibility = 'visible'
 
             im.style.top = e.pageY + 'px'
             im.style.left = (e.pageX - im.clientWidth) + 'px'
