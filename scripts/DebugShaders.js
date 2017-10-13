@@ -209,6 +209,6 @@ DebugShaders = {}
         if (type === 'bool') return [!!px.r]
         if (type === 'int');    // TODO
         if (type === 'uint');   // TODO
-        if (type === 'float') return [cv(res.r)]
+        if (type === 'float') return [cv(px.r)]
     }
 })()
