@@ -26,8 +26,6 @@ The vertex and fragment shader being written are saved and reloaded on refresh
 - Because colors are stored as 4 8bit values, there is a severe loss of precision when reading out floating point values. [Issue 1](https://github.com/gkjohnson/webgl-shader-editor/issues/2), [Issue 2](https://github.com/gkjohnson/webgl-shader-editor/issues/1)
 
 ## TODO
-- [ ] Update UI so it's easier to inspect (local variables not persistent, etc)
-
 - [ ] Add pause button for animated variables
 - [ ] Texture upload
 - [ ] Uniform variable edit UI
