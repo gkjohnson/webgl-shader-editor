@@ -186,7 +186,7 @@
             
             <div class="header">Local Fragment Shader Variables</div>
             <div id="debug-list" hidden$="[[_exists(_localVariables)]]">
-                <template is="dom-repeat" items="[[_images]]">
+                <template is="dom-repeat" items="[[_images]]" restamp>
                     <div
                         class="shader"
                         active$="[[_equals(index,_activeImage)]]"
@@ -194,7 +194,7 @@
                     >
                         <div class="name">[[item.type]] [[item.name]]</div>
                         <div class="name">[[item.fromShader]]</div>
-                        <img src$="[[item.src]]" />
+                        <canvas index$="[[index]]"></canvas>
                     </div>
                 </template>
             </div>
@@ -308,7 +308,14 @@
                 _renderSize: {
                     type: Number,
                     value: 400
-                } 
+                },
+
+                // List of canvases and their contexts for drawing the
+                // debug shaders to
+                _debugCanvases: {
+                    type: Array,
+                    value: () => []
+                }
             }
         }
 
@@ -349,22 +356,19 @@
             orbit.enableZoom = false
             orbit.enablePan = false
             orbit.enableKeys = false
-            orbit.addEventListener('change', () => {
-                this._render(true, true)
-                this.debounce('rerender', () => this._render(false, true), 500)
-            })
 
             this._renderer = renderer
             this._scene = scene
             this._camera = camera
             this._meshes = meshes
 
-            this._render()
+
+            this._compileShaders(this._shaders, true)
         }
 
         connectedCallback() {
             super.connectedCallback()
-            this.animate('animate', () => this._render(true, true))
+            this.animate('animate', () => this._render(false, true))
         }
 
         disconnectedCallback() {
@@ -481,7 +485,6 @@
         // If `activeOnly` is true, then only the primary image will be rendered
         _render(activeOnly = false, skipIfErrors = false) {
             if (!this._renderer) return
-            if (skipIfErrors && (this.vertexErrors || this.fragmentErrors)) return
 
             if (activeOnly) {
                 this._renderFrame(this._activeImage)
@@ -522,7 +525,8 @@
                 item.material.uniforms._negate_.value = false
                 this._renderer.render(this._scene, this._camera)
 
-                this.set(`${setpref}.src`, de.toDataURL('image/png'))
+                if (i === this._activeImage) this.set(`${setpref}.src`, de.toDataURL('image/png'))
+                this._drawToDebugCanvas(de, i)
                 item.img.width = de.width
                 item.img.height = de.height
                 item.ctx.drawImage(de, 0, 0)
@@ -531,7 +535,6 @@
                 item.material.uniforms._negate_.value = true
                 this._renderer.render(this._scene, this._camera)
 
-                this.set(`${setpref}.negsrc`, de.toDataURL('image/png'))
                 item.negimg.width = de.width
                 item.negimg.height = de.height
                 item.negctx.drawImage(de, 0, 0)
@@ -540,6 +543,73 @@
                 // the one that the user is writing
                 if (i === 0) this._checkForError(item.material)
             }
+        }
+
+        _drawToDebugCanvas(source, i) {
+            if (i >= this._debugCanvases.length) {
+                const c = this.shadowRoot.querySelector(`canvas[index="${i}"]`)
+                if (!c) return
+                const ctx = c.getContext('2d')
+                this._debugCanvases[i] = { c, ctx }
+            }
+
+            const dest = this._debugCanvases[i].c
+            const ctx = this._debugCanvases[i].ctx
+
+            dest.style.width = '100%'
+            dest.height = dest.width
+            dest.width = dest.height
+
+            ctx.drawImage(source, 0, 0, source.width, source.height, 0, 0, dest.width, dest.height)
+        }
+
+        _compileShaders(shaders, force = false) {
+            this.debounce('shader-recompile', () => {
+                // expand or shorten the array if necessary
+                while (this._images.length > shaders.length) {
+                    const item = this.pop('_images')
+                    item.material.dispose()
+                }
+
+                while (this._debugCanvases.length > shaders.length) {
+                    this._debugCanvases.pop()
+                }
+
+                while (this._images.length < shaders.length) {
+                    const c = document.createElement('canvas')
+                    const nc = document.createElement('canvas')
+                    this.push('_images', {
+                        img: c,
+                        ctx: c.getContext('2d'),
+                        negimg: nc,
+                        negctx: nc.getContext('2d'),
+                        material: this._getMaterial(),
+                        src: '',
+                        negsrc: '',
+                        name: '',
+                        type: '',
+                        fromShader: ''
+                    })
+                }
+
+                shaders.forEach((s, i) => {
+                    const item = this._images[i]
+                    const setpref = `_images.${i}`
+
+                    this.set(`${setpref}.name`, s.name)
+                    this.set(`${setpref}.type`, s.type)
+                    this.set(`${setpref}.fromShader`, s.fromShader)
+
+                    item.material.vertexShader = s.vertexShader
+                    item.material.fragmentShader = s.fragmentShader
+                    item.material.needsUpdate = true
+                })
+
+                this.vertexErrors = null
+                this.fragmentErrors = null
+            }, 250)
+
+            if (force) this.flushDebounce('shader-recompile')
         }
 
         /* Event Handlers */
@@ -556,6 +626,8 @@
 
             im.xPixel = e.pixel.x
             im.yPixel = e.pixel.y
+
+            // TODO: sampling all the data seems to cause slowness / stuttering
 
             const arr = []
             this._images.forEach(item => {
@@ -640,45 +712,7 @@
         }
 
         _shadersObserver(shaders) {
-
-            // expand or shorten the array if necessary
-            while (this._images.length > this._shaders.length) {
-                const item = this.pop('_images')
-                item.material.dispose()
-            }
-
-            while (this._images.length < this._shaders.length) {
-                const c = document.createElement('canvas')
-                const nc = document.createElement('canvas')
-                this.push('_images', {
-                    img: c,
-                    ctx: c.getContext('2d'),
-                    negimg: nc,
-                    negctx: nc.getContext('2d'),
-                    material: this._getMaterial(),
-                    src: '',
-                    negsrc: '',
-                    name: '',
-                    type: '',
-                    fromShader: ''
-                })
-            }
-
-            shaders.forEach((s, i) => {
-                const item = this._images[i]
-                const setpref = `_images.${i}`
-
-                this.set(`${setpref}.name`, s.name)
-                this.set(`${setpref}.type`, s.type)
-                this.set(`${setpref}.fromShader`, s.fromShader)
-
-                item.material.vertexShader = s.vertexShader
-                item.material.fragmentShader = s.fragmentShader
-                item.material.needsUpdate = true
-            })
-
-            this.debounce('rerender-primary', () => this._renderFrame(0), 250)
-            this.debounce('rerender', () => this._render(false, true), 500)
+            this._compileShaders(shaders)
         }
 
         _displayGeometryObserver(newgeom, oldgeom) {
