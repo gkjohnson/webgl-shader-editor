@@ -45,8 +45,8 @@
 
             #debug-list .shader {
                 flex: 1;
-                min-width: 100px;
-                max-width: 200px;
+                min-width: 50%;
+                max-width: 50%;
                 transition: opacity .25s ease;
             }
 
@@ -71,33 +71,18 @@
             }
 
             /* Local Variables Section */
-            #local-variables-list {
-                padding: 10px;
-                overflow: hidden;
-            }
 
-            #local-variables-list .data {
+            .data {
                 display: flex;
                 padding: 5px 10px;
             }
 
-            #local-variables-list .data span {
+            .data span {
                 flex: 1;
                 font-size: 12px;
-                font-weight: 900;
-            }
-
-            #local-variables-list .data .name {
-                flex: 2;
-                opacity: 0.75;
-                white-space: pre;
+                font-weight: 300;
+                text-align:center;
                 overflow: hidden;
-                text-overflow: ellipsis;
-                font-style: italic;
-            }
-
-            #debug-list .shader img {
-                width: 100%;
             }
 
             .header {
@@ -185,7 +170,7 @@
             ></zoomable-canvas>
             
             <div class="header">Local Variables</div>
-            <div id="debug-list" hidden$="[[_exists(_localVariables)]]">
+            <div id="debug-list">
                 <template is="dom-repeat" items="[[_images]]" restamp>
                     <div
                         class="shader"
@@ -193,20 +178,13 @@
                         on-click="_debugImageClickHandler"
                     >
                         <div class="name">[[item.type]] [[item.name]]</div>
-                        <div class="name">[[item.fromShader]]</div>
+                        <div class="name" hidden="[[_localVariables]]">[[item.fromShader]] </div>
+                        <div class="data">
+                            <template is="dom-repeat" items="[[_getLocalVariableData(_localVariables, index)]]">
+                                <span>[[item]]</span>
+                            </template>
+                        </div>
                         <canvas index$="[[index]]"></canvas>
-                    </div>
-                </template>
-            </div>
-
-            <div id="local-variables-list" hidden$="[[!_exists(_localVariables)]]">
-                <template is="dom-repeat" items="[[_localVariables]]">
-                    <div class="data">
-                        <span class="name">[[item.type]] [[item.name]]</span>
-                        <span>[[item.data.0]]</span>
-                        <span>[[item.data.1]]</span>
-                        <span>[[item.data.2]]</span>
-                        <span>[[item.data.3]]</span>
                     </div>
                 </template>
             </div>
@@ -420,6 +398,12 @@
         _equals(a,b) { return a === b }
 
         _exists(a) { return !!a }
+
+        _getLocalVariableData(lv, i, di) {
+            if (!lv || !lv[i]) return []
+
+            return lv[i].data.map(d => parseFloat(d.toFixed(4)))
+        }
 
         // parses the log definition from THREE.js to extract
         // the line number and error

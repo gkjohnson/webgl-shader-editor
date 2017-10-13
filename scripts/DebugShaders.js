@@ -79,7 +79,7 @@ DebugShaders = {}
         else if(type === 'float') {
             // TODO : Pack this into bytes so we can
             // read it back out as a larger float
-            r = `${name}`
+            r = g = b = `${name}`
         }
 
         return `gl_FragColor = vec4(${r},${g},${b},${a});`
