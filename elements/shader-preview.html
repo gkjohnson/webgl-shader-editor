@@ -174,7 +174,7 @@
                 <span class="shape" on-click="_setShapeHandler" shape="sphere" title="sphere"></span>
                 <span class="shape" on-click="_setShapeHandler" shape="plane" title="plane"></span>
             </div>
-            <zoomable-image
+            <zoomable-canvas
                 id="target"
                 src="[[_primaryImageSrc]]"
                 max-scale="10"
@@ -182,7 +182,8 @@
                 on-mousemove="_imageMouseMoveHandler"
                 on-mouseleave="_imageMouseLeaveHandler"
                 clamp
-            ></zoomable-image>
+                auto-render
+            ></zoomable-canvas>
             
             <div class="header">Local Fragment Shader Variables</div>
             <div id="debug-list" hidden$="[[_exists(_localVariables)]]">
@@ -362,7 +363,6 @@
             this._camera = camera
             this._meshes = meshes
 
-
             this._compileShaders(this._shaders, true)
         }
 
@@ -373,6 +373,7 @@
 
         disconnectedCallback() {
             super.disconnectedCallback()
+
             // TODO: Dispose of everything here?
             // Or make an explicit "dispose" function?
             this.clearAnimations()
@@ -525,18 +526,16 @@
                 item.material.uniforms._negate_.value = false
                 this._renderer.render(this._scene, this._camera)
 
-                if (i === this._activeImage) this.set(`${setpref}.src`, de.toDataURL('image/png'))
                 this._drawToDebugCanvas(de, i)
-                item.img.width = de.width
-                item.img.height = de.height
+                item.ctx.canvas.width = de.width
+                item.ctx.canvas.height = de.height
                 item.ctx.drawImage(de, 0, 0)
 
                 // negated
                 item.material.uniforms._negate_.value = true
                 this._renderer.render(this._scene, this._camera)
-
-                item.negimg.width = de.width
-                item.negimg.height = de.height
+                item.negctx.canvas.width = de.width
+                item.negctx.canvas.height = de.height
                 item.negctx.drawImage(de, 0, 0)
 
                 // only check for errors on the first go because thats
@@ -579,13 +578,10 @@
                     const c = document.createElement('canvas')
                     const nc = document.createElement('canvas')
                     this.push('_images', {
-                        img: c,
                         ctx: c.getContext('2d'),
-                        negimg: nc,
                         negctx: nc.getContext('2d'),
                         material: this._getMaterial(),
                         src: '',
-                        negsrc: '',
                         name: '',
                         type: '',
                         fromShader: ''
@@ -677,7 +673,7 @@
         }
 
         _computeImageSrc(images, i) {
-            return images.base[i] ? images.base[i].src : ''
+            return images.base[i] ? images.base[i].ctx.canvas : null
         }
 
         /* Observers */
@@ -720,8 +716,6 @@
 
             this._scene.remove(this._meshes[oldgeom])
             this._scene.add(this._meshes[newgeom])
-
-            this._render(false, true)
         }
     }
  

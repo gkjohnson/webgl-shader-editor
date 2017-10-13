@@ -1,0 +1,103 @@
+<dom-module id="zoomable-canvas">
+    <template>
+        <zoomable-element
+            scale =      "{{scale}}"
+            max-scale =  "{{maxScale}}"
+            clamp =      "{{clamp}}"
+            x-offset =   "{{xOffset}}"
+            y-offset =   "{{yOffset}}"
+        >
+            <div slot="size-proxy"/></div>
+            <canvas slot="zoom-element"></canvas>
+        </zoomable-element>
+    </template>
+</dom-module>
+
+<script type="text/javascript">
+    // zoomable-canvas Element
+    // <img>-like element that allows for pixel-precise zooming and
+    // panning for closer image detail inspection, but on a canvas
+    // element that can take any source that can be piped into
+    // canvas context.drawImage
+
+    // wraps and has all the same properties as zoomable-element
+    class ZoomableCanvas extends Mixin(Polymer.Element, Debouncer, Animator) {
+        static get is() { return 'zoomable-canvas' }
+
+        static get properties() {
+            return {
+                scale: {
+                    type: Number,
+                    value: 1,
+                    notify: true
+                },
+
+                maxScale: {
+                    type: Number,
+                    value: null
+                },
+
+                clamp: {
+                    type: Boolean,
+                    value: false
+                },
+
+                src: {
+                    type: Object,
+                    value: null,
+                    observer: '_srcObserver'
+                },
+                
+                xOffset: {
+                    type: Number,
+                    value: 0,
+                    notify: true
+                },
+
+                yOffset: {
+                    type: Number,
+                    value: 0,
+                    notify: true
+                },
+
+                autoRender: {
+                    type: Boolean,
+                    value: false,
+                    observer: '_autoRenderObserver'
+                }
+            }
+        }
+
+        /* Private Functions */
+        _render() {
+            this.debounce('rerender', () => {
+                const src = this.src
+                const prx = this.shadowRoot.querySelector('[slot="size-proxy"]')
+                const tgt = this.shadowRoot.querySelector('[slot="zoom-element"]')
+                this.ctx = this.ctx || tgt.getContext('2d')
+
+                this.ctx.clearRect(0, 0, tgt.width, tgt.height)
+                if (src) {
+                    prx.setAttribute('style', `width:${src.width}px; height:${src.height}px;`)
+
+                    tgt.width = src.width
+                    tgt.height = src.height
+                
+                    this.ctx.drawImage(src, 0, 0)
+                }
+            }, 0)
+        }
+
+        /* Observers */
+        _srcObserver(src) { this._render() }
+
+        _autoRenderObserver(animate) {
+            this.clearAnimation('render-loop')
+            if (animate) {
+                this.animate('render-loop', () => this._render())
+            }
+        }
+    }
+
+    customElements.define(ZoomableCanvas.is, ZoomableCanvas)
+</script>
