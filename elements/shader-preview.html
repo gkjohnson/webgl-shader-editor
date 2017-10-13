@@ -376,10 +376,9 @@
             orbit.enableZoom = false
             orbit.enablePan = false
             orbit.enableKeys = false
-            orbit.addEventListener('change', () => {
-                this._suspendHover = true
-                this.debounce('suspend-hover-change', () => this._suspendHover = false, 250)
-            })
+
+            this.addEventListener('mousedown', () => this._suspendHover = true)
+            this._docMouseupCallback = () => this._suspendHover = false
 
             this._renderer = renderer
             this._scene = scene
@@ -391,6 +390,9 @@
 
         connectedCallback() {
             super.connectedCallback()
+
+            document.addEventListener('mouseup', this._docMouseupCallback)
+            
             this.animate('animate', () => {
                 if (!this._localVariables || this._suspendHover) {
                     const delta = window.performance.now() - this._lastFrameTime
@@ -405,6 +407,8 @@
 
         disconnectedCallback() {
             super.disconnectedCallback()
+
+            document.removeEventListener('mouseup', this._docMouseupCallback)
 
             // TODO: Dispose of everything here?
             // Or make an explicit "dispose" function?
