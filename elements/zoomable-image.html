@@ -1,62 +1,21 @@
 <dom-module id="zoomable-image">
     <template>
-        <style>
-            :host {
-                display: block;
-                position: relative;
-            }
-            
-            #proxy-image {
-                display: block;
-                visibility: hidden;
-            }
-
-            #zoom-container {
-                width: 100%;
-                height: 100%;
-                position: absolute;
-                overflow: hidden;
-                top: 0;
-                left: 0;
-            }
-
-            #zoom-image {
-                position: absolute;
-            }
-
-            #grid {
-                width: 200%;
-                height: 200%;
-
-                opacity: 0.1;
-
-                position: absolute;
-                pointer-events: none;
-
-            }
-        </style>
-
-        <!--
-            Image used to scale the container
-            appropriately
-        -->
-        <img
-            id="proxy-image"
-            src="[[src]]"
-        />
-
-        <div id="zoom-container">
+        <zoomable-element
+            scale =      "{{scale}}"
+            max-scale =  "{{maxScale}}"
+            clamp =      "{{clamp}}"
+            x-offset =   "{{xOffset}}"
+            y-offset =   "{{yOffset}}"
+        >
             <img
-                id="zoom-image"
+                slot="size-proxy"
                 src="[[src]]"
-                style="[[_getImageStyle(scale,xOffset,yOffset)]]"
-                on-mousemove="_imageMouseMoveHandler"
             />
-            <div
-                id="grid"
-                style$="[[_getGradientStyle(scale,xOffset,yOffset)]]"
-            ></div>
-        </div>
+            <img
+                slot="zoom-element"
+                src="[[src]]"
+            />
+        </zoomable-element>
     </template>
 </dom-module>
 
@@ -65,48 +24,33 @@
     // <img>-like element that allows for pixel-precise zooming and
     // panning for closer image detail inspection
 
-    // Scroll wheel will zoom and right click will pan
-
-    // A grid representing pixel edges is shown once scale is >= 7
-
-    // Events
-    // { pixel: { x, y } } is added to the event on mousemove event
-    // to add which pixel is being hovered over
+    // wraps and has all the same properties as zoomable-element
     class ZoomableImage extends Polymer.Element {
         static get is() { return 'zoomable-image' }
 
         static get properties() {
             return {
-                // The factor to zoom in by
                 scale: {
                     type: Number,
                     value: 1,
-                    notify: true,
-                    observer: '_scaleObserver'
+                    notify: true
                 },
 
-                // The maximum scale allowed
                 maxScale: {
                     type: Number,
                     value: null
                 },
 
-                // Whether or not to clamp to pixel-perfect
-                // aligned offsets
                 clamp: {
                     type: Boolean,
                     value: false
                 },
 
-                // The source of the image to display
                 src: {
                     type: String,
                     value: ''
                 },
-
-                // The pixel offset for the image from the
-                // top left that the image has been panned by
-                // This value is not affected by scale
+                
                 xOffset: {
                     type: Number,
                     value: 0,
@@ -117,152 +61,7 @@
                     type: Number,
                     value: 0,
                     notify: true
-                },
-
-                // Whether or not the image is currently being dragged
-                _dragging: {
-                    type: Boolean,
-                    value: false
                 }
-            }
-        }
-
-        static get observers() {
-            return ['_offsetObserver(xOffset, yOffset, scale, src, clamp)']
-        }
-
-        /* Lifecycle */
-        ready() {
-            super.ready()
-
-            // Zoom in on scroll wheel
-            this.addEventListener('wheel', e => {
-                const oldScale = this.scale
-
-                // set the scale first because the
-                // offsets are clamped by the scale
-                // and the scale is clamped by
-                // the max value
-                this.scale = oldScale - e.deltaY * 1e-2
-                const newScale = this.scale
-
-                // calculate the offset before and after
-                // the scale change and move the offset by
-                // that amount to keep the mouse over the
-                // current pixel
-                const xpxdelta = Math.floor(e.offsetX / newScale) - Math.floor(e.offsetX / oldScale)
-                const ypxdelta = Math.floor(e.offsetY / newScale) - Math.floor(e.offsetY / oldScale)
-
-                this.xOffset += xpxdelta
-                this.yOffset += ypxdelta
-            })
-        }
-
-        connectedCallback() {
-            super.connectedCallback()
-
-            // Begin drag
-            let stPageX, stPageY
-            let stXOffset, stYOffset
-            this.__mousedowncallback = e => {
-                if (e.which !== 2) return
-                this._dragging = true
-                
-                stXOffset = this.xOffset
-                stYOffset = this.yOffset
-                stPageX = e.pageX
-                stPageY = e.pageY
-            }
-
-            // Allow for dragging across the page
-            this.__mousemovecallback = e => {
-                if (!this._dragging) return
-
-                const deltaX = e.pageX - stPageX
-                const deltaY = e.pageY - stPageY
-
-                this.xOffset = stXOffset + deltaX / this.scale
-                this.yOffset = stYOffset + deltaY / this.scale
-            }
-
-            // Drag end
-            this.__mouseupcallback = e => {
-                if (e.which !== 2) return
-                this._dragging = false
-            }
-
-            this.addEventListener('mousedown',      this.__mousedowncallback)
-            document.addEventListener('mousemove',  this.__mousemovecallback)
-            document.addEventListener('mouseup',    this.__mouseupcallback)
-        }
-
-        disconnectedCallback() {
-            super.disconnectedCallback()
-
-            document.removeEventListener('mousedown',   this.__mousedowncallback)
-            document.removeEventListener('mousemove',   this.__mousemovecallback)
-            document.removeEventListener('mouseup',     this.__mouseupcallback)
-        }
-
-        /* Utilities */
-        // return the image style with the given offset
-        _getImageStyle(s, x, y) {
-            x = Math.floor(x)
-            y = Math.floor(y)
-            x *= s
-            y *= s
-            s *= 100
-
-            return `width:${s}%; top:${y}px; left:${x}px;`
-        }
-
-        _getGradientStyle(s, x, y) {
-            if (s < 7) return ''
-
-            const gradDef =`white 0, white 1px, transparent 1px, transparent ${s}px`
-            return `
-                background:
-                repeating-linear-gradient(180deg, ${gradDef}),
-                repeating-linear-gradient( 90deg, ${gradDef});
-            `
-        }
-
-        /* Observers */
-        // clamp the scale between 1 and maxScale
-        _scaleObserver(s) {
-            s = Math.max(1, Math.min(this.maxScale || Infinity, s))
-            if (this.scale !== s) this.scale = s
-        }
-
-        // floor the pixel offsets so that they align to the
-        // precise pixel positions rather than allowing
-        // the pan to sit between pixels
-        _offsetObserver(x, y, s, src, clamp) {
-            if (!clamp) return
-
-            // use our proxy image, which auto-adjusts its size,
-            // to get the initial image size
-            const prox = this.shadowRoot.querySelector('#proxy-image')
-
-            const maxX = prox.width - prox.width / s
-            const maxY = prox.height - prox.height / s
-
-            // don't go past the top left edge
-            x = Math.max(-maxX, Math.min(0, x))
-            y = Math.max(-maxY, Math.min(0, y))
-
-            if (this.xOffset !== x) this.xOffset = x
-            if (this.yOffset !== y) this.yOffset = y
-        }
-
-        /* Event Handlers */
-        _imageMouseMoveHandler(e) {
-            const xpx = Math.floor(e.offsetX / this.scale)
-            const ypx = Math.floor(e.offsetY / this.scale)
-
-            e.pixel = {
-                x: xpx,
-                y: ypx        
             }
         }
     }
