@@ -543,16 +543,13 @@
                 this.fragmentErrors = null
             }
 
+            const item = this._images[i]
             const s = this._shaders[i]
             const fs = s.fragmentShader
             const vs = s.vertexShader
-            const item = this._images[i]
             const de = this._renderer.domElement
 
-            const setpref = `_images.${i}`
-            if (this.fragmentErrors || this.vertexErrors) {
-                this.set(`${setpref}.src`, '')
-            } else {
+            if (item && !this.fragmentErrors && !this.vertexErrors) {
                 const material = item.material
                 this._updateUniforms(material)
 
