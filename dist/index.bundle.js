@@ -4221,7 +4221,7 @@ __webpack_require__(0);
 /* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
-/*__wc__loader*/!function(a){var b="\n    <title>WebGL Shader Editor</title>\n\n    \n    <link href=\"https://fonts.googleapis.com/css?family=Roboto:100\" rel=\"stylesheet\">\n\n    \n    \n    \n    \n    \n    \n    \n    \n\n    \n    \n\n    \n    \n    \n    \n\n    \n    \n    \n    \n    \n    \n\n    <style type=\"text/css\">html,body{margin:0;padding:0;height:100%;font-weight:100;font-family:Roboto,sans-serif;}webgl-shader{display:none;}::-webkit-scrollbar{width:5px;position:absolute;}::-webkit-scrollbar-thumb{border-radius:5px;background-color:rgba(255,255,255,0.2);}</style>\n\n    ";if(a.head){var c=a.head,d=a.createElement("div");for(d.innerHTML=b;d.children.length>0;)c.appendChild(d.children[0])}else a.write(b)}(document);!function(a){var b="<webgl-shader vertex=\"\">\n        // Lighting\n        struct DirLight {\n            vec3 color;\n            vec3 direction;\n        };\n\n        uniform float time;\n        uniform sampler2D texture0;\n        uniform sampler2D texture1;\n        uniform sampler2D texture2;\n        uniform DirLight directionalLights[NUM_DIR_LIGHTS];\n        uniform vec3 ambientLightColor;\n\n        varying vec3 lighting;\n        varying vec2 texcoord;\n\n        void main() \n        {\n            vec3 worldNorm = (modelViewMatrix * vec4(normal, 0)).xyz;\n            \n            texcoord = uv;\n            lighting = ambientLightColor;\n            for(int i = 0; i &lt; NUM_DIR_LIGHTS; i ++) {\n                DirLight dl = directionalLights[i];\n                lighting += clamp(dot(worldNorm, dl.direction), 0.0, 1.0) * dl.color;\n            }\n            \n            vec3 sample = texture2D(texture1, uv).xyz;\n            vec3 pos = position + normal * sample * sin(time * 0.001);\n\n            gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);\n        }\n    </webgl-shader>\n\n    <webgl-shader fragment=\"\">\n        varying vec3 lighting;\n        varying vec2 texcoord;\n\n        uniform sampler2D texture0;     // checkerboard\n        uniform sampler2D texture1;     // clouds\n        uniform sampler2D texture2;     // random noise\n        uniform vec4 screenSize;\n\n        void main() {\n            vec3 rgb = vec3(1, 1, 1);\n            vec4 val = texture2D(texture0, texcoord) * texture2D(texture1, texcoord);\n            rgb *= val.xyz;\n            \n            vec2 st;\n            st.x = gl_FragCoord.x / 2.0;\n            st.x -= floor(st.x);\n\n            st.y = gl_FragCoord.y / 2.0;\n            st.y -= floor(st.y);\n            \n            if (floor(st.x + 0.5) == 0.0) discard;\n            if (floor(st.y + 0.5) == 0.0) discard;\n            \n            gl_FragColor = vec4(rgb, 1);//vec4(rgb * lighting, 1);\n        }\n    </webgl-shader>\n\n\n    <shader-editor></shader-editor>\n    \n\n";if(a.body){var c=a.body,d=a.createElement("div");for(d.innerHTML=b;d.children.length>0;)c.appendChild(d.children[0])}else a.write(b)}(document);
+/*__wc__loader*/!function(a){var b="\n    <title>WebGL Shader Editor</title>\n\n    \n    <link href=\"https://fonts.googleapis.com/css?family=Roboto:100,300,500,700\" rel=\"stylesheet\">\n\n    \n    \n    \n    \n    \n    \n    \n    \n\n    \n    \n\n    \n    \n    \n    \n\n    \n    \n    \n    \n    \n    \n    \n    \n\n    <style type=\"text/css\">html,body{margin:0;padding:0;height:100%;font-weight:100;font-family:Roboto,sans-serif;}webgl-shader{display:none;}::-webkit-scrollbar{width:5px;height:5px;position:absolute;}::-webkit-scrollbar-thumb{background-color:rgba(255,255,255,0.2);}</style>\n\n    ";if(a.head){var c=a.head,d=a.createElement("div");for(d.innerHTML=b;d.children.length>0;)c.appendChild(d.children[0])}else a.write(b)}(document);!function(a){var b="<webgl-shader vertex=\"\">\n        // Lighting\n        struct DirLight {\n            vec3 color;\n            vec3 direction;\n        };\n\n        uniform float time;\n        uniform sampler2D texture0;\n        uniform sampler2D texture1;\n        uniform sampler2D texture2;\n        uniform DirLight directionalLights[NUM_DIR_LIGHTS];\n        uniform vec3 ambientLightColor;\n\n        varying vec3 lighting;\n        varying vec2 texcoord;\n\n        void main() \n        {\n            vec3 worldNorm = (modelViewMatrix * vec4(normal, 0)).xyz;\n            \n            texcoord = uv;\n            lighting = ambientLightColor;\n            for(int i = 0; i &lt; NUM_DIR_LIGHTS; i ++) {\n                DirLight dl = directionalLights[i];\n                lighting += clamp(dot(worldNorm, dl.direction), 0.0, 1.0) * dl.color;\n            }\n            \n            vec3 sample = texture2D(texture1, uv).xyz;\n            vec3 pos = position + normal * sample * sin(time * 0.001);\n\n            gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);\n        }\n    </webgl-shader>\n\n    <webgl-shader fragment=\"\">\n        varying vec3 lighting;\n        varying vec2 texcoord;\n\n        uniform sampler2D texture0;     // checkerboard\n        uniform sampler2D texture1;     // clouds\n        uniform sampler2D texture2;     // random noise\n        uniform vec4 screenSize;\n\n        void main() {\n            vec3 rgb = vec3(1, 1, 1);\n            vec4 val = texture2D(texture0, texcoord) * texture2D(texture1, texcoord);\n            rgb *= val.xyz;\n            \n            vec2 st;\n            st.x = gl_FragCoord.x / 2.0;\n            st.x -= floor(st.x);\n\n            st.y = gl_FragCoord.y / 2.0;\n            st.y -= floor(st.y);\n            \n            if (floor(st.x + 0.5) == 0.0) discard;\n            if (floor(st.y + 0.5) == 0.0) discard;\n            \n            gl_FragColor = vec4(rgb, 1);//vec4(rgb * lighting, 1);\n        }\n    </webgl-shader>\n\n\n    <shader-editor></shader-editor>\n    \n\n";if(a.body){var c=a.body,d=a.createElement("div");for(d.innerHTML=b;d.children.length>0;)c.appendChild(d.children[0])}else a.write(b)}(document);
 __webpack_require__(13);
 
 __webpack_require__(15);
@@ -4253,6 +4253,10 @@ __webpack_require__(40);
 __webpack_require__(41);
 
 __webpack_require__(42);
+
+__webpack_require__(43);
+
+__webpack_require__(44);
 
 
         // dedents the shader based on the indentation of the
@@ -8029,11 +8033,11 @@ __webpack_require__(9);
 /* 39 */
 /***/ (function(module, exports) {
 
-/*__wc__loader*/!function(a){var b="<dom-module id=\"zoomable-image\">\n    <template>\n        <style>:host{display:block;position:relative;}#proxy-image{display:block;visibility:hidden;}#zoom-container{width:100%;height:100%;position:absolute;overflow:hidden;top:0;left:0;}#zoom-image{position:absolute;}#grid{width:200%;height:200%;opacity:0.1;position:absolute;pointer-events:none;}</style>\n\n        \n        <img id=\"proxy-image\" src=\"[[src]]\">\n\n        <div id=\"zoom-container\">\n            <img id=\"zoom-image\" src=\"[[src]]\" style=\"[[_getImageStyle(scale,xOffset,yOffset)]]\" on-mousemove=\"_imageMouseMoveHandler\">\n            <div id=\"grid\" style$=\"[[_getGradientStyle(scale,xOffset,yOffset)]]\"></div>\n        </div>\n    </template>\n</dom-module>\n\n";if(a.body){var c=a.body,d=a.createElement("div");for(d.innerHTML=b;d.children.length>0;)c.appendChild(d.children[0])}else a.write(b)}(document);
+/*__wc__loader*/!function(a){var b="<dom-module id=\"zoomable-element\">\n    <template>\n        <style>:host{display:block;position:relative;}#zoom-container{width:100%;height:100%;position:absolute;overflow:hidden;top:0;left:0;}#grid{width:200%;height:200%;opacity:0.1;position:absolute;pointer-events:none;}::slotted([slot=\"zoom-element\"]){position:absolute;}::slotted([slot=\"size-proxy\"]){display:block;visibility:hidden;}</style>\n\n        \n        <slot name=\"size-proxy\"></slot>\n\n        <div id=\"zoom-container\" on-mousemove=\"_imageMouseMoveHandler\">\n            <slot name=\"zoom-element\"></slot>\n            <div id=\"grid\" style$=\"[[_getGradientStyle(scale,xOffset,yOffset)]]\"></div>\n        </div>\n    </template>\n</dom-module>\n\n";if(a.body){var c=a.body,d=a.createElement("div");for(d.innerHTML=b;d.children.length>0;)c.appendChild(d.children[0])}else a.write(b)}(document);
 
-    // zoomable-image Element
-    // <img>-like element that allows for pixel-precise zooming and
-    // panning for closer image detail inspection
+    // zoomable-element Element
+    // Allows for zooming of a dom element slotted into the "zoom-element" slot.
+    // The "size-proxy" slot determines the overall size of the element
 
     // Scroll wheel will zoom and right click will pan
 
@@ -8042,8 +8046,8 @@ __webpack_require__(9);
     // Events
     // { pixel: { x, y } } is added to the event on mousemove event
     // to add which pixel is being hovered over
-    class ZoomableImage extends Polymer.Element {
-        static get is() { return 'zoomable-image' }
+    class ZoomableElement extends Polymer.Element {
+        static get is() { return 'zoomable-element' }
 
         static get properties() {
             return {
@@ -8066,12 +8070,6 @@ __webpack_require__(9);
                 clamp: {
                     type: Boolean,
                     value: false
-                },
-
-                // The source of the image to display
-                src: {
-                    type: String,
-                    value: ''
                 },
 
                 // The pixel offset for the image from the
@@ -8120,8 +8118,10 @@ __webpack_require__(9);
                 // the scale change and move the offset by
                 // that amount to keep the mouse over the
                 // current pixel
-                const xpxdelta = Math.floor(e.offsetX / newScale) - Math.floor(e.offsetX / oldScale)
-                const ypxdelta = Math.floor(e.offsetY / newScale) - Math.floor(e.offsetY / oldScale)
+                const xo = e.offsetX + this.xOffset * newScale
+                const yo = e.offsetY + this.yOffset * newScale
+                const xpxdelta = Math.floor(xo / newScale) - Math.floor(xo / oldScale)
+                const ypxdelta = Math.floor(yo / newScale) - Math.floor(yo / oldScale)
 
                 this.xOffset += xpxdelta
                 this.yOffset += ypxdelta
@@ -8197,6 +8197,13 @@ __webpack_require__(9);
             `
         }
 
+        /* Private Functions */
+        _updateStyle() {
+            this
+                .querySelector('[slot="zoom-element"]')
+                .setAttribute('style', this._getImageStyle(this.scale, this.xOffset, this.yOffset))            
+        }
+
         /* Observers */
         // clamp the scale between 1 and maxScale
         _scaleObserver(s) {
@@ -8208,14 +8215,17 @@ __webpack_require__(9);
         // precise pixel positions rather than allowing
         // the pan to sit between pixels
         _offsetObserver(x, y, s, src, clamp) {
-            if (!clamp) return
+            if (!clamp) {
+                this._updateStyle()
+                return
+            }
 
             // use our proxy image, which auto-adjusts its size,
             // to get the initial image size
-            const prox = this.shadowRoot.querySelector('#proxy-image')
+            const prox = this.querySelector('[slot="size-proxy"')
 
-            const maxX = prox.width - prox.width / s
-            const maxY = prox.height - prox.height / s
+            const maxX = prox.offsetWidth - prox.offsetWidth / s
+            const maxY = prox.offsetHeight - prox.offsetHeight / s
 
             // don't go past the top left edge
             x = Math.max(-maxX, Math.min(0, x))
@@ -8223,6 +8233,8 @@ __webpack_require__(9);
 
             if (this.xOffset !== x) this.xOffset = x
             if (this.yOffset !== y) this.yOffset = y
+
+            this._updateStyle()
         }
 
         /* Event Handlers */
@@ -8237,7 +8249,7 @@ __webpack_require__(9);
         }
     }
 
-    customElements.define(ZoomableImage.is, ZoomableImage)
+    customElements.define(ZoomableElement.is, ZoomableElement)
 
 
 
@@ -8245,7 +8257,156 @@ __webpack_require__(9);
 /* 40 */
 /***/ (function(module, exports) {
 
-/*__wc__loader*/!function(a){var b="<dom-module id=\"image-magnifier\">\n    <template>\n        <style>:host{display:block;position:absolute;pointer-events:none;}#outline{right:0;top:0;position:absolute;pointer-events:none;}/* Magnifier Arrow */ #container:before{content:\"\";width:50%;height:50%;top:0;right:0;position:absolute;background:white;}#container{border:5px solid white;background:#111;position:absolute;right:0;top:0;z-index:1;}#image-wrapper{width:100%;height:100%;overflow:hidden;position:relative;background:black;}#pixel-outline{position:absolute;border:1px solid white;top:30px;left:30px;z-index:1000;opacity:0.5;}zoomable-image{position:absolute;image-rendering:pixelated;}</style>\n\n        <div id=\"container\" style$=\"[[_getContainerStyle(size)]]\">\n            <div id=\"pixel-outline\" style$=\"[[_getPixelOutlineStyle(size,scale)]]\"></div>\n            <div id=\"image-wrapper\" style$=\"[[_getBorderRadiusStyle(size)]]\">\n                <zoomable-image src=\"[[src]]\" scale=\"[[scale]]\" x-offset=\"[[_toOffset(xPixel)]]\" y-offset=\"[[_toOffset(yPixel)]]\" style=\"[[_getOffsetStyle(scale)]]\"></zoomable-image>\n            </div>\n        </div>\n    </template>\n</dom-module>\n\n";if(a.body){var c=a.body,d=a.createElement("div");for(d.innerHTML=b;d.children.length>0;)c.appendChild(d.children[0])}else a.write(b)}(document);
+/*__wc__loader*/!function(a){var b="<dom-module id=\"zoomable-image\">\n    <template>\n        <zoomable-element scale=\"{{scale}}\" max-scale=\"{{maxScale}}\" clamp=\"{{clamp}}\" x-offset=\"{{xOffset}}\" y-offset=\"{{yOffset}}\">\n            <img slot=\"size-proxy\" src=\"[[src]]\">\n            <img slot=\"zoom-element\" src=\"[[src]]\">\n        </zoomable-element>\n    </template>\n</dom-module>\n\n";if(a.body){var c=a.body,d=a.createElement("div");for(d.innerHTML=b;d.children.length>0;)c.appendChild(d.children[0])}else a.write(b)}(document);
+
+    // zoomable-image Element
+    // <img>-like element that allows for pixel-precise zooming and
+    // panning for closer image detail inspection
+
+    // wraps and has all the same properties as zoomable-element
+    class ZoomableImage extends Polymer.Element {
+        static get is() { return 'zoomable-image' }
+
+        static get properties() {
+            return {
+                scale: {
+                    type: Number,
+                    value: 1,
+                    notify: true
+                },
+
+                maxScale: {
+                    type: Number,
+                    value: null
+                },
+
+                clamp: {
+                    type: Boolean,
+                    value: false
+                },
+
+                src: {
+                    type: String,
+                    value: ''
+                },
+                
+                xOffset: {
+                    type: Number,
+                    value: 0,
+                    notify: true
+                },
+
+                yOffset: {
+                    type: Number,
+                    value: 0,
+                    notify: true
+                }
+            }
+        }
+    }
+
+    customElements.define(ZoomableImage.is, ZoomableImage)
+
+
+
+/***/ }),
+/* 41 */
+/***/ (function(module, exports) {
+
+/*__wc__loader*/!function(a){var b="<dom-module id=\"zoomable-canvas\">\n    <template>\n        <zoomable-element scale=\"{{scale}}\" max-scale=\"{{maxScale}}\" clamp=\"{{clamp}}\" x-offset=\"{{xOffset}}\" y-offset=\"{{yOffset}}\">\n            <div slot=\"size-proxy\"></div>\n            <canvas slot=\"zoom-element\"></canvas>\n        </zoomable-element>\n    </template>\n</dom-module>\n\n";if(a.body){var c=a.body,d=a.createElement("div");for(d.innerHTML=b;d.children.length>0;)c.appendChild(d.children[0])}else a.write(b)}(document);
+
+    // zoomable-canvas Element
+    // <img>-like element that allows for pixel-precise zooming and
+    // panning for closer image detail inspection, but on a canvas
+    // element that can take any source that can be piped into
+    // canvas context.drawImage
+
+    // wraps and has all the same properties as zoomable-element
+    class ZoomableCanvas extends Mixin(Polymer.Element, Debouncer, Animator) {
+        static get is() { return 'zoomable-canvas' }
+
+        static get properties() {
+            return {
+                scale: {
+                    type: Number,
+                    value: 1,
+                    notify: true
+                },
+
+                maxScale: {
+                    type: Number,
+                    value: null
+                },
+
+                clamp: {
+                    type: Boolean,
+                    value: false
+                },
+
+                src: {
+                    type: Object,
+                    value: null,
+                    observer: '_srcObserver'
+                },
+                
+                xOffset: {
+                    type: Number,
+                    value: 0,
+                    notify: true
+                },
+
+                yOffset: {
+                    type: Number,
+                    value: 0,
+                    notify: true
+                },
+
+                autoRender: {
+                    type: Boolean,
+                    value: false,
+                    observer: '_autoRenderObserver'
+                }
+            }
+        }
+
+        /* Public API */
+        redraw() {
+            const src = this.src
+            const prx = this.shadowRoot.querySelector('[slot="size-proxy"]')
+            const tgt = this.shadowRoot.querySelector('[slot="zoom-element"]')
+            this.ctx = this.ctx || tgt.getContext('2d')
+
+            this.ctx.clearRect(0, 0, tgt.width, tgt.height)
+            if (src) {
+                prx.setAttribute('style', `width:${src.width}px; height:${src.height}px;`)
+
+                tgt.width = src.width
+                tgt.height = src.height
+            
+                this.ctx.drawImage(src, 0, 0)
+            }
+        }
+
+        /* Observers */
+        _srcObserver(src) { if (!this.autoRender) this.redraw() }
+
+        _autoRenderObserver(animate) {
+            this.clearAnimation('render-loop')
+            if (animate) {
+                this.animate('render-loop', () => this.redraw())
+            }
+        }
+    }
+
+    customElements.define(ZoomableCanvas.is, ZoomableCanvas)
+
+
+
+/***/ }),
+/* 42 */
+/***/ (function(module, exports) {
+
+/*__wc__loader*/!function(a){var b="<dom-module id=\"image-magnifier\">\n    <template>\n        <style>:host{display:block;position:absolute;pointer-events:none;}#outline{right:0;top:0;position:absolute;pointer-events:none;}/* Magnifier Arrow */ #container:before{content:\"\";width:50%;height:50%;top:0;right:0;position:absolute;background:white;}#container{border:5px solid white;background:#111;position:absolute;right:0;top:0;z-index:1;}#image-wrapper{width:100%;height:100%;overflow:hidden;position:relative;background:black;}#pixel-outline{position:absolute;border:1px solid white;top:30px;left:30px;z-index:1000;opacity:0.5;}zoomable-canvas{position:absolute;image-rendering:pixelated;}</style>\n\n        <div id=\"container\" style$=\"[[_getContainerStyle(size)]]\">\n            <div id=\"pixel-outline\" style$=\"[[_getPixelOutlineStyle(size,scale)]]\"></div>\n            <div id=\"image-wrapper\" style$=\"[[_getBorderRadiusStyle(size)]]\">\n                <zoomable-canvas src=\"[[src]]\" scale=\"[[scale]]\" x-offset=\"[[_toOffset(xPixel)]]\" y-offset=\"[[_toOffset(yPixel)]]\" style=\"[[_getOffsetStyle(scale)]]\" auto-render=\"\"></zoomable-canvas>\n            </div>\n        </div>\n    </template>\n</dom-module>\n\n";if(a.body){var c=a.body,d=a.createElement("div");for(d.innerHTML=b;d.children.length>0;)c.appendChild(d.children[0])}else a.write(b)}(document);
 
     // image-magnifier Element
     // A magnifying glass that zooms in to an image to give
@@ -8324,10 +8485,10 @@ __webpack_require__(9);
 
 
 /***/ }),
-/* 41 */
+/* 43 */
 /***/ (function(module, exports) {
 
-/*__wc__loader*/!function(a){var b="<dom-module id=\"shader-editor\">\n    <template>\n        <style type=\"text/css\">#container{display:flex;height:100%;}#editors{height:100%;display:flex;flex-direction:column;flex:2;}shader-preview{flex:1;max-width:400px;background:#272822;color:white;}ace-editor{flex:1;}h5{padding:5px;margin:0;color:white;background:#272822;font-size:12px;}</style>\n        <div id=\"container\">\n            <div id=\"editors\">\n                <h5>Vertex Shader</h5>\n                <ace-editor value=\"{{ vertexShader }}\" annotations=\"[[ _errorsToAnnotations(vertexErrors) ]]\" type=\"glsl\"></ace-editor>\n                \n                <h5>Fragment Shader</h5>\n                <ace-editor value=\"{{ fragmentShader }}\" annotations=\"[[ _errorsToAnnotations(fragmentErrors) ]]\" type=\"glsl\"></ace-editor>\n            </div>\n            <shader-preview vertex-shader=\"[[ vertexShader ]]\" vertex-errors=\"{{ vertexErrors }}\" fragment-shader=\"[[ fragmentShader ]]\" fragment-errors=\"{{ fragmentErrors }}\" textures=\"[[textures]]\"></shader-preview>\n        </div>\n    </template>\n</dom-module>\n";if(a.body){var c=a.body,d=a.createElement("div");for(d.innerHTML=b;d.children.length>0;)c.appendChild(d.children[0])}else a.write(b)}(document);
+/*__wc__loader*/!function(a){var b="<dom-module id=\"shader-editor\">\n    <template>\n        <style type=\"text/css\">#container{display:flex;height:100%;background:#272822;}#editors{height:100%;display:flex;flex-direction:column;flex:2;}#preview{flex:1;max-width:400px;color:white;display:flex;flex-direction:column;height:100%;}shader-preview{flex:1;overflow:hidden;}ace-editor{flex:1;}h2{padding:5px;margin:5px 10px;color:white;/*font-size:25px;*/ font-weight:100;border-bottom:1px solid white;opacity:0.5;}</style>\n        <div id=\"container\">\n            <div id=\"editors\">\n                <h2>Vertex Shader</h2>\n                <ace-editor value=\"{{ vertexShader }}\" annotations=\"[[ _errorsToAnnotations(vertexErrors) ]]\" type=\"glsl\"></ace-editor>\n                \n                <h2>Fragment Shader</h2>\n                <ace-editor value=\"{{ fragmentShader }}\" annotations=\"[[ _errorsToAnnotations(fragmentErrors) ]]\" type=\"glsl\"></ace-editor>\n            </div>\n            <div id=\"preview\">\n                <h2>Preview</h2>\n                <shader-preview vertex-shader=\"[[ vertexShader ]]\" vertex-errors=\"{{ vertexErrors }}\" fragment-shader=\"[[ fragmentShader ]]\" fragment-errors=\"{{ fragmentErrors }}\" textures=\"[[textures]]\"></shader-preview>\n            </div>\n        </div>\n    </template>\n</dom-module>\n";if(a.body){var c=a.body,d=a.createElement("div");for(d.innerHTML=b;d.children.length>0;)c.appendChild(d.children[0])}else a.write(b)}(document);
 
     // shader-editor element
     // Element that contains a vertex and fragment shader editor
@@ -8400,10 +8561,10 @@ __webpack_require__(9);
 
 
 /***/ }),
-/* 42 */
+/* 44 */
 /***/ (function(module, exports) {
 
-/*__wc__loader*/!function(a){var b="<dom-module id=\"shader-preview\">\n    <template>\n        <style type=\"text/css\">/* Util Classes */ ::-webkit-scrollbar{width:5px;position:absolute;}::-webkit-scrollbar-thumb{border-radius:5px;background-color:rgba(255,255,255,0.2);}[hidden]{display:none !important;}#container{display:flex;flex-direction:column;width:100%;height:100%;}#target{width:100%;image-rendering:pixelated;}image-magnifier{visibility:hidden;z-index:1000;}/* Debug Shader Displays */ #debug-list{display:flex;flex-wrap:wrap;width:100%;overflow-y:auto;}#debug-list .shader{flex:1;min-width:100px;max-width:200px;transition:opacity .25s ease;}#debug-list:hover .shader{opacity:0.25;}#debug-list:hover .shader:hover{opacity:1;}#debug-list .name{text-align:center;font-weight:900;font-size:12px;font-style:italic;white-space:pre;overflow:hidden;text-overflow:ellipsis;opacity:0.75;}/* Local Variables Section */ #local-variables-list{padding:10px;overflow:hidden;}#local-variables-list .data{display:flex;padding:5px 10px;}#local-variables-list .data span{flex:1;font-size:12px;font-weight:900;}#local-variables-list .data .name{flex:2;opacity:0.75;white-space:pre;overflow:hidden;text-overflow:ellipsis;font-style:italic;}#debug-list .shader img{width:100%;}.header{font-weight:bold;padding:15px;}/* Header */ #header{display:flex;}#header .name{flex:1;font-weight:bold;padding:5px;display:inline-block;}#header .shape{padding:4px;opacity:0.5;transition:opacity .25s ease;}#header .shape:hover{opacity:1;}#header .shape:before{content:'';width:18px;height:18px;display:block;}#header .shape[shape=\"plane\"]:before,#header .shape[shape=\"sphere\"]:before{background:white;}#header .shape[shape=\"sphere\"]:before{border-radius:100px;}#header .shape[shape=\"plane\"]:before{width:16px;height:16px;margin:1px;}#header .shape[shape=\"cube\"]:before{/* TODO:The cube image cannot properly be loaded with webpack at the moment */ /*content:'cube';*/ background-image:url(data:image/png;base64,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);background-size:cover;}</style>\n        \n        <image-magnifier scale=\"20\" src=\"[[_primaryImageSrc]]\"></image-magnifier>\n\n        <div id=\"container\">\n            <div id=\"header\">\n                <span class=\"name\">[[_getName(_images.*, _activeImage)]]</span>\n                <span class=\"shape\" on-click=\"_setShapeHandler\" shape=\"cube\" title=\"cube\"></span>\n                <span class=\"shape\" on-click=\"_setShapeHandler\" shape=\"sphere\" title=\"sphere\"></span>\n                <span class=\"shape\" on-click=\"_setShapeHandler\" shape=\"plane\" title=\"plane\"></span>\n            </div>\n            <zoomable-image id=\"target\" src=\"[[_primaryImageSrc]]\" max-scale=\"10\" on-mouseenter=\"_imageMouseEnterHandler\" on-mousemove=\"_imageMouseMoveHandler\" on-mouseleave=\"_imageMouseLeaveHandler\" clamp=\"\"></zoomable-image>\n            \n            <div class=\"header\">Local Fragment Shader Variables</div>\n            <div id=\"debug-list\" hidden$=\"[[_exists(_localVariables)]]\">\n                <template is=\"dom-repeat\" items=\"[[_images]]\">\n                    <div class=\"shader\" active$=\"[[_equals(index,_activeImage)]]\" on-click=\"_debugImageClickHandler\">\n                        <div class=\"name\">[[item.type]] [[item.name]]</div>\n                        <div class=\"name\">[[item.fromShader]]</div>\n                        <img src$=\"[[item.src]]\">\n                    </div>\n                </template>\n            </div>\n\n            <div id=\"local-variables-list\" hidden$=\"[[!_exists(_localVariables)]]\">\n                <template is=\"dom-repeat\" items=\"[[_localVariables]]\">\n                    <div class=\"data\">\n                        <span class=\"name\">[[item.type]] [[item.name]]</span>\n                        <span>[[item.data.0]]</span>\n                        <span>[[item.data.1]]</span>\n                        <span>[[item.data.2]]</span>\n                        <span>[[item.data.3]]</span>\n                    </div>\n                </template>\n            </div>\n        </div>\n    </template>\n</dom-module>\n";if(a.body){var c=a.body,d=a.createElement("div");for(d.innerHTML=b;d.children.length>0;)c.appendChild(d.children[0])}else a.write(b)}(document);
+/*__wc__loader*/!function(a){var b="<dom-module id=\"shader-preview\">\n    <template>\n        <style type=\"text/css\">/* Util Classes */ ::-webkit-scrollbar{width:5px;position:absolute;}::-webkit-scrollbar-thumb{border-radius:5px;background-color:rgba(255,255,255,0.2);}[hidden]{display:none !important;}#container{display:flex;flex-direction:column;width:100%;height:100%;}#target{width:100%;image-rendering:pixelated;}image-magnifier{visibility:hidden;z-index:1000;}/* Debug Shader Displays */ #debug-list{display:flex;flex-wrap:wrap;width:100%;overflow-y:auto;}#debug-list .shader{flex:1;min-width:100px;max-width:200px;transition:opacity .25s ease;}#debug-list:hover .shader{opacity:0.25;}#debug-list:hover .shader:hover{opacity:1;}#debug-list .name{text-align:center;font-weight:300;font-size:12px;white-space:pre;overflow:hidden;text-overflow:ellipsis;opacity:0.75;}/* Local Variables Section */ #local-variables-list{padding:10px;overflow:hidden;}#local-variables-list .data{display:flex;padding:5px 10px;}#local-variables-list .data span{flex:1;font-size:12px;font-weight:900;}#local-variables-list .data .name{flex:2;opacity:0.75;white-space:pre;overflow:hidden;text-overflow:ellipsis;font-style:italic;}#debug-list .shader img{width:100%;}.header{font-weight:300;padding:15px;}/* Header */ #header{display:flex;}#header .name{flex:1;font-weight:300;padding:5px;display:inline-block;}#header .shape{padding:4px;opacity:0.5;transition:opacity .25s ease;}#header .shape:hover{opacity:1;}#header .shape:before{content:'';width:18px;height:18px;display:block;}#header .shape[shape=\"plane\"]:before,#header .shape[shape=\"sphere\"]:before{background:white;}#header .shape[shape=\"sphere\"]:before{border-radius:100px;}#header .shape[shape=\"plane\"]:before{width:16px;height:16px;margin:1px;}#header .shape[shape=\"cube\"]:before{/* TODO:The cube image cannot properly be loaded with webpack at the moment */ /*content:'cube';*/ background-image:url(data:image/png;base64,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);background-size:cover;}</style>\n        \n        <image-magnifier scale=\"20\" src=\"[[_primaryImageSrc]]\"></image-magnifier>\n\n        <div id=\"container\">\n            <div id=\"header\">\n                <span class=\"name\">[[_getName(_images.*, _activeImage)]]</span>\n                <span class=\"shape\" on-click=\"_setShapeHandler\" shape=\"cube\" title=\"cube\"></span>\n                <span class=\"shape\" on-click=\"_setShapeHandler\" shape=\"sphere\" title=\"sphere\"></span>\n                <span class=\"shape\" on-click=\"_setShapeHandler\" shape=\"plane\" title=\"plane\"></span>\n            </div>\n            <zoomable-canvas id=\"target\" src=\"[[_primaryImageSrc]]\" max-scale=\"10\" on-mouseenter=\"_imageMouseEnterHandler\" on-mousemove=\"_imageMouseMoveHandler\" on-mouseleave=\"_imageMouseLeaveHandler\" clamp=\"\" auto-render=\"\"></zoomable-canvas>\n            \n            <div class=\"header\">Local Fragment Shader Variables</div>\n            <div id=\"debug-list\" hidden$=\"[[_exists(_localVariables)]]\">\n                <template is=\"dom-repeat\" items=\"[[_images]]\" restamp=\"\">\n                    <div class=\"shader\" active$=\"[[_equals(index,_activeImage)]]\" on-click=\"_debugImageClickHandler\">\n                        <div class=\"name\">[[item.type]] [[item.name]]</div>\n                        <div class=\"name\">[[item.fromShader]]</div>\n                        <canvas index$=\"[[index]]\"></canvas>\n                    </div>\n                </template>\n            </div>\n\n            <div id=\"local-variables-list\" hidden$=\"[[!_exists(_localVariables)]]\">\n                <template is=\"dom-repeat\" items=\"[[_localVariables]]\">\n                    <div class=\"data\">\n                        <span class=\"name\">[[item.type]] [[item.name]]</span>\n                        <span>[[item.data.0]]</span>\n                        <span>[[item.data.1]]</span>\n                        <span>[[item.data.2]]</span>\n                        <span>[[item.data.3]]</span>\n                    </div>\n                </template>\n            </div>\n        </div>\n    </template>\n</dom-module>\n";if(a.body){var c=a.body,d=a.createElement("div");for(d.innerHTML=b;d.children.length>0;)c.appendChild(d.children[0])}else a.write(b)}(document);
 
     // shader-preview Element
     // Element to preview, zoom in, and debug shader definitions
@@ -8499,7 +8660,34 @@ __webpack_require__(9);
                 _renderSize: {
                     type: Number,
                     value: 400
-                } 
+                },
+
+                // List of canvases and their contexts for drawing the
+                // debug shaders to
+                _debugCanvases: {
+                    type: Array,
+                    value: () => []
+                },
+
+                // whether or not to suspen hover events, which prevent
+                // animation
+                _suspendHover: {
+                    type: Boolean,
+                    value: false
+                },
+
+                // Time used for uniform variables in the shader materials
+                _time: {
+                    type: Number,
+                    value: 0
+                },
+
+                // the last render time so we can pause the animation and
+                // have a smooth step forward
+                _lastFrameTime: {
+                    type: Number,
+                    value: () => window.performance.now()
+                }
             }
         }
 
@@ -8541,8 +8729,8 @@ __webpack_require__(9);
             orbit.enablePan = false
             orbit.enableKeys = false
             orbit.addEventListener('change', () => {
-                this._render(true, true)
-                this.debounce('rerender', () => this._render(false, true), 500)
+                this._suspendHover = true
+                this.debounce('suspend-hover-change', () => this._suspendHover = false, 250)
             })
 
             this._renderer = renderer
@@ -8550,16 +8738,26 @@ __webpack_require__(9);
             this._camera = camera
             this._meshes = meshes
 
-            this._render()
+            this._compileShaders(this._shaders, true)
         }
 
         connectedCallback() {
             super.connectedCallback()
-            this.animate('animate', () => this._render(true, true))
+            this.animate('animate', () => {
+                if (!this._localVariables || this._suspendHover) {
+                    const delta = window.performance.now() - this._lastFrameTime
+                    this._time += delta
+                    this._render(false, true)
+                }
+
+                this._lastFrameTime = window.performance.now()
+
+            })
         }
 
         disconnectedCallback() {
             super.disconnectedCallback()
+
             // TODO: Dispose of everything here?
             // Or make an explicit "dispose" function?
             this.clearAnimations()
@@ -8615,7 +8813,7 @@ __webpack_require__(9);
         // returns the name for the given image object index
         _getName(imgbase, index) {
             const img = imgbase.base[index]
-            return img ? img.name : ''
+            return img ? `${img.type} ${img.name}` : ''
         }
 
         /* Private Functions */
@@ -8638,7 +8836,7 @@ __webpack_require__(9);
 
             const res = this._renderSize
             mat.uniforms.screenSize = { type: '4f', value: [res, res, 1 / res, 1 / res] }
-            mat.uniforms.time = { type: 'f', value: window.performance.now() }
+            mat.uniforms.time = { type: 'f', value: this._time }
         }
 
         // reads, parses, and assigns the errors to the error properties
@@ -8672,7 +8870,6 @@ __webpack_require__(9);
         // If `activeOnly` is true, then only the primary image will be rendered
         _render(activeOnly = false, skipIfErrors = false) {
             if (!this._renderer) return
-            if (skipIfErrors && (this.vertexErrors || this.fragmentErrors)) return
 
             if (activeOnly) {
                 this._renderFrame(this._activeImage)
@@ -8713,18 +8910,16 @@ __webpack_require__(9);
                 item.material.uniforms._negate_.value = false
                 this._renderer.render(this._scene, this._camera)
 
-                this.set(`${setpref}.src`, de.toDataURL('image/png'))
-                item.img.width = de.width
-                item.img.height = de.height
+                this._drawToDebugCanvas(de, i)
+                item.ctx.canvas.width = de.width
+                item.ctx.canvas.height = de.height
                 item.ctx.drawImage(de, 0, 0)
 
                 // negated
                 item.material.uniforms._negate_.value = true
                 this._renderer.render(this._scene, this._camera)
-
-                this.set(`${setpref}.negsrc`, de.toDataURL('image/png'))
-                item.negimg.width = de.width
-                item.negimg.height = de.height
+                item.negctx.canvas.width = de.width
+                item.negctx.canvas.height = de.height
                 item.negctx.drawImage(de, 0, 0)
 
                 // only check for errors on the first go because thats
@@ -8733,20 +8928,90 @@ __webpack_require__(9);
             }
         }
 
-        /* Event Handlers */
-        // Mouse hover events for inspecting local variables
-        _imageMouseEnterHandler() {
-            this.shadowRoot.querySelector('image-magnifier').style.visibility = 'visible'
+        _drawToDebugCanvas(source, i) {
+            if (i >= this._debugCanvases.length) {
+                const c = this.shadowRoot.querySelector(`canvas[index="${i}"]`)
+                if (!c) return
+                const ctx = c.getContext('2d')
+                this._debugCanvases[i] = { c, ctx }
+            }
+
+            const dest = this._debugCanvases[i].c
+            const ctx = this._debugCanvases[i].ctx
+
+            dest.style.width = '100%'
+            dest.height = dest.width
+            dest.width = dest.height
+
+            ctx.drawImage(source, 0, 0, source.width, source.height, 0, 0, dest.width, dest.height)
         }
 
+        _compileShaders(shaders, force = false) {
+            this.debounce('shader-recompile', () => {
+                // expand or shorten the array if necessary
+                while (this._images.length > shaders.length) {
+                    const item = this.pop('_images')
+                    item.material.dispose()
+                }
+
+                while (this._debugCanvases.length > shaders.length) {
+                    this._debugCanvases.pop()
+                }
+
+                while (this._images.length < shaders.length) {
+                    const c = document.createElement('canvas')
+                    const nc = document.createElement('canvas')
+                    this.push('_images', {
+                        ctx: c.getContext('2d'),
+                        negctx: nc.getContext('2d'),
+                        material: this._getMaterial(),
+                        src: '',
+                        name: '',
+                        type: '',
+                        fromShader: ''
+                    })
+                }
+
+                shaders.forEach((s, i) => {
+                    const item = this._images[i]
+                    const setpref = `_images.${i}`
+
+                    this.set(`${setpref}.name`, s.name)
+                    this.set(`${setpref}.type`, s.type)
+                    this.set(`${setpref}.fromShader`, s.fromShader)
+
+                    item.material.vertexShader = s.vertexShader
+                    item.material.fragmentShader = s.fragmentShader
+                    item.material.needsUpdate = true
+                })
+
+                this.vertexErrors = null
+                this.fragmentErrors = null
+            }, 250)
+
+            if (force) this.flushDebounce('shader-recompile')
+        }
+
+        /* Event Handlers */
+        // Mouse hover events for inspecting local variables
         _imageMouseMoveHandler(e) {
             const im = this.shadowRoot.querySelector('image-magnifier')
+
+            if (this._suspendHover) {
+                this._localVariables = null
+                im.style.visibility = 'hidden'
+                return
+            }
+
+            im.style.visibility = 'visible'
 
             im.style.top = e.pageY + 'px'
             im.style.left = (e.pageX - im.clientWidth) + 'px'
 
             im.xPixel = e.pixel.x
             im.yPixel = e.pixel.y
+
+            // TODO: sampling all the data seems to cause slowness / stuttering
 
             const arr = []
             this._images.forEach(item => {
@@ -8796,7 +9061,7 @@ __webpack_require__(9);
         }
 
         _computeImageSrc(images, i) {
-            return images.base[i] ? images.base[i].src : ''
+            return images.base[i] ? images.base[i].ctx.canvas : null
         }
 
         /* Observers */
@@ -8831,45 +9096,7 @@ __webpack_require__(9);
         }
 
         _shadersObserver(shaders) {
-
-            // expand or shorten the array if necessary
-            while (this._images.length > this._shaders.length) {
-                const item = this.pop('_images')
-                item.material.dispose()
-            }
-
-            while (this._images.length < this._shaders.length) {
-                const c = document.createElement('canvas')
-                const nc = document.createElement('canvas')
-                this.push('_images', {
-                    img: c,
-                    ctx: c.getContext('2d'),
-                    negimg: nc,
-                    negctx: nc.getContext('2d'),
-                    material: this._getMaterial(),
-                    src: '',
-                    negsrc: '',
-                    name: '',
-                    type: '',
-                    fromShader: ''
-                })
-            }
-
-            shaders.forEach((s, i) => {
-                const item = this._images[i]
-                const setpref = `_images.${i}`
-
-                this.set(`${setpref}.name`, s.name)
-                this.set(`${setpref}.type`, s.type)
-                this.set(`${setpref}.fromShader`, s.fromShader)
-
-                item.material.vertexShader = s.vertexShader
-                item.material.fragmentShader = s.fragmentShader
-                item.material.needsUpdate = true
-            })
-
-            this.debounce('rerender-primary', () => this._renderFrame(0), 250)
-            this.debounce('rerender', () => this._render(false, true), 500)
+            this._compileShaders(shaders)
         }
 
         _displayGeometryObserver(newgeom, oldgeom) {
@@ -8877,8 +9104,6 @@ __webpack_require__(9);
 
             this._scene.remove(this._meshes[oldgeom])
             this._scene.add(this._meshes[newgeom])
-
-            this._render(false, true)
         }
     }
  
