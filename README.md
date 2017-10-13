@@ -23,11 +23,10 @@ Every local variable will be displayed as a rendered image in the preview bar as
 The vertex and fragment shader being written are saved and reloaded on refresh
 
 ## Caveats
-- Because colors are stored as 4 8bit values, there is a severe loss of precision when reading out floating point values.
+- Because colors are stored as 4 8bit values, there is a severe loss of precision when reading out floating point values. [Issue 1](https://github.com/gkjohnson/webgl-shader-editor/issues/2), [Issue 2](https://github.com/gkjohnson/webgl-shader-editor/issues/1)
 
 ## TODO
 - [ ] Update UI so it's easier to inspect (local variables not persistent, etc)
-- [ ] Use canvases for everything instead of image tags and `toDataURL`
 
 - [ ] Add pause button for animated variables
 - [ ] Texture upload
