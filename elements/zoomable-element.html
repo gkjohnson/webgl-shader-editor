@@ -242,8 +242,8 @@
             // to get the initial image size
             const prox = this.querySelector('[slot="size-proxy"')
 
-            const maxX = prox.width - prox.width / s
-            const maxY = prox.height - prox.height / s
+            const maxX = prox.offsetWidth - prox.offsetWidth / s
+            const maxY = prox.offsetHeight - prox.offsetHeight / s
 
             // don't go past the top left edge
             x = Math.max(-maxX, Math.min(0, x))
