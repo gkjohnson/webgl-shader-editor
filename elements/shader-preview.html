@@ -60,9 +60,8 @@
 
             #debug-list .name {
                 text-align: center;
-                font-weight: 900;
+                font-weight: 300;
                 font-size: 12px;
-                font-style: italic;
 
                 white-space: pre;
                 overflow: hidden;
@@ -102,7 +101,7 @@
             }
 
             .header {
-                font-weight: bold;
+                font-weight: 300;
                 padding: 15px;
             }
 
@@ -113,7 +112,7 @@
 
             #header .name {
                 flex: 1;
-                font-weight: bold;
+                font-weight: 300;
                 padding: 5px;
                 display: inline-block;
             }
@@ -462,7 +461,7 @@
         // returns the name for the given image object index
         _getName(imgbase, index) {
             const img = imgbase.base[index]
-            return img ? img.name : ''
+            return img ? `${img.type} ${img.name}` : ''
         }
 
         /* Private Functions */
