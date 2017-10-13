@@ -54,7 +54,7 @@
                 opacity: 0.5;
             }
 
-            zoomable-image {
+            zoomable-canvas {
                 position: absolute;
                 image-rendering: pixelated;
             }
@@ -72,14 +72,15 @@
                 id="image-wrapper"
                 style$="[[_getBorderRadiusStyle(size)]]"
             >
-                <zoomable-image
+                <zoomable-canvas
                     src="[[src]]"
                     scale="[[scale]]"
                     x-offset="[[_toOffset(xPixel)]]"
                     y-offset="[[_toOffset(yPixel)]]"
 
                     style="[[_getOffsetStyle(scale)]]"
-                ></zoomable-image>
+                    auto-render
+                ></zoomable-canvas>
             </div>
         </div>
     </template>
