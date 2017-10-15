@@ -3,6 +3,8 @@ Realtime editor for creating webgl shaders with debugging tools to allow for ins
 
 [Demo](https://gkjohnson.github.io/webgl-shader-editor/dist/index.bundle.html)
 
+![Example](/docs/example.gif)
+
 ## Goal
 After lot of frustration with developing shaders and not being able to easily track the calculations within a shader, I wanted explore what the possibilities for enabling a rich shader debugger might be light while still affording the direct shader code editing.
 
