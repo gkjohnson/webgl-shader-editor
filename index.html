@@ -104,10 +104,7 @@
         uniform vec4 screenSize;
 
         void main() {
-            vec3 rgb = vec3(1, 1, 1);
-            vec4 val = texture2D(texture0, texcoord) * texture2D(texture1, texcoord);
-            rgb *= val.xyz;
-            
+            vec3 rgb = texture2D(texture1, texcoord).xyz;
             vec2 st;
             st.x = gl_FragCoord.x / 2.0;
             st.x -= floor(st.x);
@@ -115,10 +112,12 @@
             st.y = gl_FragCoord.y / 2.0;
             st.y -= floor(st.y);
             
-            if (floor(st.x + 0.5) == 0.0) discard;
-            if (floor(st.y + 0.5) == 0.0) discard;
-            
-            gl_FragColor = vec4(rgb, 1);//vec4(rgb * lighting, 1);
+            if (rgb.r < 0.5) {
+                float offset = 0.5;
+                offset += floor(st.y + 0.5) == 0.0 ? -1.0 : 0.0;
+                if (floor(st.x + offset) == 0.0) discard;
+            }
+            gl_FragColor = vec4(rgb, 1) * vec4(rgb * lighting, 1);
         }
     </webgl-shader>
 </head>
@@ -148,7 +147,6 @@
             localStorage.setItem('vertexShader', se.vertexShader)
             localStorage.setItem('fragmentShader', se.fragmentShader)
         }
-
 
         const path = /\.bundle\.html$/.test(location.href) ? '..' : '.'
         se.vertexShader = localStorage.getItem('vertexShader') || dedent(vs)
