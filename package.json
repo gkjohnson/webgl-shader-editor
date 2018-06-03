@@ -4,11 +4,11 @@
   "description": "Realtime editor for creating webgl shaders",
   "main": "electron/app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "serve": "static-server",
+    "start": "static-server",
     "electron": "electron .",
     "build-electron": "electron-packager . webgl-shader-editor",
-    "build": "webpack"
+    "build": "webpack",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",

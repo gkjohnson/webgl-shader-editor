@@ -29,4 +29,4 @@ module.exports = {
             filename: 'index.bundle.html'
         })
     ]
-}
+};

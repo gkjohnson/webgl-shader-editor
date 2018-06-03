@@ -123,7 +123,7 @@
             #header .shape[shape="sphere"]:before {
                 background: white;
             }
-            
+
             #header .shape[shape="sphere"]:before {
                 border-radius: 100px;
             }
@@ -145,7 +145,7 @@
 
             }
         </style>
-        
+
         <image-magnifier
             scale="20"
             src="[[_primaryImageSrc]]"
@@ -168,7 +168,7 @@
                 clamp
                 auto-render
             ></zoomable-canvas>
-            
+
             <div class="header">Local Variables</div>
             <div id="debug-list">
                 <template is="dom-repeat" items="[[_images]]" restamp>
@@ -192,12 +192,19 @@
     </template>
 </dom-module>
 <script type="text/javascript">
+    /* globals Mixin Polymer Debouncer Animator THREE DebugShaders */
     // shader-preview Element
     // Element to preview, zoom in, and debug shader definitions
     class ShaderPreview extends Mixin(Polymer.Element, Debouncer, Animator) {
-        static get is() { return 'shader-preview' }
 
-        static get properties() {
+        static get is () {
+
+            return 'shader-preview';
+
+        }
+
+        static get properties () {
+
             return {
                 // vertex shader to preview
                 vertexShader: {
@@ -215,7 +222,11 @@
                 // the application
                 textures: {
                     type: Object,
-                    value: () => { return {} },
+                    value: () => {
+
+                        return {};
+
+                    },
                     observer: '_texturesObserver'
                 },
 
@@ -278,14 +289,18 @@
                 // the textures that have been loaded
                 _loadedTextures: {
                     type: Object,
-                    value: () => { return {} }
+                    value: () => {
+
+                        return {};
+
+                    }
                 },
 
                 // the target size to render to
                 // TODO: Respect when this changes
                 _renderSize: {
                     type: Number,
-                    value: 400
+                    value: 300
                 },
 
                 // List of canvases and their contexts for drawing the
@@ -314,286 +329,356 @@
                     type: Number,
                     value: () => window.performance.now()
                 }
-            }
+            };
+
         }
 
-        static get observers() {
-            return ['_shadersObserver(_shaders)']
+        static get observers () {
+
+            return ['_shadersObserver(_shaders)'];
+
         }
 
         /* Lifecycle Functions */
-        ready() {
-            super.ready()
+        ready () {
 
-            const scene = new THREE.Scene()
-            const renderer = new THREE.WebGLRenderer({ antialias: false, alpha: true })
-            renderer.setPixelRatio(window.devicePixelRatio)
-            renderer.setSize(this._renderSize, this._renderSize)
-            renderer.setClearColor(0x000000, 0)
+            super.ready();
 
-            const camera = new THREE.PerspectiveCamera(75, 1, 0.1, 50)
-            camera.position.z = 10
-            scene.add(camera)
+            const scene = new THREE.Scene();
+            const renderer = new THREE.WebGLRenderer({ antialias: false, alpha: true });
+            renderer.setPixelRatio(window.devicePixelRatio);
+            renderer.setSize(this._renderSize, this._renderSize);
+            renderer.setClearColor(0x000000, 0);
+
+            const camera = new THREE.PerspectiveCamera(75, 1, 0.1, 50);
+            camera.position.z = 10;
+            scene.add(camera);
 
             const meshes = {
-                cube: new THREE.Mesh(new THREE.BoxGeometry( 5, 5, 5, 50, 50, 50 ), null ),
-                plane: new THREE.Mesh(new THREE.PlaneGeometry( 5, 5, 100, 100 ), null ),
-                sphere: new THREE.Mesh(new THREE.IcosahedronGeometry(5, 5), null),
-            }
-            scene.add( meshes[this._displayGeometry] );
-            scene.add(new THREE.AmbientLight(0x222222))
-            
-            const dl = new THREE.DirectionalLight( 0xffffff, 0.5 );
+                cube: new THREE.Mesh(new THREE.BoxGeometry(5, 5, 5, 50, 50, 50), null),
+                plane: new THREE.Mesh(new THREE.PlaneGeometry(5, 5, 100, 100), null),
+                sphere: new THREE.Mesh(new THREE.IcosahedronGeometry(5, 5), null)
+            };
+            scene.add(meshes[this._displayGeometry]);
+            scene.add(new THREE.AmbientLight(0x222222));
+
+            const dl = new THREE.DirectionalLight(0xffffff, 0.5);
             dl.position.x = 1;
             dl.position.y = 1;
             dl.position.z = 1;
-            scene.add( dl );
-            
-            const target = this.shadowRoot.querySelector('#target')
-            const orbit = new THREE.OrbitControls(camera, target)
-            orbit.enableZoom = false
-            orbit.enablePan = false
-            orbit.enableKeys = false
+            scene.add(dl);
 
-            this.addEventListener('mousedown', () => this._suspendHover = true)
-            this._docMouseupCallback = () => this._suspendHover = false
+            const target = this.shadowRoot.querySelector('#target');
+            const orbit = new THREE.OrbitControls(camera, target);
+            orbit.enableZoom = false;
+            orbit.enablePan = false;
+            orbit.enableKeys = false;
 
-            this._renderer = renderer
-            this._scene = scene
-            this._camera = camera
-            this._meshes = meshes
+            this.addEventListener('mousedown', () => this._suspendHover = true);
+            this._docMouseupCallback = () => this._suspendHover = false;
 
-            this._compileShaders(this._shaders, true)
+            this._renderer = renderer;
+            this._scene = scene;
+            this._camera = camera;
+            this._meshes = meshes;
+
+            this._compileShaders(this._shaders, true);
+
         }
 
-        connectedCallback() {
-            super.connectedCallback()
+        connectedCallback () {
 
-            document.addEventListener('mouseup', this._docMouseupCallback)
-            
+            super.connectedCallback();
+
+            document.addEventListener('mouseup', this._docMouseupCallback);
+
             this.animate('animate', () => {
+
                 if (!this._localVariables || this._suspendHover) {
-                    const delta = window.performance.now() - this._lastFrameTime
-                    this._time += delta
-                    this._render(false, true)
+
+                    const delta = window.performance.now() - this._lastFrameTime;
+                    this._time += delta;
+                    this._render(false, true);
+
                 }
 
-                this._lastFrameTime = window.performance.now()
+                this._lastFrameTime = window.performance.now();
 
-            })
+            });
+
         }
 
-        disconnectedCallback() {
-            super.disconnectedCallback()
+        disconnectedCallback () {
 
-            document.removeEventListener('mouseup', this._docMouseupCallback)
+            super.disconnectedCallback();
+
+            document.removeEventListener('mouseup', this._docMouseupCallback);
 
             // TODO: Dispose of everything here?
             // Or make an explicit "dispose" function?
-            this.clearAnimations()
-            this.clearDebounce()
+            this.clearAnimations();
+            this.clearDebounce();
+
         }
 
         /* Utilities */
-        _equals(a,b) { return a === b }
+        _equals (a, b) {
 
-        _exists(a) { return !!a }
+            return a === b;
 
-        _getLocalVariableData(lv, i, di) {
-            if (!lv || !lv[i]) return []
+        }
 
-            return lv[i].data.map(d => parseFloat(d.toFixed(4)))
+        _exists (a) {
+
+            return !!a;
+
+        }
+
+        _getLocalVariableData (lv, i, di) {
+
+            if (!lv || !lv[i]) return [];
+
+            return lv[i].data.map(d => parseFloat(d.toFixed(4)));
+
         }
 
         // parses the log definition from THREE.js to extract
         // the line number and error
-        _getLogError(log, lineOffset = 0) {
-            const regex = /^ERROR: ([^:]+):([^:]+)\s*:/
-            const matches = log.match(regex)
-            let row = 0
-            let col = 0
-            if(matches != null) {
-                row = parseFloat(matches[2]) - lineOffset
-                col = parseFloat(matches[1])
+        _getLogError (log, lineOffset = 0) {
 
-                row = row || 0
-                col = col || 0
+            const regex = /^ERROR: ([^:]+):([^:]+)\s*:/;
+            const matches = log.match(regex);
+            let row = 0;
+            let col = 0;
+            if (matches != null) {
+
+                row = parseFloat(matches[2]) - lineOffset;
+                col = parseFloat(matches[1]);
+
+                row = row || 0;
+                col = col || 0;
+
             }
-            log = log.replace(regex, '').trim()            
+            log = log.replace(regex, '').trim();
 
-            return { row, col, log }
+            return { row, col, log };
+
         }
 
         // parses a set of logs
-        _getLogErrors(logs, lineOffset = 0) {
+        _getLogErrors (logs, lineOffset = 0) {
+
             return logs
                 .replace(String.fromCharCode(0), '')
                 .trim()
                 .split('\n')
-                .map(line => this._getLogError(line, lineOffset))
+                .map(line => this._getLogError(line, lineOffset));
+
         }
 
         // create a new material
-        _getMaterial() {
+        _getMaterial () {
+
             const mat = new THREE.ShaderMaterial({
                 uniforms: THREE.UniformsUtils.merge([
-                        THREE.UniformsLib["lights"],
-                        { _negate_: { value: false } }
-                    ]),
+                    THREE.UniformsLib['lights'],
+                    { _negate_: { value: false } }
+                ]),
                 lights: true,
                 side: THREE.DoubleSide
-            })
-            return mat
+            });
+            return mat;
+
         }
 
         // returns the name for the given image object index
-        _getName(imgbase, index) {
-            const img = imgbase.base[index]
-            return img ? `${img.type} ${img.name}` : ''
+        _getName (imgbase, index) {
+
+            const img = imgbase.base[index];
+            return img ? `${img.type} ${img.name}` : '';
+
         }
 
         /* Private Functions */
-        _updateUniforms(mat) {
+        _updateUniforms (mat) {
+
             for (let key in mat.uniforms) {
-                if (mat.uniforms[key].type !== 't') continue
+
+                if (mat.uniforms[key].type !== 't') continue;
 
                 if (!(key in this._loadedTextures)) {
-                    delete mat.uniforms[key]
+
+                    delete mat.uniforms[key];
+
                 }
+
             }
 
             for (let key in this._loadedTextures) {
+
                 mat.uniforms[key] = {
-                    type:   't',
-                    value:  this._loadedTextures[key].texture,
+                    type: 't',
+                    value: this._loadedTextures[key].texture,
                     texture: this._loadedTextures[key].texture
-                }
+                };
+
             }
 
-            const res = this._renderSize
-            mat.uniforms.screenSize = { type: '4f', value: [res, res, 1 / res, 1 / res] }
-            mat.uniforms.time = { type: 'f', value: this._time }
+            const res = this._renderSize;
+            mat.uniforms.screenSize = { type: '4f', value: [res, res, 1 / res, 1 / res] };
+            mat.uniforms.time = { type: 'f', value: this._time };
+
         }
 
         // reads, parses, and assigns the errors to the error properties
         // for the given material
-        _checkForError(mat) {
-            if (!mat.program) return
-                
-            const diag = mat.program.diagnostics
+        _checkForError (mat) {
+
+            if (!mat.program) return;
+
+            const diag = mat.program.diagnostics;
 
             if (!diag || !diag.fragmentShader.log) {
-                this.fragmentErrors = null
+
+                this.fragmentErrors = null;
+
             } else {
+
                 this.fragmentErrors = this._getLogErrors(
                     diag.fragmentShader.log,
                     diag.fragmentShader.prefix.split('\n').length
-                )
+                );
+
             }
 
             if (!diag || !diag.vertexShader.log) {
-                this.vertexErrors = null
+
+                this.vertexErrors = null;
+
             } else {
+
                 this.vertexErrors = this._getLogErrors(
                     diag.vertexShader.log,
                     diag.vertexShader.prefix.split('\n').length
-                )
+                );
+
             }
+
         }
 
         // Renders all the images and updates the _images array with the new
         // image information
         // If `activeOnly` is true, then only the primary image will be rendered
-        _render(activeOnly = false, skipIfErrors = false) {
-            if (!this._renderer) return
+        _render (activeOnly = false, skipIfErrors = false) {
+
+            if (!this._renderer) return;
 
             if (activeOnly) {
-                this._renderFrame(this._activeImage)
+
+                this._renderFrame(this._activeImage);
+
             } else {
+
                 // TODO: Roll this over multiple frames so it's a bit
                 // faster to draw. This includes the negative frame
                 // as well
-                this._shaders.forEach((s, i) => this._renderFrame(i))
+                this._shaders.forEach((s, i) => this._renderFrame(i));
+
             }
+
         }
 
         // Rerender a particular frame
-        _renderFrame(i) {
+        _renderFrame (i) {
+
             // reset the errors if we're about to render
             // the primary shader because that's the only
             // we care about errors on
             if (i === 0) {
-                this.vertexErrors = null
-                this.fragmentErrors = null
+
+                this.vertexErrors = null;
+                this.fragmentErrors = null;
+
             }
 
-            const item = this._images[i]
-            const s = this._shaders[i]
-            const fs = s.fragmentShader
-            const vs = s.vertexShader
-            const de = this._renderer.domElement
+            const item = this._images[i];
+            const de = this._renderer.domElement;
 
             if (item && !this.fragmentErrors && !this.vertexErrors) {
-                const material = item.material
-                this._updateUniforms(material)
 
-                this._meshes[this._displayGeometry].material = item.material
-                
+                const material = item.material;
+                this._updateUniforms(material);
+
+                this._meshes[this._displayGeometry].material = item.material;
+
                 // non-negated
-                item.material.uniforms._negate_.value = false
-                this._renderer.render(this._scene, this._camera)
+                item.material.uniforms._negate_.value = false;
+                this._renderer.render(this._scene, this._camera);
 
-                this._drawToDebugCanvas(de, i)
-                item.ctx.canvas.width = de.width
-                item.ctx.canvas.height = de.height
-                item.ctx.drawImage(de, 0, 0)
+                this._drawToDebugCanvas(de, i);
+                item.ctx.canvas.width = de.width;
+                item.ctx.canvas.height = de.height;
+                item.ctx.drawImage(de, 0, 0);
 
                 // negated
-                item.material.uniforms._negate_.value = true
-                this._renderer.render(this._scene, this._camera)
-                item.negctx.canvas.width = de.width
-                item.negctx.canvas.height = de.height
-                item.negctx.drawImage(de, 0, 0)
+                item.material.uniforms._negate_.value = true;
+                this._renderer.render(this._scene, this._camera);
+                item.negctx.canvas.width = de.width;
+                item.negctx.canvas.height = de.height;
+                item.negctx.drawImage(de, 0, 0);
 
                 // only check for errors on the first go because thats
                 // the one that the user is writing
-                if (i === 0) this._checkForError(item.material)
+                if (i === 0) this._checkForError(item.material);
+
             }
+
         }
 
-        _drawToDebugCanvas(source, i) {
+        _drawToDebugCanvas (source, i) {
+
             if (i >= this._debugCanvases.length) {
-                const c = this.shadowRoot.querySelector(`canvas[index="${i}"]`)
-                if (!c) return
-                const ctx = c.getContext('2d')
-                this._debugCanvases[i] = { c, ctx }
+
+                const c = this.shadowRoot.querySelector(`canvas[index="${i}"]`);
+                if (!c) return;
+                const ctx = c.getContext('2d');
+                this._debugCanvases[i] = { c, ctx };
+
             }
 
-            const dest = this._debugCanvases[i].c
-            const ctx = this._debugCanvases[i].ctx
+            const dest = this._debugCanvases[i].c;
+            const ctx = this._debugCanvases[i].ctx;
 
-            dest.style.width = '100%'
-            dest.height = dest.width
-            dest.width = dest.height
+            dest.style.width = '100%';
+            dest.height = dest.width;
+            dest.width = dest.height;
 
-            ctx.drawImage(source, 0, 0, source.width, source.height, 0, 0, dest.width, dest.height)
+            ctx.drawImage(source, 0, 0, source.width, source.height, 0, 0, dest.width, dest.height);
+
         }
 
-        _compileShaders(shaders, force = false) {
+        _compileShaders (shaders, force = false) {
+
             this.debounce('shader-recompile', () => {
+
                 // expand or shorten the array if necessary
                 while (this._images.length > shaders.length) {
-                    const item = this.pop('_images')
-                    item.material.dispose()
+
+                    const item = this.pop('_images');
+                    item.material.dispose();
+
                 }
 
                 while (this._debugCanvases.length > shaders.length) {
-                    this._debugCanvases.pop()
+
+                    this._debugCanvases.pop();
+
                 }
 
                 while (this._images.length < shaders.length) {
-                    const c = document.createElement('canvas')
-                    const nc = document.createElement('canvas')
+
+                    const c = document.createElement('canvas');
+                    const nc = document.createElement('canvas');
                     this.push('_images', {
                         ctx: c.getContext('2d'),
                         negctx: nc.getContext('2d'),
@@ -602,117 +687,146 @@
                         name: '',
                         type: '',
                         fromShader: ''
-                    })
+                    });
+
                 }
 
                 shaders.forEach((s, i) => {
-                    const item = this._images[i]
-                    const setpref = `_images.${i}`
 
-                    this.set(`${setpref}.name`, s.name)
-                    this.set(`${setpref}.type`, s.type)
-                    this.set(`${setpref}.fromShader`, s.fromShader)
+                    const item = this._images[i];
+                    const setpref = `_images.${i}`;
 
-                    item.material.vertexShader = s.vertexShader
-                    item.material.fragmentShader = s.fragmentShader
-                    item.material.needsUpdate = true
-                })
+                    this.set(`${setpref}.name`, s.name);
+                    this.set(`${setpref}.type`, s.type);
+                    this.set(`${setpref}.fromShader`, s.fromShader);
 
-                this.vertexErrors = null
-                this.fragmentErrors = null
-            }, 250)
+                    item.material.vertexShader = s.vertexShader;
+                    item.material.fragmentShader = s.fragmentShader;
+                    item.material.needsUpdate = true;
 
-            if (force) this.flushDebounce('shader-recompile')
+                });
+
+                this.vertexErrors = null;
+                this.fragmentErrors = null;
+
+            }, 250);
+
+            if (force) this.flushDebounce('shader-recompile');
+
         }
 
         /* Event Handlers */
         // Mouse hover events for inspecting local variables
-        _imageMouseMoveHandler(e) {
-            const im = this.shadowRoot.querySelector('image-magnifier')
+        _imageMouseMoveHandler (e) {
+
+            const im = this.shadowRoot.querySelector('image-magnifier');
 
             if (this._suspendHover) {
-                this._localVariables = null
-                im.style.visibility = 'hidden'
-                return
+
+                this._localVariables = null;
+                im.style.visibility = 'hidden';
+                return;
+
             }
 
-            im.style.visibility = 'visible'
+            im.style.visibility = 'visible';
 
-            im.style.top = e.pageY + 'px'
-            im.style.left = (e.pageX - im.clientWidth) + 'px'
+            im.style.top = e.pageY + 'px';
+            im.style.left = (e.pageX - im.clientWidth) + 'px';
 
-            im.xPixel = e.pixel.x
-            im.yPixel = e.pixel.y
+            im.xPixel = e.pixel.x;
+            im.yPixel = e.pixel.y;
 
+            /*
             // Sampling causes a bit of slowness when rendering, so we don't render when
             // the user is hovering, and we stop sampling when they rotate the model
             // or mouse off
-            const arr = []
+            const arr = [];
             this._images.forEach(item => {
-                const px = DebugShaders.readPixel(item.ctx, e.pixel.x, e.pixel.y)
-                const data = DebugShaders.pixelToArray(px, item.type)
-                
-                const negpx = DebugShaders.readPixel(item.negctx, e.pixel.x, e.pixel.y)
-                const negdata = DebugShaders.pixelToArray(negpx, item.type)
 
-                for(let i in data) data[i] = data[i] || -negdata[i]
+                const px = DebugShaders.readPixel(item.ctx, e.pixel.x, e.pixel.y);
+                const data = DebugShaders.pixelToArray(px, item.type);
+
+                const negpx = DebugShaders.readPixel(item.negctx, e.pixel.x, e.pixel.y);
+                const negdata = DebugShaders.pixelToArray(negpx, item.type);
+
+                for (let i in data) data[i] = data[i] || -negdata[i];
 
                 arr.push({
                     type: item.type,
                     name: item.name,
                     data
-                })
-            })
+                });
 
-            this._localVariables = arr
+            });
+
+            this._localVariables = arr;
+            */
+
         }
 
-        _imageMouseLeaveHandler() {
-            this.shadowRoot.querySelector('image-magnifier').style.visibility = 'hidden'
-            this._localVariables = null
+        _imageMouseLeaveHandler () {
+
+            this.shadowRoot.querySelector('image-magnifier').style.visibility = 'hidden';
+            this._localVariables = null;
+
         }
 
-        _debugImageClickHandler(e) {
-            this._activeImage = e.model.index
+        _debugImageClickHandler (e) {
+
+            this._activeImage = e.model.index;
+
         }
 
-        _setShapeHandler(e) {
-            this._displayGeometry = e.target.getAttribute('shape')
+        _setShapeHandler (e) {
+
+            this._displayGeometry = e.target.getAttribute('shape');
+
         }
 
         /* Computed Variables */
-        _computeShaders(vs, fs) {
+        _computeShaders (vs, fs) {
+
             const prim = {
                 type: 'vec4',
                 name: 'color',
                 vertexShader: vs,
                 fragmentShader: fs,
                 line: 0
-            }
-            const arr = [prim].concat(DebugShaders.enumerate(vs, fs))
+            };
+            const arr = [prim].concat(DebugShaders.enumerate(vs, fs));
 
-            return arr
+            return arr;
+
         }
 
-        _computeImageSrc(images, i) {
-            return images.base[i] ? images.base[i].ctx.canvas : null
+        _computeImageSrc (images, i) {
+
+            return images.base[i] ? images.base[i].ctx.canvas : null;
+
         }
 
         /* Observers */
-        _texturesObserver(textures) {
+        _texturesObserver (textures) {
+
             for (let key in this._loadedTextures) {
-                const removed = !(key in textures)
-                const changed = !removed && this._loadedTextures[key].source !== textures[key] 
+
+                const removed = !(key in textures);
+                const changed = !removed && this._loadedTextures[key].source !== textures[key];
 
                 if (removed || changed) {
-                    this._loadedTextures[key].dispose()
-                    this.set(`_loadedTextures.${key}`, undefined)
+
+                    this._loadedTextures[key].dispose();
+                    this.set(`_loadedTextures.${key}`, undefined);
+
                 }
+
             }
 
             for (let key in textures) {
+
                 if (!(key in this._loadedTextures)) {
-                    const thisKey = key
+
                     this.set(`_loadedTextures.${key}`, {
                         source: textures[key],
                         texture: new THREE.TextureLoader().load(
@@ -720,26 +834,36 @@
                             () => this.debounce('rerender', () => this._render(false, true), 250),
                             null,
                             () => {
-                                this.set(`_loadedTextures.${key}`, undefined)
-                                this.debounce('rerender', () => this._render(false, true), 250)
+
+                                this.set(`_loadedTextures.${key}`, undefined);
+                                this.debounce('rerender', () => this._render(false, true), 250);
+
                             }
                         )
-                    })
+                    });
+
                 }
+
             }
+
         }
 
-        _shadersObserver(shaders) {
-            this._compileShaders(shaders)
+        _shadersObserver (shaders) {
+
+            this._compileShaders(shaders);
+
         }
 
-        _displayGeometryObserver(newgeom, oldgeom) {
-            if (!this._meshes) return
+        _displayGeometryObserver (newgeom, oldgeom) {
 
-            this._scene.remove(this._meshes[oldgeom])
-            this._scene.add(this._meshes[newgeom])
+            if (!this._meshes) return;
+
+            this._scene.remove(this._meshes[oldgeom]);
+            this._scene.add(this._meshes[newgeom]);
+
         }
+
     }
- 
-    customElements.define(ShaderPreview.is, ShaderPreview)
+
+    customElements.define(ShaderPreview.is, ShaderPreview);
 </script>

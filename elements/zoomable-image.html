@@ -20,15 +20,22 @@
 </dom-module>
 
 <script type="text/javascript">
+    /* globals Polymer */
     // zoomable-image Element
     // <img>-like element that allows for pixel-precise zooming and
     // panning for closer image detail inspection
 
     // wraps and has all the same properties as zoomable-element
     class ZoomableImage extends Polymer.Element {
-        static get is() { return 'zoomable-image' }
 
-        static get properties() {
+        static get is () {
+
+            return 'zoomable-image';
+
+        }
+
+        static get properties () {
+
             return {
                 scale: {
                     type: Number,
@@ -50,7 +57,7 @@
                     type: String,
                     value: ''
                 },
-                
+
                 xOffset: {
                     type: Number,
                     value: 0,
@@ -62,9 +69,11 @@
                     value: 0,
                     notify: true
                 }
-            }
+            };
+
         }
+
     }
 
-    customElements.define(ZoomableImage.is, ZoomableImage)
+    customElements.define(ZoomableImage.is, ZoomableImage);
 </script>

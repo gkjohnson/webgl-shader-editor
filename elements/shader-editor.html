@@ -16,7 +16,7 @@
 
             #preview {
                 flex: 1;
-                max-width: 400px;
+                max-width: 300px;
                 color: white;
                 display: flex;
                 flex-direction: column;
@@ -50,7 +50,7 @@
                     annotations="[[ _errorsToAnnotations(vertexErrors) ]]"
                     type="glsl"
                 ></ace-editor>
-                
+
                 <h2>Fragment Shader</h2>
                 <ace-editor
                     value="{{ fragmentShader }}"
@@ -72,13 +72,20 @@
     </template>
 </dom-module>
 <script type="text/javascript">
+    /* globals Polymer */
     // shader-editor element
     // Element that contains a vertex and fragment shader editor
     // and preview panel
     class ShaderEditor extends Polymer.Element {
-        static get is() { return 'shader-editor' }
 
-        static get properties() {
+        static get is () {
+
+            return 'shader-editor';
+
+        }
+
+        static get properties () {
+
             return {
                 // The vertex shader value being editted
                 vertexShader: {
@@ -91,7 +98,7 @@
                 fragmentShader: {
                     type: String,
                     value: '',
-                    notify: true,
+                    notify: true
                 },
 
                 // The errors from compiling the vertex shader
@@ -111,32 +118,45 @@
                 // Textures to render the preview with
                 textures: {
                     type: Object,
-                    value: () => { return {} }
+                    value: () => {
+
+                        return {};
+
+                    }
                 }
-            }
+            };
+
         }
 
         /* Utilities */
-        _errorsToAnnotations(e) {
-            if (!e) return null
+        _errorsToAnnotations (e) {
+
+            if (!e) return null;
 
             return e.map(i => {
+
                 return {
                     row: i.row,
                     column: i.col,
                     text: i.log,
                     type: 'error'
-                }
-            })
+                };
+
+            });
+
         }
 
         /* Overrides */
         // This does not use shadow dom because child
         // the ace-editor child elements require that
         // they be open
-        _attachDom(d) { this.appendChild(d) }
+        _attachDom (d) {
+
+            this.appendChild(d);
+
+        }
 
     }
- 
-    customElements.define(ShaderEditor.is, ShaderEditor)
+
+    customElements.define(ShaderEditor.is, ShaderEditor);
 </script>

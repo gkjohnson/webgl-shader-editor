@@ -14,7 +14,7 @@
                 position: absolute;
                 pointer-events: none;
             }
-            
+
             /* Magnifier Arrow */
             #container:before {
                 content: "";
@@ -87,6 +87,7 @@
 </dom-module>
 
 <script type="text/javascript">
+    /* global Polymer */
     // image-magnifier Element
     // A magnifying glass that zooms in to an image to give
     // pixel detail
@@ -95,9 +96,15 @@
     // the postion of the <image-magnifier> element to the point
     // you want it to point to
     class ImageMagnifier extends Polymer.Element {
-        static get is() { return 'image-magnifier' }
 
-        static get properties() {
+        static get is () {
+
+            return 'image-magnifier';
+
+        }
+
+        static get properties () {
+
             return {
                 // The width and height of the magnifying
                 // circle
@@ -129,35 +136,47 @@
                     type: Number,
                     value: 0
                 }
-            }
+            };
+
         }
 
         /* Utilities */
-        _toOffset(px) {
-            return -px + 2
+        _toOffset (px) {
+
+            return -px + 2;
+
         }
 
-        _getOffsetStyle(s) {
-            const offset = -s / 2
-            return `top:${offset}px; left:${offset}px;`
+        _getOffsetStyle (s) {
+
+            const offset = -s / 2;
+            return `top:${offset}px; left:${offset}px;`;
+
         }
 
-        _getContainerStyle(size) {
-            return `width:${size}px; height:${size}px; border-radius:${size}px;`
+        _getContainerStyle (size) {
+
+            return `width:${size}px; height:${size}px; border-radius:${size}px;`;
+
         }
 
-        _getPixelOutlineStyle(size, scale) {
+        _getPixelOutlineStyle (size, scale) {
+
             // -1px on each side for
             // the outline
-            const dim = scale - 2
-            const offset = (size - scale) / 2
-            return `width:${dim}px; height:${dim}px; top:${offset}px; left:${offset}px;`
+            const dim = scale - 2;
+            const offset = (size - scale) / 2;
+            return `width:${dim}px; height:${dim}px; top:${offset}px; left:${offset}px;`;
+
         }
 
-        _getBorderRadiusStyle(size) {
-            return `border-radius:${size}px;`
+        _getBorderRadiusStyle (size) {
+
+            return `border-radius:${size}px;`;
+
         }
+
     }
 
-    customElements.define(ImageMagnifier.is, ImageMagnifier)
+    customElements.define(ImageMagnifier.is, ImageMagnifier);
 </script>

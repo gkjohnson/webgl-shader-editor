@@ -76,17 +76,17 @@
         varying vec3 lighting;
         varying vec2 texcoord;
 
-        void main() 
+        void main()
         {
             vec3 worldNorm = (modelViewMatrix * vec4(normal, 0)).xyz;
-            
+
             texcoord = uv;
             lighting = ambientLightColor;
             for(int i = 0; i < NUM_DIR_LIGHTS; i ++) {
                 DirLight dl = directionalLights[i];
                 lighting += clamp(dot(worldNorm, dl.direction), 0.0, 1.0) * dl.color;
             }
-            
+
             vec3 sample = texture2D(texture1, uv).xyz;
             vec3 pos = position + normal * sample * sin(time * 0.001);
 
@@ -111,7 +111,7 @@
 
             st.y = gl_FragCoord.y / 2.0;
             st.y -= floor(st.y);
-            
+
             if (rgb.r < 0.5) {
                 float offset = 0.5;
                 offset += floor(st.y + 0.5) == 0.0 ? -1.0 : 0.0;
@@ -127,35 +127,42 @@
         // dedents the shader based on the indentation of the
         // first line with words
         const dedent = sh => {
-            sh = sh.replace(/^[\s\n\r]*(\n|\r)/m, '')
-            const tabMatches = sh.match(/^\s+/)
-            const tab = tabMatches ? tabMatches[0] : ''
-            sh = sh.replace(new RegExp(`^${tab}`, 'gm'), '')
-            return sh
-        }
 
+            sh = sh.replace(/^[\s\n\r]*(\n|\r)/m, '');
+            const tabMatches = sh.match(/^\s+/);
+            const tab = tabMatches ? tabMatches[0] : '';
+            sh = sh.replace(new RegExp(`^${tab}`, 'gm'), '');
+            return sh;
+
+        };
+
+        // used in console
         const resetShaders = () => {
-            se.vertexShader = dedent(vs)
-            se.fragmentShader = dedent(fs)
-        }
 
-        const se = document.querySelector('shader-editor')
-        const vs = document.querySelector('webgl-shader[vertex]').textContent
-        const fs = document.querySelector('webgl-shader[fragment]').textContent
+            se.vertexShader = dedent(vs);
+            se.fragmentShader = dedent(fs);
+
+        };
+
+        const se = document.querySelector('shader-editor');
+        const vs = document.querySelector('webgl-shader[vertex]').textContent;
+        const fs = document.querySelector('webgl-shader[fragment]').textContent;
 
         window.onunload = () => {
-            localStorage.setItem('vertexShader', se.vertexShader)
-            localStorage.setItem('fragmentShader', se.fragmentShader)
-        }
 
-        const path = /\.bundle\.html$/.test(location.href) ? '..' : '.'
-        se.vertexShader = localStorage.getItem('vertexShader') || dedent(vs)
-        se.fragmentShader = localStorage.getItem('fragmentShader') || dedent(fs)
+            localStorage.setItem('vertexShader', se.vertexShader);
+            localStorage.setItem('fragmentShader', se.fragmentShader);
+
+        };
+
+        const path = /\.bundle\.html$/.test(location.href) ? '..' : '.';
+        se.vertexShader = localStorage.getItem('vertexShader') || dedent(vs);
+        se.fragmentShader = localStorage.getItem('fragmentShader') || dedent(fs);
         se.textures = {
             'texture0': `${path}/textures/checkerboard.png`,
             'texture1': `${path}/textures/clouds.png`,
             'texture2': `${path}/textures/random.png`
-        }
+        };
     </script>
 </body>
 </html>
